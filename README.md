@@ -11,6 +11,10 @@ This project allows for a very simple download of multiple repositories at once 
 
 ![GitHub backup User Interface](GitHubBackupUI.png "GitHub backup User Interface")
 
+## Delphi Version
+
+This app was originally written in Delphi 10.0 Seattle but later revised in Delphi 10.1 Berlin. It has not been tested in any other Delphi versions, but it's anticipated to make this library work on multiple Delphi versions. 
+
 ## OpenSSL
 
 This project requires the OpenSSL binaries. These are not included in this repository, and you are responsible to provide a 32bit set of binaries with the output executable. Specifically, `ssleay32.dll` and `libeay32.dll`. 
