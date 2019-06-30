@@ -9,6 +9,8 @@ This project is currently under active development, and is not a complete soluti
 
 This project allows for a very simple download of multiple repositories at once from any given user or organization. Simply fetch a list of all repositories, place a check by the ones you want, and click "Download" to get them all at once.
 
+![GitHub backup User Interface](GitHubBackupUI.png "GitHub backup User Interface")
+
 ## OpenSSL
 
 This project requires the OpenSSL binaries. These are not included in this repository, and you are responsible to provide a 32bit set of binaries with the output executable. Specifically, `ssleay32.dll` and `libeay32.dll`. 
