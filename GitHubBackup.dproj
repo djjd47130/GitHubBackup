@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>GitHubBackup.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -58,6 +58,9 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_Define>USE_VCL_STYLE_UTILS;$(DCC_Define)</DCC_Define>
+        <VerInfo_Keys>CompanyName=RM Innovation;FileVersion=1.0.0.0;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHubBackup.exe;ProductVersion=1.0.0.0;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <Custom_Styles>Glossy|VCLSTYLE|$(PUBLIC)\Documents\Embarcadero\Studio\17.0\Styles\Glossy.vsf</Custom_Styles>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>GitHubBackup</SanitizedProjectName>
@@ -126,7 +129,7 @@
         <BT_BuildType>Debug</BT_BuildType>
         <Icon_MainIcon>Icons\media (1).ico</Icon_MainIcon>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=RM Innovation;FileVersion=1.0.0.0;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHubBackup.exe;ProductVersion=1.0.0.0;Comments=GitHub Backup;ProgramID=com.embarcadero.$(ModuleName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=RM Innovation;FileVersion=1.0.0.0;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHubBackup.exe;ProductVersion=1.0.0.0;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
@@ -172,9 +175,8 @@
                     <Source Name="MainSource">GitHubBackup.dpr</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\LockBoxVCLDD230.bpl">TurboPack LockBox Delphi Vcl designtime package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k230.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp230.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
