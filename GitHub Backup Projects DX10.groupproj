@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{22D990F7-710D-464F-AEBE-B61739657A80}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="GitHubBackup.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\DelphiInterfaceGenerator\DelphiInterfaceGenerator.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="GitHubBackup">
+        <MSBuild Projects="GitHubBackup.dproj"/>
+    </Target>
+    <Target Name="GitHubBackup:Clean">
+        <MSBuild Projects="GitHubBackup.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GitHubBackup:Make">
+        <MSBuild Projects="GitHubBackup.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DelphiInterfaceGenerator">
+        <MSBuild Projects="..\DelphiInterfaceGenerator\DelphiInterfaceGenerator.dproj"/>
+    </Target>
+    <Target Name="DelphiInterfaceGenerator:Clean">
+        <MSBuild Projects="..\DelphiInterfaceGenerator\DelphiInterfaceGenerator.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DelphiInterfaceGenerator:Make">
+        <MSBuild Projects="..\DelphiInterfaceGenerator\DelphiInterfaceGenerator.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="GitHubBackup;DelphiInterfaceGenerator"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="GitHubBackup:Clean;DelphiInterfaceGenerator:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="GitHubBackup:Make;DelphiInterfaceGenerator:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
