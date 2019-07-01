@@ -1,4 +1,4 @@
-# GitHubBackup
+# GitHub Backup Application
 Simple UI for bulk downloading GitHub repositories
 
 ## IMPORTANT NOTE
