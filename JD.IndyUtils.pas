@@ -27,8 +27,9 @@ var
 begin
   inherited Create;
 
-  //TODO: Use conditionals to use feature only if available in current Indy version
+  {$IF Declared(IdHTTP.TIdHTTPOption.hoWantProtocolErrorContent)}
   HTTPOptions := HTTPOptions + [hoNoProtocolErrorException, hoWantProtocolErrorContent];
+  {$ENDIF}
 
   SSLIO := TIdSSLIOHandlerSocketOpenSSL.Create(Self);
   SSLIO.SSLOptions.SSLVersions := [sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2];

@@ -29,7 +29,6 @@ uses
   JD.IndyUtils;
 
 type
-
   TRepo = class(TObject)
   private
     FObj: ISuperObject;
@@ -83,8 +82,6 @@ type
     Label2: TLabel;
     pRepoTop: TPanel;
     lstRepos: TListView;
-    tabResults: TTabSheet;
-    txtResults: TMemo;
     cboUserType: TComboBox;
     Prog: TProgressBar;
     Label3: TLabel;
@@ -109,6 +106,12 @@ type
     btnColsDone: TButton;
     btnCols: TButton;
     tabListGridTest: TTabSheet;
+    pErrorLog: TPanel;
+    pErrorLogTitle: TPanel;
+    lblErrorLogTitle: TLabel;
+    btnCloseErrorLog: TButton;
+    spErrorLog: TSplitter;
+    txtErrorLog: TMemo;
     procedure btnListReposClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -127,6 +130,7 @@ type
     procedure btnColsDoneClick(Sender: TObject);
     procedure btnColsClick(Sender: TObject);
     procedure lstReposItemChecked(Sender: TObject; Item: TListItem);
+    procedure btnCloseErrorLogClick(Sender: TObject);
   private                    
     FEnabled: Boolean;
     FRepos: TObjectList<TRepo>;
@@ -157,6 +161,7 @@ type
     procedure UpdateCheckAll;
     procedure SortRepos;
     procedure DisplayRepos;
+    procedure ShowErrorLog(const AShow: Boolean = True);
     {$IFDEF LISTGRID}
     procedure SetupListGrid;
     procedure PopulateListGrid;
@@ -178,7 +183,7 @@ implementation
 {$R *.dfm}
 
 uses
-  System.IOUtils, System.DateUtils, XSBuiltIns, System.Math;
+  System.IOUtils, System.DateUtils, Soap.XSBuiltIns, System.Math;
 
 const
   REPO_FLD_NAME = 0;
@@ -325,9 +330,10 @@ begin
 
   Pages.Align:= alClient;
   lstRepos.Align:= alClient;
-  txtResults.Align:= alClient;
+  txtErrorLog.Align:= alClient;
 
   SetEnabledState(True);
+  ShowErrorLog(False);
 
   cboSort.Items.Clear;
   ListRepoFields(cboSort.Items);
@@ -340,7 +346,7 @@ begin
   FListGrid.Show;
   SetupListGrid;
   {$ELSE}
-  Self.tabListGridTest.TabVisible:= False;
+  tabListGridTest.TabVisible:= False;
   {$ENDIF}
 
   if LoadConfig then
@@ -833,7 +839,7 @@ begin
 
       end;
       2: begin
-        //Results page...
+        //List grid test page...
 
       end;
     end;
@@ -898,7 +904,8 @@ end;
 procedure TfrmMain.ThreadBegin(Sender: TObject);
 begin
   SetEnabledState(False);
-  txtResults.Lines.Clear;
+  txtErrorLog.Lines.Clear;
+  ShowErrorLog(False);
   btnCancel.Enabled:= True;
   Stat.Panels[1].Text:= 'Downloading...';
   Prog.Visible:= True;
@@ -918,8 +925,8 @@ begin
   Prog.Visible:= False;
   Stat.Panels[2].Text:= '';
   //If any errors, show...
-  if txtResults.Lines.Text <> '' then begin
-    Pages.ActivePageIndex:= 2;
+  if txtErrorLog.Lines.Text <> '' then begin
+    ShowErrorLog(True);
     MessageDlg('Download completed with errors.', mtWarning, [mbOK], 0);
   end else begin
     MessageDlg('Download completed successfully.', mtInformation, [mbOK], 0);
@@ -953,7 +960,7 @@ end;
 procedure TfrmMain.ThreadException(Sender: TObject;
   const CurFile: TDownloadFile);
 begin
-  txtResults.Lines.Append('EXCEPTION on file '+CurFile.Name+': '+CurFile.Error);
+  txtErrorLog.Lines.Append('EXCEPTION on file '+CurFile.Name+': '+CurFile.Error);
 end;
 
 function TfrmMain.CreateDownloadThread: TDownloadThread;
@@ -976,6 +983,19 @@ begin
     if Assigned(FThreadCancel) then
       FThreadCancel;
   end;
+end;
+
+procedure TfrmMain.btnCloseErrorLogClick(Sender: TObject);
+begin
+  ShowErrorLog(False);
+end;
+
+procedure TfrmMain.ShowErrorLog(const AShow: Boolean = True);
+begin
+  pErrorLog.Visible:= AShow;
+  spErrorLog.Visible:= AShow;
+  if AShow then
+    spErrorLog.Top:= pErrorLog.Top - 10;
 end;
 
 procedure TfrmMain.btnColsClick(Sender: TObject);

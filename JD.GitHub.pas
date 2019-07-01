@@ -28,9 +28,14 @@ interface
 uses
   System.Classes, System.SysUtils, System.Generics.Collections,
   XSuperObject,
-  JD.IndyUtils,
-  JD.GitHub.Intf, JD.GitHub.Impl;
+  JD.IndyUtils
+{$IFDEF V2}
+  , JD.GitHub.Intf, JD.GitHub.Impl
+{$ENDIF}
+  ;
 
+
+{$IFDEF V2}
 type
   TGitHubAPI = class;
   TGitHubAPIRepos = class;
@@ -66,7 +71,7 @@ type
 
   end;
 
-
+{$ENDIF}
 
 
 
@@ -74,6 +79,7 @@ type
 
 { ---------------------------- Original Code ------------------------------ }
 
+type
   TDownloadStatus = (dsPending, dsProgress, dsComplete, dsException);
 
   TDownloadFile = class(TObject)
@@ -176,6 +182,74 @@ begin
     Inc(i);
   Result := FormatFloat('###0.##', Bytes / IntPower(1024, i)) + ' ' + Description[i];
 end;
+
+{$IFDEF V2}
+
+{ TGitHubAPI }
+
+constructor TGitHubAPI.Create(AOwner: TComponent);
+begin
+  inherited;
+  FWeb:= TIndyHttpTransport.Create;
+end;
+
+destructor TGitHubAPI.Destroy;
+begin
+  FreeAndNil(FWeb);
+  inherited;
+end;
+
+procedure TGitHubAPI.SetToken(const Value: String);
+begin
+  FToken := Value;
+end;
+
+{ TGitHubAPIRepos }
+
+constructor TGitHubAPIRepos.Create(AOwner: TGitHubAPI);
+begin
+  FOwner:= AOwner;
+
+end;
+
+destructor TGitHubAPIRepos.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TGitHubAPIRepos.SetPageSize(const Value: Integer);
+begin
+  FPageSize := Value;
+  if FPageSize > 100 then
+    FPageSize:= 100;
+  if FPageSize < 1 then
+    FPageSize:= 1;
+end;
+
+function TGitHubAPIRepos.GetMyRepos(const AName: String;
+  const APage: Integer): IGitHubRepos;
+begin
+
+end;
+
+function TGitHubAPIRepos.GetUserRepos(const AName: String;
+  const APage: Integer): IGitHubRepos;
+begin
+
+end;
+
+function TGitHubAPIRepos.GetOrgRepos(const AName: String;
+  const APage: Integer): IGitHubRepos;
+begin
+
+end;
+
+{$ENDIF}
+
+
+
+
 
 { TDownloadFile }
 
@@ -344,66 +418,6 @@ procedure TDownloadThread.SYNC_OnException;
 begin
   if Assigned(FOnException) then
     FOnException(Self, FSYNC_CurFile);
-end;
-
-{ TGitHubAPI }
-
-constructor TGitHubAPI.Create(AOwner: TComponent);
-begin
-  inherited;
-  FWeb:= TIndyHttpTransport.Create;
-end;
-
-destructor TGitHubAPI.Destroy;
-begin
-  FreeAndNil(FWeb);
-  inherited;
-end;
-
-procedure TGitHubAPI.SetToken(const Value: String);
-begin
-  FToken := Value;
-end;
-
-{ TGitHubAPIRepos }
-
-constructor TGitHubAPIRepos.Create(AOwner: TGitHubAPI);
-begin
-  FOwner:= AOwner;
-
-end;
-
-destructor TGitHubAPIRepos.Destroy;
-begin
-
-  inherited;
-end;
-
-procedure TGitHubAPIRepos.SetPageSize(const Value: Integer);
-begin
-  FPageSize := Value;
-  if FPageSize > 100 then
-    FPageSize:= 100;
-  if FPageSize < 1 then
-    FPageSize:= 1;
-end;
-
-function TGitHubAPIRepos.GetMyRepos(const AName: String;
-  const APage: Integer): IGitHubRepos;
-begin
-
-end;
-
-function TGitHubAPIRepos.GetUserRepos(const AName: String;
-  const APage: Integer): IGitHubRepos;
-begin
-
-end;
-
-function TGitHubAPIRepos.GetOrgRepos(const AName: String;
-  const APage: Integer): IGitHubRepos;
-begin
-
 end;
 
 end.

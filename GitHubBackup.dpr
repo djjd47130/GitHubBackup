@@ -6,9 +6,6 @@ uses
   Vcl.Themes,
   Vcl.Styles,
   JD.GitHub in 'JD.GitHub.pas',
-  JD.ListGrid in 'JD.ListGrid.pas' {ListGrid},
-  JD.GitHub.Intf in 'JD.GitHub.Intf.pas',
-  JD.GitHub.Impl in 'JD.GitHub.Impl.pas',
   JD.IndyUtils in 'JD.IndyUtils.pas';
 
 {$R *.res}

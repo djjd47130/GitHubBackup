@@ -147,12 +147,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="JD.GitHub.pas"/>
-        <DCCReference Include="JD.ListGrid.pas">
-            <Form>ListGrid</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="JD.GitHub.Intf.pas"/>
-        <DCCReference Include="JD.GitHub.Impl.pas"/>
         <DCCReference Include="JD.IndyUtils.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

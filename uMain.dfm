@@ -2,8 +2,8 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'GitHub Repository Backup'
-  ClientHeight = 487
-  ClientWidth = 1029
+  ClientHeight = 473
+  ClientWidth = 990
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -20,8 +20,8 @@ object frmMain: TfrmMain
   TextHeight = 14
   object Stat: TStatusBar
     Left = 0
-    Top = 468
-    Width = 1029
+    Top = 454
+    Width = 990
     Height = 19
     Panels = <
       item
@@ -41,16 +41,16 @@ object frmMain: TfrmMain
   object Pages: TPageControl
     Left = 0
     Top = 0
-    Width = 1029
-    Height = 415
+    Width = 990
+    Height = 394
     ActivePage = tabRepositories
     Align = alTop
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabHeight = 24
     TabOrder = 1
     OnChanging = PagesChanging
-    ExplicitWidth = 1012
-    ExplicitHeight = 417
+    ExplicitWidth = 1029
+    ExplicitHeight = 481
     object tabSetup: TTabSheet
       Caption = '   Setup   '
       ExplicitWidth = 1004
@@ -140,15 +140,26 @@ object frmMain: TfrmMain
     object tabRepositories: TTabSheet
       Caption = '   Repositories   '
       ImageIndex = 1
-      ExplicitWidth = 1004
-      ExplicitHeight = 383
+      ExplicitWidth = 1021
+      ExplicitHeight = 384
       DesignSize = (
-        1021
-        381)
+        982
+        360)
+      object spErrorLog: TSplitter
+        Left = 0
+        Top = 228
+        Width = 982
+        Height = 5
+        Cursor = crVSplit
+        Align = alBottom
+        ResizeStyle = rsUpdate
+        ExplicitTop = 317
+        ExplicitWidth = 1021
+      end
       object pRepoTop: TPanel
         Left = 0
         Top = 0
-        Width = 1021
+        Width = 982
         Height = 29
         Align = alTop
         BevelOuter = bvNone
@@ -158,7 +169,7 @@ object frmMain: TfrmMain
           AlignWithMargins = True
           Left = 557
           Top = 3
-          Width = 430
+          Width = 391
           Height = 23
           Align = alClient
           TabOrder = 4
@@ -321,7 +332,7 @@ object frmMain: TfrmMain
         end
         object btnCols: TButton
           AlignWithMargins = True
-          Left = 993
+          Left = 954
           Top = 3
           Width = 25
           Height = 23
@@ -338,10 +349,9 @@ object frmMain: TfrmMain
       object lstRepos: TListView
         Left = 0
         Top = 29
-        Width = 1021
-        Height = 292
+        Width = 982
+        Height = 204
         Align = alTop
-        Anchors = [akLeft, akTop, akRight, akBottom]
         BorderStyle = bsNone
         Checkboxes = True
         Columns = <
@@ -380,8 +390,7 @@ object frmMain: TfrmMain
         ViewStyle = vsReport
         OnClick = lstReposClick
         OnItemChecked = lstReposItemChecked
-        ExplicitWidth = 1004
-        ExplicitHeight = 294
+        ExplicitWidth = 1021
       end
       object chkCheckAll: TCheckBox
         Left = 3
@@ -393,14 +402,14 @@ object frmMain: TfrmMain
         OnClick = chkCheckAllClick
       end
       object pCols: TPanel
-        Left = 882
+        Left = 843
         Top = 32
         Width = 136
-        Height = 273
+        Height = 198
         Anchors = [akTop, akRight]
         TabOrder = 3
         Visible = False
-        ExplicitLeft = 865
+        ExplicitLeft = 835
         object Label5: TLabel
           AlignWithMargins = True
           Left = 4
@@ -427,7 +436,7 @@ object frmMain: TfrmMain
           Left = 4
           Top = 23
           Width = 128
-          Height = 218
+          Height = 143
           Margins.Bottom = 0
           OnClickCheck = lstColsClickCheck
           Align = alClient
@@ -441,39 +450,97 @@ object frmMain: TfrmMain
             'Last Push'
             'Description')
           TabOrder = 0
+          ExplicitHeight = 218
         end
         object btnColsDone: TButton
           AlignWithMargins = True
           Left = 4
-          Top = 244
+          Top = 169
           Width = 128
           Height = 25
           Align = alBottom
           Caption = 'Done'
           TabOrder = 1
           OnClick = btnColsDoneClick
+          ExplicitTop = 244
         end
       end
-    end
-    object tabResults: TTabSheet
-      Caption = '   Results   '
-      ImageIndex = 2
-      ExplicitWidth = 1004
-      ExplicitHeight = 383
-      object txtResults: TMemo
+      object pErrorLog: TPanel
         Left = 0
-        Top = 0
-        Width = 1021
-        Height = 304
-        Align = alTop
-        Anchors = [akLeft, akTop, akRight, akBottom]
-        BorderStyle = bsNone
-        ReadOnly = True
-        ScrollBars = ssBoth
-        TabOrder = 0
-        WordWrap = False
-        ExplicitWidth = 1004
-        ExplicitHeight = 306
+        Top = 233
+        Width = 982
+        Height = 127
+        Align = alBottom
+        BevelOuter = bvNone
+        TabOrder = 4
+        ExplicitTop = 320
+        ExplicitWidth = 1021
+        object pErrorLogTitle: TPanel
+          Left = 0
+          Top = 0
+          Width = 982
+          Height = 24
+          Align = alTop
+          BevelOuter = bvNone
+          TabOrder = 0
+          ExplicitLeft = 3
+          ExplicitTop = 1
+          ExplicitWidth = 1019
+          object lblErrorLogTitle: TLabel
+            AlignWithMargins = True
+            Left = 3
+            Top = 3
+            Width = 317
+            Height = 18
+            Align = alLeft
+            AutoSize = False
+            Caption = 'Error Log'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            Layout = tlCenter
+            ExplicitLeft = 4
+            ExplicitTop = 4
+            ExplicitHeight = 16
+          end
+          object btnCloseErrorLog: TButton
+            AlignWithMargins = True
+            Left = 957
+            Top = 2
+            Width = 23
+            Height = 20
+            Cursor = crHandPoint
+            Margins.Left = 2
+            Margins.Top = 2
+            Margins.Right = 2
+            Margins.Bottom = 2
+            Align = alRight
+            Caption = 'X'
+            TabOrder = 0
+            OnClick = btnCloseErrorLogClick
+            ExplicitLeft = 992
+            ExplicitTop = 3
+            ExplicitHeight = 16
+          end
+        end
+        object txtErrorLog: TMemo
+          Left = 0
+          Top = 42
+          Width = 982
+          Height = 85
+          Align = alBottom
+          BorderStyle = bsNone
+          ReadOnly = True
+          ScrollBars = ssBoth
+          TabOrder = 1
+          WordWrap = False
+          ExplicitLeft = 1
+          ExplicitTop = 80
+          ExplicitWidth = 1019
+        end
       end
     end
     object tabListGridTest: TTabSheet
@@ -486,21 +553,21 @@ object frmMain: TfrmMain
   object tmrDisplay: TTimer
     Interval = 200
     OnTimer = tmrDisplayTimer
-    Left = 92
-    Top = 424
+    Left = 100
+    Top = 400
   end
   object Taskbar: TTaskbar
     TaskBarButtons = <>
     TabProperties = []
     ToolTip = 'GitHub Backup'
-    Left = 164
-    Top = 422
+    Left = 172
+    Top = 398
   end
   object dlgBrowseDir: TFileOpenDialog
     FavoriteLinks = <>
     FileTypes = <>
     Options = [fdoPickFolders]
-    Left = 28
-    Top = 422
+    Left = 36
+    Top = 398
   end
 end
