@@ -2,8 +2,8 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'GitHub Repository Backup'
-  ClientHeight = 473
-  ClientWidth = 990
+  ClientHeight = 592
+  ClientWidth = 1114
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -11,6 +11,7 @@ object frmMain: TfrmMain
   Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
+  Menu = MM
   OldCreateOrder = False
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
@@ -20,8 +21,8 @@ object frmMain: TfrmMain
   TextHeight = 14
   object Stat: TStatusBar
     Left = 0
-    Top = 454
-    Width = 990
+    Top = 573
+    Width = 1114
     Height = 19
     Panels = <
       item
@@ -41,16 +42,15 @@ object frmMain: TfrmMain
   object Pages: TPageControl
     Left = 0
     Top = 0
-    Width = 990
-    Height = 394
+    Width = 1114
+    Height = 505
     ActivePage = tabRepositories
     Align = alTop
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabHeight = 24
     TabOrder = 1
     OnChanging = PagesChanging
-    ExplicitWidth = 1029
-    ExplicitHeight = 481
+    ExplicitWidth = 1165
     object tabSetup: TTabSheet
       Caption = '   Setup   '
       ExplicitWidth = 1004
@@ -142,13 +142,10 @@ object frmMain: TfrmMain
       ImageIndex = 1
       ExplicitWidth = 1021
       ExplicitHeight = 384
-      DesignSize = (
-        982
-        360)
       object spErrorLog: TSplitter
         Left = 0
-        Top = 228
-        Width = 982
+        Top = 339
+        Width = 1106
         Height = 5
         Cursor = crVSplit
         Align = alBottom
@@ -159,21 +156,23 @@ object frmMain: TfrmMain
       object pRepoTop: TPanel
         Left = 0
         Top = 0
-        Width = 982
+        Width = 1106
         Height = 29
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 1004
+        ExplicitLeft = 25
+        ExplicitTop = -2
         object Prog: TProgressBar
           AlignWithMargins = True
-          Left = 557
+          Left = 540
           Top = 3
-          Width = 391
+          Width = 563
           Height = 23
           Align = alClient
           TabOrder = 4
           Visible = False
+          ExplicitLeft = 557
           ExplicitWidth = 413
         end
         object Panel4: TPanel
@@ -275,11 +274,11 @@ object frmMain: TfrmMain
           AlignWithMargins = True
           Left = 212
           Top = 3
-          Width = 93
+          Width = 76
           Height = 23
           Cursor = crHandPoint
+          Action = actRefresh
           Align = alLeft
-          Caption = 'List Repos'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = 16754011
           Font.Height = -11
@@ -288,18 +287,16 @@ object frmMain: TfrmMain
           ParentFont = False
           TabOrder = 1
           StyleElements = [seClient, seBorder]
-          OnClick = btnListReposClick
         end
         object btnDownload: TButton
           AlignWithMargins = True
-          Left = 311
+          Left = 294
           Top = 3
           Width = 159
           Height = 23
           Cursor = crHandPoint
+          Action = actDownloadRepos
           Align = alLeft
-          Caption = 'Download'
-          Enabled = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clLime
           Font.Height = -11
@@ -308,18 +305,17 @@ object frmMain: TfrmMain
           ParentFont = False
           TabOrder = 2
           StyleElements = [seClient, seBorder]
-          OnClick = btnDownloadClick
+          ExplicitLeft = 311
         end
         object btnCancel: TButton
           AlignWithMargins = True
-          Left = 476
+          Left = 459
           Top = 3
           Width = 75
           Height = 23
           Cursor = crHandPoint
+          Action = actCancelDownload
           Align = alLeft
-          Caption = 'Cancel'
-          Enabled = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clRed
           Font.Height = -11
@@ -328,28 +324,14 @@ object frmMain: TfrmMain
           ParentFont = False
           TabOrder = 3
           StyleElements = [seClient, seBorder]
-          OnClick = btnCancelClick
-        end
-        object btnCols: TButton
-          AlignWithMargins = True
-          Left = 954
-          Top = 3
-          Width = 25
-          Height = 23
-          Cursor = crHandPoint
-          Align = alRight
-          Caption = '...'
-          Enabled = False
-          TabOrder = 5
-          Visible = False
-          OnClick = btnColsClick
-          ExplicitLeft = 976
+          ExplicitLeft = 500
+          ExplicitTop = 0
         end
       end
       object lstRepos: TListView
         Left = 0
         Top = 29
-        Width = 982
+        Width = 1106
         Height = 204
         Align = alTop
         BorderStyle = bsNone
@@ -389,6 +371,7 @@ object frmMain: TfrmMain
         TabOrder = 1
         ViewStyle = vsReport
         OnClick = lstReposClick
+        OnDblClick = lstReposDblClick
         OnItemChecked = lstReposItemChecked
         ExplicitWidth = 1021
       end
@@ -401,84 +384,20 @@ object frmMain: TfrmMain
         TabOrder = 2
         OnClick = chkCheckAllClick
       end
-      object pCols: TPanel
-        Left = 843
-        Top = 32
-        Width = 136
-        Height = 198
-        Anchors = [akTop, akRight]
-        TabOrder = 3
-        Visible = False
-        ExplicitLeft = 835
-        object Label5: TLabel
-          AlignWithMargins = True
-          Left = 4
-          Top = 4
-          Width = 128
-          Height = 13
-          Align = alTop
-          Alignment = taCenter
-          AutoSize = False
-          Caption = 'Columns'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          Layout = tlCenter
-          ExplicitLeft = 56
-          ExplicitTop = 56
-          ExplicitWidth = 31
-        end
-        object lstCols: TCheckListBox
-          AlignWithMargins = True
-          Left = 4
-          Top = 23
-          Width = 128
-          Height = 143
-          Margins.Bottom = 0
-          OnClickCheck = lstColsClickCheck
-          Align = alClient
-          ItemHeight = 14
-          Items.Strings = (
-            'Repository Name'
-            'Default Branch'
-            'Visibility'
-            'Language'
-            'Size'
-            'Last Push'
-            'Description')
-          TabOrder = 0
-          ExplicitHeight = 218
-        end
-        object btnColsDone: TButton
-          AlignWithMargins = True
-          Left = 4
-          Top = 169
-          Width = 128
-          Height = 25
-          Align = alBottom
-          Caption = 'Done'
-          TabOrder = 1
-          OnClick = btnColsDoneClick
-          ExplicitTop = 244
-        end
-      end
       object pErrorLog: TPanel
         Left = 0
-        Top = 233
-        Width = 982
+        Top = 344
+        Width = 1106
         Height = 127
         Align = alBottom
         BevelOuter = bvNone
-        TabOrder = 4
+        TabOrder = 3
         ExplicitTop = 320
         ExplicitWidth = 1021
         object pErrorLogTitle: TPanel
           Left = 0
           Top = 0
-          Width = 982
+          Width = 1106
           Height = 24
           Align = alTop
           BevelOuter = bvNone
@@ -508,7 +427,7 @@ object frmMain: TfrmMain
           end
           object btnCloseErrorLog: TButton
             AlignWithMargins = True
-            Left = 957
+            Left = 1081
             Top = 2
             Width = 23
             Height = 20
@@ -529,7 +448,7 @@ object frmMain: TfrmMain
         object txtErrorLog: TMemo
           Left = 0
           Top = 42
-          Width = 982
+          Width = 1106
           Height = 85
           Align = alBottom
           BorderStyle = bsNone
@@ -553,21 +472,175 @@ object frmMain: TfrmMain
   object tmrDisplay: TTimer
     Interval = 200
     OnTimer = tmrDisplayTimer
-    Left = 100
-    Top = 400
+    Left = 92
+    Top = 518
   end
   object Taskbar: TTaskbar
     TaskBarButtons = <>
     TabProperties = []
     ToolTip = 'GitHub Backup'
-    Left = 172
-    Top = 398
+    Left = 156
+    Top = 518
   end
   object dlgBrowseDir: TFileOpenDialog
     FavoriteLinks = <>
     FileTypes = <>
     Options = [fdoPickFolders]
-    Left = 36
-    Top = 398
+    Left = 28
+    Top = 518
+  end
+  object MM: TMainMenu
+    Left = 200
+    Top = 518
+    object mRepositories: TMenuItem
+      Caption = 'Repositories'
+      object CheckAll1: TMenuItem
+        Action = actCheckAll
+      end
+      object CheckNone1: TMenuItem
+        Action = actCheckNone
+      end
+      object CheckSelected1: TMenuItem
+        Action = actCheckSelected
+      end
+      object N4: TMenuItem
+        Caption = '-'
+      end
+      object DownloadCheckedRepos1: TMenuItem
+        Action = actDownloadRepos
+      end
+      object Cancel1: TMenuItem
+        Action = actCancelDownload
+      end
+      object N5: TMenuItem
+        Caption = '-'
+      end
+      object Exit1: TMenuItem
+        Action = actExit
+      end
+    end
+    object mOptions: TMenuItem
+      Caption = 'Options'
+      object mSetup: TMenuItem
+        Action = actSetup
+      end
+      object N6: TMenuItem
+        Caption = '-'
+      end
+      object ConfigureColumns1: TMenuItem
+        Action = actConfigCols
+      end
+    end
+    object mView: TMenuItem
+      Caption = 'View'
+      object mRefresh: TMenuItem
+        Action = actRefresh
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object mColumns: TMenuItem
+        Caption = 'Columns'
+        Enabled = False
+        object mColumnsConfig: TMenuItem
+          Action = actConfigCols
+        end
+        object N2: TMenuItem
+          Caption = '-'
+        end
+      end
+      object Sort1: TMenuItem
+        Caption = 'Sort'
+        Enabled = False
+        object SortAscending1: TMenuItem
+          AutoCheck = True
+          Caption = 'Sort Ascending'
+          Checked = True
+          RadioItem = True
+        end
+        object SortDescending1: TMenuItem
+          AutoCheck = True
+          Caption = 'Sort Descending'
+          RadioItem = True
+        end
+        object N7: TMenuItem
+          Caption = '-'
+        end
+      end
+    end
+    object mHelp: TMenuItem
+      Caption = 'Help'
+    end
+  end
+  object Acts: TActionManager
+    Images = Img16
+    OnUpdate = ActsUpdate
+    Left = 240
+    Top = 518
+    StyleName = 'Platform Default'
+    object actSetup: TAction
+      Category = 'Options'
+      Caption = 'Setup'
+      ShortCut = 16467
+      OnExecute = actSetupExecute
+    end
+    object actRefresh: TAction
+      Category = 'View'
+      Caption = 'Refresh'
+      ShortCut = 116
+      OnExecute = actRefreshExecute
+    end
+    object actConfigCols: TAction
+      Category = 'View'
+      Caption = 'Configure Columns'
+      Enabled = False
+      ShortCut = 16451
+      OnExecute = actConfigColsExecute
+    end
+    object actCheckAll: TAction
+      Category = 'Repositories'
+      Caption = 'Check All'
+      ShortCut = 16449
+      OnExecute = actCheckAllExecute
+    end
+    object actCheckNone: TAction
+      Category = 'Repositories'
+      Caption = 'Check None'
+      ShortCut = 16462
+      OnExecute = actCheckNoneExecute
+    end
+    object actCheckSelected: TAction
+      Category = 'Repositories'
+      Caption = 'Check Selected'
+      ShortCut = 16460
+      OnExecute = actCheckSelectedExecute
+    end
+    object actDownloadRepos: TAction
+      Category = 'Repositories'
+      Caption = 'Download'
+      Enabled = False
+      ShortCut = 16452
+      OnExecute = actDownloadReposExecute
+    end
+    object actExit: TAction
+      Category = 'Repositories'
+      Caption = 'Exit'
+      OnExecute = actExitExecute
+    end
+    object actCancelDownload: TAction
+      Category = 'Repositories'
+      Caption = 'Cancel'
+      Enabled = False
+      OnExecute = actCancelDownloadExecute
+    end
+    object actSortAZ: TAction
+      Category = 'View'
+      Caption = 'A..Z'
+      Hint = 'Sort Ascending'
+    end
+  end
+  object Img16: TImageList
+    Left = 312
+    Top = 520
   end
 end

@@ -6,10 +6,13 @@ uses
   Winapi.Windows, Winapi.Messages,
   System.SysUtils, System.Variants, System.Classes,
   System.Generics.Collections, System.Generics.Defaults,
-  System.UITypes, System.Win.TaskbarCore,
+  System.UITypes, System.Win.TaskbarCore, System.Actions,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Taskbar, Vcl.CheckLst,
+  Vcl.Menus, Vcl.PlatformDefaultStyleActnCtrls,
+  Vcl.ActnList, Vcl.ActnMan, System.ImageList, Vcl.ImgList,
 {$IFDEF USE_VCL_STYLE_UTILS}
+  //Recommended to use vcl-styles-utils to fix issues in Windows dialogs
   Vcl.Styles, Vcl.Themes,
   Vcl.Styles.FontAwesome,
   Vcl.Styles.Fixes,
@@ -21,54 +24,18 @@ uses
   Vcl.Styles.Utils.SysControls,
   Vcl.Styles.Utils.SysStyleHook,
 {$ENDIF}
-{$IFDEF LISTGRID}
+{$IFDEF V2}
   JD.ListGrid,
 {$ENDIF}
+  //Relies on X-SuperObject
   XSuperObject,
   JD.GitHub,
-  JD.IndyUtils;
+  JD.IndyUtils,
+  JD.GitHub.Common,
+  uSetup,
+  uRepoDetail;
 
 type
-  TRepo = class(TObject)
-  private
-    FObj: ISuperObject;
-    function GetB(const N: String): Boolean;
-    function GetF(const N: String): Double;
-    function GetI(const N: String): Int64;
-    function GetS(const N: String): String;
-    function GetO(const N: String): ISuperObject;
-    function GetCreated: TDateTime;
-    function GetDefaultBranch: String;
-    function GetDescription: String;
-    function GetFullName: String;
-    function GetIsPrivate: Boolean;
-    function GetLanguage: String;
-    function GetName: String;
-    function GetPushed: TDateTime;
-    function GetSize: Int64;
-    function GetUpdated: TDateTime;
-  public
-    constructor Create(AObj: ISuperObject);
-    destructor Destroy; override;
-  public
-    property S[const N: String]: String read GetS;
-    property I[const N: String]: Int64 read GetI;
-    property B[const N: String]: Boolean read GetB;
-    property F[const N: String]: Double read GetF;
-    property O[const N: String]: ISuperObject read GetO;
-  public
-    property Name: String read GetName;
-    property FullName: String read GetFullName;
-    property Created: TDateTime read GetCreated;
-    property Updated: TDateTime read GetUpdated;
-    property Pushed: TDateTime read GetPushed;
-    property Language: String read GetLanguage;
-    property DefaultBranch: String read GetDefaultBranch;
-    property IsPrivate: Boolean read GetIsPrivate;
-    property Size: Int64 read GetSize;
-    property Description: String read GetDescription;
-  end;
-
   {$WARN SYMBOL_PLATFORM OFF}
   TfrmMain = class(TForm)
     Stat: TStatusBar;
@@ -100,11 +67,6 @@ type
     dlgBrowseDir: TFileOpenDialog;
     btnSortDir: TButton;
     Label4: TLabel;
-    pCols: TPanel;
-    lstCols: TCheckListBox;
-    Label5: TLabel;
-    btnColsDone: TButton;
-    btnCols: TButton;
     tabListGridTest: TTabSheet;
     pErrorLog: TPanel;
     pErrorLogTitle: TPanel;
@@ -112,10 +74,47 @@ type
     btnCloseErrorLog: TButton;
     spErrorLog: TSplitter;
     txtErrorLog: TMemo;
-    procedure btnListReposClick(Sender: TObject);
+    MM: TMainMenu;
+    mRepositories: TMenuItem;
+    mOptions: TMenuItem;
+    mView: TMenuItem;
+    mHelp: TMenuItem;
+    mSetup: TMenuItem;
+    mRefresh: TMenuItem;
+    N1: TMenuItem;
+    mColumns: TMenuItem;
+    mColumnsConfig: TMenuItem;
+    N2: TMenuItem;
+    Acts: TActionManager;
+    CheckAll1: TMenuItem;
+    CheckNone1: TMenuItem;
+    CheckSelected1: TMenuItem;
+    N4: TMenuItem;
+    DownloadCheckedRepos1: TMenuItem;
+    N5: TMenuItem;
+    Exit1: TMenuItem;
+    Img16: TImageList;
+    actSetup: TAction;
+    actRefresh: TAction;
+    actConfigCols: TAction;
+    actCheckAll: TAction;
+    actCheckNone: TAction;
+    actCheckSelected: TAction;
+    actDownloadRepos: TAction;
+    actExit: TAction;
+    actCancelDownload: TAction;
+    N6: TMenuItem;
+    ConfigureColumns1: TMenuItem;
+    actSortAZ: TAction;
+    Sort1: TMenuItem;
+    SortAscending1: TMenuItem;
+    SortDescending1: TMenuItem;
+    N7: TMenuItem;
+    Cancel1: TMenuItem;
+    procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure btnDownloadClick(Sender: TObject);
+    procedure actDownloadReposExecute(Sender: TObject);
     procedure lstReposClick(Sender: TObject);
     procedure PagesChanging(Sender: TObject; var AllowChange: Boolean);
     procedure btnBrowseDirClick(Sender: TObject);
@@ -123,14 +122,19 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure chkCheckAllClick(Sender: TObject);
     procedure tmrDisplayTimer(Sender: TObject);
-    procedure btnCancelClick(Sender: TObject);
+    procedure actCancelDownloadExecute(Sender: TObject);
     procedure btnSortDirClick(Sender: TObject);
     procedure cboSortClick(Sender: TObject);
-    procedure lstColsClickCheck(Sender: TObject);
-    procedure btnColsDoneClick(Sender: TObject);
-    procedure btnColsClick(Sender: TObject);
     procedure lstReposItemChecked(Sender: TObject; Item: TListItem);
     procedure btnCloseErrorLogClick(Sender: TObject);
+    procedure actExitExecute(Sender: TObject);
+    procedure actCheckAllExecute(Sender: TObject);
+    procedure actCheckNoneExecute(Sender: TObject);
+    procedure actCheckSelectedExecute(Sender: TObject);
+    procedure actConfigColsExecute(Sender: TObject);
+    procedure actSetupExecute(Sender: TObject);
+    procedure ActsUpdate(Action: TBasicAction; var Handled: Boolean);
+    procedure lstReposDblClick(Sender: TObject);
   private                    
     FEnabled: Boolean;
     FRepos: TObjectList<TRepo>;
@@ -139,14 +143,14 @@ type
     FCurPos: Integer;
     FCurMax: Integer;
     FThreadCancel: TThreadCancelEvent;
-    {$IFDEF LISTGRID}
+    {$IFDEF V2}
     FListGrid: TListGrid;
     {$ENDIF}
     function GetJSON(const URL: String): ISuperObject;
     function GetRepos(const PageNum: Integer): ISuperArray;
     procedure GetPage(const PageNum: Integer);
     function CheckedCount: Integer;
-    procedure UpdateDownloadButton;
+    procedure UpdateDownloadAction;
     procedure SetEnabledState(const Enabled: Boolean);
     procedure ThreadBegin(Sender: TObject);
     procedure ThreadDone(Sender: TObject);
@@ -162,7 +166,7 @@ type
     procedure SortRepos;
     procedure DisplayRepos;
     procedure ShowErrorLog(const AShow: Boolean = True);
-    {$IFDEF LISTGRID}
+    {$IFDEF V2}
     procedure SetupListGrid;
     procedure PopulateListGrid;
     procedure ListGridGetText(AListGrid: TListGrid; AItem: TListGridItem;
@@ -209,114 +213,6 @@ begin
   AStrings.Add('Description');
 end;
 
-{ TRepo }
-
-constructor TRepo.Create(AObj: ISuperObject);
-begin
-  FObj:= AObj;
-  FObj._AddRef;
-end;
-
-destructor TRepo.Destroy;
-begin
-  FObj._Release;
-  FObj:= nil;
-  inherited;
-end;
-
-function TRepo.GetO(const N: String): ISuperObject;
-begin
-  Result:= FObj.O[N];
-end;
-
-function TRepo.GetS(const N: String): String;
-begin
-  Result:= FObj.S[N];
-end;
-
-function TRepo.GetB(const N: String): Boolean;
-begin
-  Result:= FObj.B[N];
-end;
-
-function TRepo.GetF(const N: String): Double;
-begin
-  Result:= FObj.F[N];
-end;
-
-function TRepo.GetI(const N: String): Int64;
-begin
-  Result:= FObj.I[N];
-end;
-
-function TRepo.GetCreated: TDateTime;
-begin
-  with TXSDateTime.Create do
-    try
-      XSToNative(S['created_at']);
-      Result:= AsDateTime;
-    finally
-      Free;
-    end;
-end;
-
-function TRepo.GetDefaultBranch: String;
-begin
-  Result:= S['default_branch'];
-end;
-
-function TRepo.GetDescription: String;
-begin
-  Result:= S['description'];
-end;
-
-function TRepo.GetFullName: String;
-begin
-  Result:= S['full_name'];
-end;
-
-function TRepo.GetIsPrivate: Boolean;
-begin
-  Result:= B['private'];
-end;
-
-function TRepo.GetLanguage: String;
-begin
-  Result:= S['language'];
-end;
-
-function TRepo.GetName: String;
-begin
-  Result:= S['name'];
-end;
-
-function TRepo.GetPushed: TDateTime;
-begin
-  with TXSDateTime.Create do
-    try
-      XSToNative(S['pushed_at']);
-      Result:= AsDateTime;
-    finally
-      Free;
-    end;
-end;
-
-function TRepo.GetSize: Int64;
-begin
-  Result:= I['size'];
-end;
-
-function TRepo.GetUpdated: TDateTime;
-begin
-  with TXSDateTime.Create do
-    try
-      XSToNative(S['updated_at']);
-      Result:= AsDateTime;
-    finally
-      Free;
-    end;
-end;
-
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
@@ -339,7 +235,8 @@ begin
   ListRepoFields(cboSort.Items);
   cboSort.ItemIndex:= 0;
 
-  {$IFDEF LISTGRID}
+  {$IFDEF V2}
+  //Temporary test of the list grid concept
   FListGrid:= TListGrid.Create(tabListGridTest);
   FListGrid.Parent:= tabListGridTest;
   FListGrid.Align:= alClient;
@@ -376,6 +273,7 @@ end;
 
 function TfrmMain.ConfigFilename: String;
 begin
+  //TODO: Switch to new TJDConfig object
   Result:= TPath.GetHomePath;
   Result:= TPath.Combine(Result, 'RM Innovation');
   Result:= TPath.Combine(Result, 'GitHub Backup');
@@ -387,6 +285,7 @@ var
   L: TStringList;
   O: ISuperObject;
 begin
+  //TODO: Switch to new TJDConfig object
   Result:= False;
   L:= TStringList.Create;
   try
@@ -420,6 +319,7 @@ var
   L: TStringList;
   O: ISuperObject;
 begin
+  //TODO: Switch to new TJDConfig object
   L:= TStringList.Create;
   try
     O:= SO;
@@ -439,7 +339,7 @@ begin
   end;
 end;
 
-{$IFDEF LISTGRID}
+{$IFDEF V2}
 procedure TfrmMain.SetupListGrid;
   procedure AC(const Fld, Cap: String; const Wid: Integer; const Vis: Boolean = True);
   begin
@@ -459,7 +359,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF LISTGRID}
+{$IFDEF V2}
 procedure TfrmMain.PopulateListGrid;
   procedure AI(const AObj: TObject);
   begin
@@ -475,7 +375,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF LISTGRID}
+{$IFDEF V2}
 procedure TfrmMain.ListGridGetText(AListGrid: TListGrid; AItem: TListGridItem;
   ACol: TListGridColumn; var AText: String);
 var
@@ -519,6 +419,8 @@ function TfrmMain.GetJSON(const URL: String): ISuperObject;
 var
   R: String;
 begin
+  //Root function for all interaction with GitHub API
+  //Returns JSON objects via Super Object
   Result:= nil;
   FWeb.Request.Username:= txtToken.Text;
   R:= FWeb.Get('https://api.github.com'+URL);
@@ -527,6 +429,7 @@ end;
 
 function TfrmMain.RepoVisibility: String;
 begin
+  //Filter
   case cboVisibility.ItemIndex of
     0: Result:= 'all';
     1: Result:= 'public';
@@ -536,6 +439,7 @@ end;
 
 function TfrmMain.RepoType: String;
 begin
+  //Filter
   case cboType.ItemIndex of
     0: Result:= 'all';
     1: Result:= 'owner';
@@ -569,6 +473,7 @@ var
   C: Boolean;
   R: TRepo;
 begin
+  //Fetches a single page of repositories
   Application.ProcessMessages;
 
   try
@@ -599,6 +504,7 @@ end;
 
 procedure TfrmMain.SortRepos;
 begin
+  //TODO: Support virtually any column...
   FRepos.Sort(TComparer<TRepo>.Construct(
     function (const L, R: TRepo): Integer
     var
@@ -653,12 +559,14 @@ var
   O: TRepo;
   I: TListItem;
 begin
+  //Populates list view with repository items
   lstRepos.Items.BeginUpdate;
   try
     lstRepos.Items.Clear;
     for X := 0 to FRepos.Count-1 do begin
       O:= FRepos[X];
       I:= lstRepos.Items.Add;
+      I.Data:= O;
       I.Caption:= O.Name;
       I.SubItems.Add(O.DefaultBranch);
       if O.IsPrivate = True then
@@ -673,13 +581,14 @@ begin
   finally
     lstRepos.Items.EndUpdate;
   end;
-  {$IFDEF LISTGRID}
+  {$IFDEF V2}
   PopulateListGrid;
   {$ENDIF}
 end;
 
-procedure TfrmMain.btnListReposClick(Sender: TObject);
+procedure TfrmMain.actRefreshExecute(Sender: TObject);
 begin
+  //Performs actual refresh of repository list
   Screen.Cursor:= crHourglass;
   try
     SetEnabledState(False);
@@ -701,12 +610,13 @@ begin
   finally
     Screen.Cursor:= crDefault;
   end;
-  UpdateDownloadButton;
+  UpdateDownloadAction;
   UpdateCheckAll;
 end;
 
 procedure TfrmMain.btnSortDirClick(Sender: TObject);
 begin
+  //Change between ascending and descending
   case btnSortDir.Tag of
     0: begin
       btnSortDir.Tag:= 1;
@@ -725,17 +635,18 @@ begin
   SortRepos;
 end;
 
-procedure TfrmMain.UpdateDownloadButton;
+procedure TfrmMain.UpdateDownloadAction;
 var
   C: Integer;
 begin
+  //Change download option depending on selection
   C:= CheckedCount;
   if C > 0 then begin
-    btnDownload.Caption:= 'Download '+IntToStr(C)+' Checked';
-    btnDownload.Enabled:= FEnabled;
+    actDownloadRepos.Caption:= 'Download '+IntToStr(C)+' Checked';
+    actDownloadRepos.Enabled:= FEnabled;
   end else begin
-    btnDownload.Caption:= 'Download';
-    btnDownload.Enabled:= False;
+    actDownloadRepos.Caption:= 'Download';
+    actDownloadRepos.Enabled:= False;
   end;
 end;
 
@@ -743,6 +654,7 @@ procedure TfrmMain.UpdateCheckAll;
 var
   C: Integer;
 begin
+  //Change check all option depending on selection
   chkCheckAll.Tag:= 1;
   try
     C:= CheckedCount;
@@ -759,30 +671,31 @@ begin
   end;
 end;
 
-procedure TfrmMain.lstColsClickCheck(Sender: TObject);
-var
-  X: Integer;
-  //C: TListColumn;
-  //TC: Integer;
-begin
-  //User checked/unchecked a column to show/hide...
-  //TC:= 0;
-  for X := 0 to lstCols.Count-1 do begin
-    //if lstCols.Checked[X] then
-      //Inc(TC);
-  end;
-  for X := lstRepos.Columns.Count-1 downto 0 do begin
-    //C:= lstRepos.Columns[X];
-    //TODO...???
-
-  end;
-end;
-
 procedure TfrmMain.lstReposClick(Sender: TObject);
 begin
   if FEnabled then begin
-    UpdateDownloadButton;
+    UpdateDownloadAction;
     UpdateCheckAll;
+  end;
+end;
+
+procedure TfrmMain.lstReposDblClick(Sender: TObject);
+var
+  I: TListItem;
+  R: TRepo;
+  F: TfrmRepoDetail;
+begin
+  //Open details of repository
+  I:= lstRepos.Selected;
+  if Assigned(I) then begin
+    R:= TRepo(I.Data);
+    F:= TfrmRepoDetail.Create(nil);
+    try
+      F.LoadRepo(R);
+      F.ShowModal;
+    finally
+      F.Free;
+    end;
   end;
 end;
 
@@ -798,7 +711,7 @@ begin
     end;
   end else begin
     if FEnabled then begin
-      UpdateDownloadButton;
+      UpdateDownloadAction;
       UpdateCheckAll;
     end;
   end;
@@ -806,11 +719,25 @@ end;
 
 procedure TfrmMain.PagesChanging(Sender: TObject; var AllowChange: Boolean);
 begin
-  AllowChange:= FEnabled;
+  //TODO: As soon as the setup is migrated into its own module,
+  //  this function will be completely unnecessary because
+  //  the entire page control will be removed and the main form
+  //  will become the base of the project in itself.
+  //  Not to mention there will no longer be a need to validate
+  //  the setup anymore anyway.
+  AllowChange:= FEnabled; //Prevent changing if in progress
   if AllowChange then begin
     case Pages.ActivePageIndex of
       0: begin
         //Setup page - Validate setup first...
+
+        try
+          ForceDirectories(txtBackupDir.Text);
+        except
+          on E: Exception do begin
+            //I guess do nothing here because error will appear anyway...
+          end;
+        end;
         if not DirectoryExists(txtBackupDir.Text) then begin
           MessageDlg('Invalid backup directory!', mtError, [mbOK], 0);
           AllowChange:= False;
@@ -818,6 +745,7 @@ begin
           txtBackupDir.SelectAll;
           Exit;
         end;
+
         if Trim(txtUser.Text) = '' then begin
           MessageDlg('Invalid user account!', mtError, [mbOK], 0);
           AllowChange:= False;
@@ -825,6 +753,7 @@ begin
           txtUser.SelectAll;
           Exit;
         end;
+
         if Trim(txtToken.Text) = '' then begin
           MessageDlg('Invalid access token!', mtError, [mbOK], 0);
           AllowChange:= False;
@@ -832,7 +761,9 @@ begin
           txtToken.SelectAll;
           Exit;
         end;
+
         SaveConfig;
+
       end;
       1: begin
         //Repository page...
@@ -851,8 +782,47 @@ begin
   Result:= txtBackupDir.Text;
 end;
 
+procedure TfrmMain.actCheckAllExecute(Sender: TObject);
+begin
+  //Check All...
+  Self.chkCheckAll.Checked:= True;
+end;
+
+procedure TfrmMain.actCheckNoneExecute(Sender: TObject);
+begin
+  //Check None...
+  Self.chkCheckAll.Checked:= False;
+end;
+
+procedure TfrmMain.actCheckSelectedExecute(Sender: TObject);
+begin
+  //Check Selected...
+  if Self.lstRepos.ItemIndex >= 0 then begin
+    lstRepos.Selected.Checked:= not lstRepos.Selected.Checked;
+  end;
+end;
+
+procedure TfrmMain.actSetupExecute(Sender: TObject);
+begin
+  //Setup App...
+  frmSetup.ShowModal;
+
+end;
+
+procedure TfrmMain.actConfigColsExecute(Sender: TObject);
+begin
+  //Configure Columns...
+
+end;
+
+procedure TfrmMain.actExitExecute(Sender: TObject);
+begin
+  Close;
+end;
+
 procedure TfrmMain.btnBrowseDirClick(Sender: TObject);
 begin
+  //TODO: Migrate to setup form
   {$WARN SYMBOL_PLATFORM OFF}
   dlgBrowseDir.FileName:= txtBackupDir.Text;
   if dlgBrowseDir.Execute then begin
@@ -865,6 +835,7 @@ function TfrmMain.CheckedCount: Integer;
 var
   X: Integer;
 begin
+  //Returns number of checked repos
   Result:= 0;
   for X := 0 to lstRepos.Items.Count-1 do begin
     if lstRepos.Items[X].Checked then
@@ -876,49 +847,63 @@ procedure TfrmMain.chkCheckAllClick(Sender: TObject);
 var
   X: Integer;
 begin
+  //User clicked on check all checkbox at top of list
   if chkCheckAll.Tag = 0 then begin
     lstRepos.OnItemChecked:= nil;
     try
       for X := 0 to lstRepos.Items.Count-1 do
         lstRepos.Items[X].Checked:= chkCheckAll.Checked;
-      UpdateDownloadButton;
+      UpdateDownloadAction;
     finally
       lstRepos.OnItemChecked:= lstReposItemChecked;
     end;
   end;
 end;
 
+procedure TfrmMain.ActsUpdate(Action: TBasicAction; var Handled: Boolean);
+begin
+  //TODO: Adjust actions based on current state of application...
+
+  SetEnabledState(FEnabled); //TODO: This is just temporary!
+
+end;
+
 procedure TfrmMain.SetEnabledState(const Enabled: Boolean);
 begin
+  //Set UI enabled controls based on current state
   FEnabled:= Enabled;
-  btnListRepos.Enabled:= Enabled;
+  actRefresh.Enabled:= Enabled;
   chkCheckAll.Enabled:= Enabled;
+  actCheckAll.Enabled:= Enabled;
+  actCheckNone.Enabled:= Enabled;
+  actCheckSelected.Enabled:= Enabled;
   cboVisibility.Enabled:= Enabled;
   cboType.Enabled:= Enabled;
   cboSort.Enabled:= Enabled;
   btnSortDir.Enabled:= Enabled;
-  btnCols.Enabled:= Enabled;
-  UpdateDownloadButton;
+  UpdateDownloadAction;
 end;
 
 procedure TfrmMain.ThreadBegin(Sender: TObject);
 begin
+  //Triggered when download thread begins work
   SetEnabledState(False);
   txtErrorLog.Lines.Clear;
   ShowErrorLog(False);
-  btnCancel.Enabled:= True;
+  actCancelDownload.Enabled:= True;
   Stat.Panels[1].Text:= 'Downloading...';
   Prog.Visible:= True;
   Prog.Position:= 0;
-  UpdateDownloadButton;
+  UpdateDownloadAction;
   lstRepos.Tag:= 1;
 end;
 
 procedure TfrmMain.ThreadDone(Sender: TObject);
 begin
+  //Triggered when download thread is done with all work
   FCurFile:= nil;
   FThreadCancel:= nil;
-  btnCancel.Enabled:= False;
+  actCancelDownload.Enabled:= False;
   lstRepos.Tag:= 0;
   SetEnabledState(True);
   Stat.Panels[1].Text:= 'Ready';
@@ -931,12 +916,13 @@ begin
   end else begin
     MessageDlg('Download completed successfully.', mtInformation, [mbOK], 0);
   end;
-  UpdateDownloadButton;
+  UpdateDownloadAction;
 end;
 
 procedure TfrmMain.ThreadProgress(Sender: TObject; const Cur: Integer;
   const Max: Integer; const CurFile: TDownloadFile);
 begin
+  //Triggered when download thread makes progress
   FCurFile:= CurFile;
   FCurPos:= Cur;
   FCurMax:= Max;
@@ -944,6 +930,7 @@ end;
 
 procedure TfrmMain.tmrDisplayTimer(Sender: TObject);
 begin
+  //Displays UI status/progress
   if Assigned(FCurFile) then begin
     Taskbar.ProgressState:= TTaskbarProgressState.Normal;
     Prog.Max:= FCurMax;
@@ -960,11 +947,13 @@ end;
 procedure TfrmMain.ThreadException(Sender: TObject;
   const CurFile: TDownloadFile);
 begin
+  //Error occurred in download thread
   txtErrorLog.Lines.Append('EXCEPTION on file '+CurFile.Name+': '+CurFile.Error);
 end;
 
 function TfrmMain.CreateDownloadThread: TDownloadThread;
 begin
+  //Create a new instance of download thread
   Result:= TDownloadThread.Create;
   Result.Token:= txtToken.Text;
   Result.OnDownloadBegin:= ThreadBegin;
@@ -975,8 +964,9 @@ begin
   FThreadCancel:= Result.Cancel;
 end;
 
-procedure TfrmMain.btnCancelClick(Sender: TObject);
+procedure TfrmMain.actCancelDownloadExecute(Sender: TObject);
 begin
+  //User wants to cancel download
   if MessageDlg('Are you sure you want to cancel download?',
     mtConfirmation, [mbYes,mbNo], 0) = mrYes then
   begin
@@ -987,38 +977,27 @@ end;
 
 procedure TfrmMain.btnCloseErrorLogClick(Sender: TObject);
 begin
+  //User is closing error log
   ShowErrorLog(False);
 end;
 
 procedure TfrmMain.ShowErrorLog(const AShow: Boolean = True);
 begin
+  //Either show or hide error log
   pErrorLog.Visible:= AShow;
   spErrorLog.Visible:= AShow;
   if AShow then
     spErrorLog.Top:= pErrorLog.Top - 10;
 end;
 
-procedure TfrmMain.btnColsClick(Sender: TObject);
-begin
-  pCols.Visible:= not pCols.Visible;
-  if pCols.Visible then begin
-    pCols.Left:= ClientWidth - pCols.Width - 8;
-    pCols.Top:= lstRepos.Top;
-  end;
-end;
-
-procedure TfrmMain.btnColsDoneClick(Sender: TObject);
-begin
-  pCols.Hide;
-end;
-
-procedure TfrmMain.btnDownloadClick(Sender: TObject);
+procedure TfrmMain.actDownloadReposExecute(Sender: TObject);
 var
   C: Integer;
   O: TRepo;
   X: Integer;
   T: TDownloadThread;
 begin
+  //Actual downloading of checked repos
   try
     //Attempt to create destination directory, if not already...
     ForceDirectories(DestDir);
