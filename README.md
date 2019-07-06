@@ -11,6 +11,10 @@ This project allows for a very simple download of multiple repositories at once 
 
 ![GitHub backup User Interface](GitHubBackupUI.png "GitHub backup User Interface")
 
+## Background
+
+This project came to be due to a lack of user-friendly solutions to back up GitHub repositories in bulk. While there are some solutions, most of them were highly scripted, and none of them were viable solutions for the immediate purpose: to allow anybody to bulk-download multiple repositories as a form of "backup". 
+
 ## Delphi Version
 
 This app was originally written in Delphi 10.0 Seattle but later revised in Delphi 10.1 Berlin. It has not been tested in any other Delphi versions, but it's anticipated to make this library work on multiple Delphi versions. 
