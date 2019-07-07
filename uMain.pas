@@ -164,6 +164,7 @@ type
     procedure SortRepos;
     procedure DisplayRepos;
     procedure ShowErrorLog(const AShow: Boolean = True);
+    function AppIsConfigured: Boolean;
     {$IFDEF V2}
     procedure SetupListGrid;
     procedure PopulateListGrid;
@@ -525,30 +526,50 @@ begin
   {$ENDIF}
 end;
 
+function TfrmMain.AppIsConfigured: Boolean;
+begin
+  Result:= frmSetup.Token <> '';
+  if Result then
+    Result:= frmSetup.User <> '';
+  if Result then
+    Result:= frmSetup.BackupDir <> '';
+  if Result then
+    Result:= frmSetup.UserType >= 0;
+end;
+
 procedure TfrmMain.actRefreshExecute(Sender: TObject);
 begin
   //Performs actual refresh of repository list
-  Screen.Cursor:= crHourglass;
-  try
-    SetEnabledState(False);
+  if AppIsConfigured then begin
+
+    Screen.Cursor:= crHourglass;
     try
-      Stat.Panels[1].Text:= 'Listing Repos...';
+      SetEnabledState(False);
       try
-        FRepos.Clear;
-        //Start with page 1, will automatically traverse to all pages...
-        GetPage(1);
-        Stat.Panels[0].Text:= IntToStr(FRepos.Count)+' Repositories';
-        Application.ProcessMessages;
-        SortRepos;
+        Stat.Panels[1].Text:= 'Listing Repos...';
+        try
+          FRepos.Clear;
+
+          //Start with page 1, will automatically traverse to all pages...
+          GetPage(1);
+
+          Stat.Panels[0].Text:= IntToStr(FRepos.Count)+' Repositories';
+          Application.ProcessMessages;
+          SortRepos;
+        finally
+          Stat.Panels[1].Text:= 'Ready';
+        end;
       finally
-        Stat.Panels[1].Text:= 'Ready';
+        SetEnabledState(True);
       end;
     finally
-      SetEnabledState(True);
+      Screen.Cursor:= crDefault;
     end;
-  finally
-    Screen.Cursor:= crDefault;
+  end else begin
+    MessageDlg('Application has not yet been fully configured. Please visit the Setup and fill it out.', mtError, [mbOK], 0);
+    actSetup.Execute;
   end;
+
   UpdateDownloadAction;
   UpdateCheckAll;
 end;
