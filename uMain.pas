@@ -35,9 +35,6 @@ uses
   Vcl.Styles.Utils.SysControls,
   Vcl.Styles.Utils.SysStyleHook,
 {$ENDIF}
-{$IFDEF V2}
-  JD.ListGrid,
-{$ENDIF}
   //Relies on our own copy of X-SuperObject
   XSuperObject,
   JD.GitHub,
@@ -142,9 +139,6 @@ type
     FCurPos: Integer;
     FCurMax: Integer;
     FThreadCancel: TThreadCancelEvent;
-    {$IFDEF V2}
-    FListGrid: TListGrid;
-    {$ENDIF}
     function GetJSON(const URL: String): ISuperObject;
     function GetRepos(const PageNum: Integer): ISuperArray;
     procedure GetPage(const PageNum: Integer);
@@ -165,12 +159,6 @@ type
     procedure DisplayRepos;
     procedure ShowErrorLog(const AShow: Boolean = True);
     function AppIsConfigured: Boolean;
-    {$IFDEF V2}
-    procedure SetupListGrid;
-    procedure PopulateListGrid;
-    procedure ListGridGetText(AListGrid: TListGrid; AItem: TListGridItem;
-      ACol: TListGridColumn; var AText: String);
-    {$ENDIF}
   public
     function DestDir: String;
   end;
@@ -213,10 +201,8 @@ end;
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
-{$IFNDEF V2}
 var
   X: Integer;
-{$ENDIF}
 begin
   {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown:= True;
@@ -236,20 +222,9 @@ begin
   ListRepoFields(cboSort.Items);
   cboSort.ItemIndex:= 0;
 
-  {$IFDEF V2}
-  //Temporary test of the list grid concept
-  FListGrid:= TListGrid.Create(tabListGridTest);
-  FListGrid.Parent:= tabListGridTest;
-  FListGrid.Align:= alClient;
-  FListGrid.Show;
-  SetupListGrid;
-  {$ELSE}
   for X := 0 to Pages.PageCount-1 do
     Pages.Pages[X].TabVisible:= False;
-  {$ENDIF}
-
   Pages.ActivePageIndex:= 0;
-
 
 end;
 
@@ -278,82 +253,6 @@ begin
     MessageDlg('Cannot close while download is in progress.', mtError, [mbOK], 0);
   end;
 end;
-
-{$IFDEF V2}
-procedure TfrmMain.SetupListGrid;
-  procedure AC(const Fld, Cap: String; const Wid: Integer; const Vis: Boolean = True);
-  begin
-    FListGrid.Columns.Add(Fld, Cap, Wid, Vis);
-  end;
-begin
-  FListGrid.OnGetText:= ListGridGetText;
-  FListGrid.Columns.Clear;
-
-  AC('name',            'Repository Name',  150);
-  AC('default_branch',  'Default Branch',   100);
-  AC('visibility',      'Visibility',       80);
-  AC('language',        'Language',         80);
-  AC('size',            'Size',             70);
-  AC('pushed',          'Last Pushed',      100);
-  AC('description',     'Description',      300);
-end;
-{$ENDIF}
-
-{$IFDEF V2}
-procedure TfrmMain.PopulateListGrid;
-  procedure AI(const AObj: TObject);
-  begin
-    FListGrid.Items.Add(AObj);
-  end;
-var
-  X: Integer;
-begin
-  FListGrid.Items.Clear;
-  for X := 0 to FRepos.Count-1 do begin
-    AI(FRepos[X]);
-  end;
-end;
-{$ENDIF}
-
-{$IFDEF V2}
-procedure TfrmMain.ListGridGetText(AListGrid: TListGrid; AItem: TListGridItem;
-  ACol: TListGridColumn; var AText: String);
-var
-  R: TRepo;
-  function IsCol(const AFld: String): Boolean;
-  begin
-    Result:= SameText(AFld, ACol.FieldName);
-  end;
-begin
-  R:= TRepo(AItem.Obj);
-  if IsCol('name') then begin
-    AText:= R.Name;
-  end else
-  if IsCol('default_branch') then begin
-    AText:= R.DefaultBranch;
-  end else
-  if IsCol('visibility') then begin
-    if R.IsPrivate then
-      AText:= 'Private'
-    else
-      AText:= 'Public';
-  end else
-  if IsCol('language') then begin
-    AText:= R.Language;
-  end else
-  if IsCol('size') then begin
-    AText:= IntToStr(R.Size); //TODO
-  end else
-  if IsCol('pushed') then begin
-    AText:= FormatDateTime('m/d/yy h:nn ampm', R.Pushed);
-  end else
-  if IsCol('description') then begin
-    AText:= R.Description;
-  end else begin
-    AText:= 'Testing!'; //TODO
-  end;
-end;
-{$ENDIF}
 
 function TfrmMain.GetJSON(const URL: String): ISuperObject;
 var
@@ -528,9 +427,6 @@ begin
   finally
     lstRepos.Items.EndUpdate;
   end;
-  {$IFDEF V2}
-  PopulateListGrid;
-  {$ENDIF}
 end;
 
 function TfrmMain.AppIsConfigured: Boolean;

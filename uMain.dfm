@@ -355,6 +355,10 @@ object frmMain: TfrmMain
     object tabListGridTest: TTabSheet
       Caption = 'List Grid Test'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object tmrDisplay: TTimer
