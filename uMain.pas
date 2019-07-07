@@ -362,6 +362,13 @@ begin
   //Root function for all interaction with GitHub API
   //Returns JSON objects via Super Object
   Result:= nil;
+
+  if Assigned(FWeb.Request.Authentication) then
+    begin
+      FWeb.Request.Authentication.Free;
+      FWeb.Request.Authentication:=nil;
+    end;
+
   FWeb.Request.Username:= frmSetup.Token;
   R:= FWeb.Get('https://api.github.com'+URL);
   Result:= SO(R);
@@ -541,7 +548,6 @@ procedure TfrmMain.actRefreshExecute(Sender: TObject);
 begin
   //Performs actual refresh of repository list
   if AppIsConfigured then begin
-
     Screen.Cursor:= crHourglass;
     try
       SetEnabledState(False);
