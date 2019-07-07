@@ -1,5 +1,14 @@
 unit JD.IndyUtils;
 
+(*
+  JD Indy Utils
+
+  Contains customized encapsulation of Indy components for
+  ease of use.
+
+  TIndyHttpTransport - Custom TIdHTTP with built-in OpenSSL handling
+*)
+
 interface
 
 uses

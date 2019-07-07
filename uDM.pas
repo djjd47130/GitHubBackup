@@ -1,5 +1,13 @@
 unit uDM;
 
+(*
+  Global data module - accessible application-wide
+
+  This unit is intended for anything which the full application
+  needs to centralize in a single place to be available from
+  anywhere in the application. For example, the configuration.
+*)
+
 interface
 
 uses

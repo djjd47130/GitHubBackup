@@ -1,5 +1,14 @@
 unit uMain;
 
+(*
+  JD GitHub Backup Main Form
+
+  Fundamental usage of this form is to display a list of repositories,
+  allow the user to check which ones they wish to back up, and
+  download all of them in one go. Additional tools are provided to
+  assist user in filtering, sorting, and deciding which ones they want.
+*)
+
 interface
 
 uses
@@ -13,6 +22,8 @@ uses
   Vcl.ActnList, Vcl.ActnMan, System.ImageList, Vcl.ImgList,
 {$IFDEF USE_VCL_STYLE_UTILS}
   //Recommended to use vcl-styles-utils to fix issues in Windows dialogs
+  //  If you don't have this, remove the conditional from the project's
+  //  main compiler settings.
   Vcl.Styles, Vcl.Themes,
   Vcl.Styles.FontAwesome,
   Vcl.Styles.Fixes,
@@ -27,7 +38,7 @@ uses
 {$IFDEF V2}
   JD.ListGrid,
 {$ENDIF}
-  //Relies on X-SuperObject
+  //Relies on our own copy of X-SuperObject
   XSuperObject,
   JD.GitHub,
   JD.IndyUtils,
@@ -54,7 +65,6 @@ type
     btnDownload: TButton;
     btnCancel: TButton;
     Taskbar: TTaskbar;
-    dlgBrowseDir: TFileOpenDialog;
     btnSortDir: TButton;
     Label4: TLabel;
     tabListGridTest: TTabSheet;
@@ -202,8 +212,10 @@ end;
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+{$IFNDEF V2}
 var
   X: Integer;
+{$ENDIF}
 begin
   {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown:= True;
@@ -231,12 +243,12 @@ begin
   FListGrid.Show;
   SetupListGrid;
   {$ELSE}
-  tabListGridTest.TabVisible:= False;
-  {$ENDIF}
-
   for X := 0 to Pages.PageCount-1 do
     Pages.Pages[X].TabVisible:= False;
+  {$ENDIF}
+
   Pages.ActivePageIndex:= 0;
+
 
 end;
 

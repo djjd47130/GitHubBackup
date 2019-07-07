@@ -370,13 +370,6 @@ object frmMain: TfrmMain
     Left = 156
     Top = 518
   end
-  object dlgBrowseDir: TFileOpenDialog
-    FavoriteLinks = <>
-    FileTypes = <>
-    Options = [fdoPickFolders]
-    Left = 28
-    Top = 518
-  end
   object MM: TMainMenu
     Left = 200
     Top = 518

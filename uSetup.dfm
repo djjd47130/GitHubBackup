@@ -157,6 +157,7 @@ object frmSetup: TfrmSetup
           Height = 20
           Margins.Bottom = 8
           Align = alLeft
+          Enabled = False
           TabOrder = 0
           Text = '100'
           ExplicitHeight = 21
