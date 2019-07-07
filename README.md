@@ -25,7 +25,7 @@ This app was originally written in Delphi 10.0 Seattle but later revised in Delp
 
 ## OpenSSL
 
-This project requires the OpenSSL binaries. These are not included in this repository, and you are responsible to provide a 32bit set of binaries with the output executable. Specifically, `ssleay32.dll` and `libeay32.dll`. 
+This project requires the OpenSSL binaries. These are not included in this repository, and you are responsible to provide a 32bit set of binaries with the output executable. Specifically, `ssleay32.dll` and `libeay32.dll`. However, the binary downloads in the releases section does include these files. 
 
 ## Setup
 
