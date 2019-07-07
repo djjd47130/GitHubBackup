@@ -47,30 +47,8 @@ type
   {$WARN SYMBOL_PLATFORM OFF}
   TfrmMain = class(TForm)
     Stat: TStatusBar;
-    Pages: TPageControl;
-    tabRepositories: TTabSheet;
-    pRepoTop: TPanel;
-    lstRepos: TListView;
-    Prog: TProgressBar;
-    Panel4: TPanel;
-    cboVisibility: TComboBox;
-    cboType: TComboBox;
-    cboSort: TComboBox;
-    chkCheckAll: TCheckBox;
     tmrDisplay: TTimer;
-    btnListRepos: TButton;
-    btnDownload: TButton;
-    btnCancel: TButton;
     Taskbar: TTaskbar;
-    btnSortDir: TButton;
-    Label4: TLabel;
-    tabListGridTest: TTabSheet;
-    pErrorLog: TPanel;
-    pErrorLogTitle: TPanel;
-    lblErrorLogTitle: TLabel;
-    btnCloseErrorLog: TButton;
-    spErrorLog: TSplitter;
-    txtErrorLog: TMemo;
     MM: TMainMenu;
     mRepositories: TMenuItem;
     mOptions: TMenuItem;
@@ -108,6 +86,25 @@ type
     SortDescending1: TMenuItem;
     N7: TMenuItem;
     Cancel1: TMenuItem;
+    pRepoTop: TPanel;
+    Prog: TProgressBar;
+    Panel4: TPanel;
+    Label4: TLabel;
+    cboVisibility: TComboBox;
+    cboType: TComboBox;
+    cboSort: TComboBox;
+    btnSortDir: TButton;
+    btnListRepos: TButton;
+    btnDownload: TButton;
+    btnCancel: TButton;
+    lstRepos: TListView;
+    spErrorLog: TSplitter;
+    pErrorLog: TPanel;
+    pErrorLogTitle: TPanel;
+    lblErrorLogTitle: TLabel;
+    btnCloseErrorLog: TButton;
+    txtErrorLog: TMemo;
+    chkCheckAll: TCheckBox;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -211,7 +208,6 @@ begin
   FRepos:= TObjectList<TRepo>.Create(True);
   FWeb:= TIndyHttpTransport.Create;
 
-  Pages.Align:= alClient;
   lstRepos.Align:= alClient;
   txtErrorLog.Align:= alClient;
 
@@ -221,10 +217,6 @@ begin
   cboSort.Items.Clear;
   ListRepoFields(cboSort.Items);
   cboSort.ItemIndex:= 0;
-
-  for X := 0 to Pages.PageCount-1 do
-    Pages.Pages[X].TabVisible:= False;
-  Pages.ActivePageIndex:= 0;
 
 end;
 
@@ -671,6 +663,7 @@ begin
   actCheckAll.Enabled:= Enabled;
   actCheckNone.Enabled:= Enabled;
   actCheckSelected.Enabled:= Enabled;
+  actSetup.Enabled:= Enabled;
   cboVisibility.Enabled:= Enabled;
   cboType.Enabled:= Enabled;
   cboSort.Enabled:= Enabled;
