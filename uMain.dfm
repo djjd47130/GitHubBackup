@@ -227,7 +227,7 @@ object frmMain: TfrmMain
     Left = 0
     Top = 29
     Width = 1010
-    Height = 116
+    Height = 164
     Align = alTop
     BorderStyle = bsNone
     Checkboxes = True
@@ -268,7 +268,6 @@ object frmMain: TfrmMain
     OnClick = lstReposClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
-    ExplicitWidth = 1037
   end
   object pErrorLog: TPanel
     Left = 0
