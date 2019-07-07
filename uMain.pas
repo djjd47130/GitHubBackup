@@ -198,8 +198,6 @@ end;
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
-var
-  X: Integer;
 begin
   {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown:= True;
