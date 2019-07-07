@@ -5,6 +5,10 @@ Simple UI for bulk downloading GitHub repositories
 
 This project is currently under active development, and is not a complete solution yet. It is however fully functional in its current state for what it needs to do. There are many improvements which are being worked on at this time, and the internal structure will undergo complete revisions.
 
+## V2 Branch
+
+There is a separate `V2` branch where new features are being implemented. This will serve as a replacement in the future, once it's become stable. V2 will consist of a wrapper library and feature-rich grid view. 
+
 ## Summary
 
 This project allows for a very simple download of multiple repositories at once from any given user or organization. Simply fetch a list of all repositories, place a check by the ones you want, and click "Download" to get them all at once.
