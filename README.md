@@ -50,3 +50,9 @@ The "Size" of the repositories is not accurate. At this time, it's unknown exact
 ## Downloading Repositories
 
 To the left of each list item, you can place a check next to each repository you wish to download, or you can select all. By clicking the main "Download" button, you initiate the bulk download of all the checked repositories. 
+
+### Progress Indicator
+
+The progress is purely based on number of repositories downloaded versus total number to download. It does not account for repo size, simply because the size is not reliable data. 
+
+Either way, the progress is also shown in the taskbar icon for the application.
