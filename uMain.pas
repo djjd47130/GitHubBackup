@@ -40,20 +40,10 @@ type
   TfrmMain = class(TForm)
     Stat: TStatusBar;
     Pages: TPageControl;
-    tabSetup: TTabSheet;
     tabRepositories: TTabSheet;
-    Panel2: TPanel;
-    txtUser: TEdit;
-    Label1: TLabel;
-    txtToken: TEdit;
-    Label2: TLabel;
     pRepoTop: TPanel;
     lstRepos: TListView;
-    cboUserType: TComboBox;
     Prog: TProgressBar;
-    Label3: TLabel;
-    txtBackupDir: TEdit;
-    btnBrowseDir: TBitBtn;
     Panel4: TPanel;
     cboVisibility: TComboBox;
     cboType: TComboBox;
@@ -116,8 +106,6 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure actDownloadReposExecute(Sender: TObject);
     procedure lstReposClick(Sender: TObject);
-    procedure PagesChanging(Sender: TObject; var AllowChange: Boolean);
-    procedure btnBrowseDirClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure chkCheckAllClick(Sender: TObject);
@@ -135,6 +123,7 @@ type
     procedure actSetupExecute(Sender: TObject);
     procedure ActsUpdate(Action: TBasicAction; var Handled: Boolean);
     procedure lstReposDblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private                    
     FEnabled: Boolean;
     FRepos: TObjectList<TRepo>;
@@ -158,7 +147,6 @@ type
     procedure ThreadProgress(Sender: TObject; const Cur, Max: Integer;
       const CurFile: TDownloadFile);
     function CreateDownloadThread: TDownloadThread;
-    function ConfigFilename: String;
     function RepoSort: Integer;
     function RepoType: String;
     function RepoVisibility: String;
@@ -173,8 +161,6 @@ type
       ACol: TListGridColumn; var AText: String);
     {$ENDIF}
   public
-    function LoadConfig: Boolean;
-    procedure SaveConfig;
     function DestDir: String;
   end;
   {$WARN SYMBOL_PLATFORM ON}
@@ -216,6 +202,8 @@ end;
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+var
+  X: Integer;
 begin
   {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown:= True;
@@ -246,10 +234,10 @@ begin
   tabListGridTest.TabVisible:= False;
   {$ENDIF}
 
-  if LoadConfig then
-    Pages.ActivePageIndex:= 1
-  else
-    Pages.ActivePageIndex:= 0;
+  for X := 0 to Pages.PageCount-1 do
+    Pages.Pages[X].TabVisible:= False;
+  Pages.ActivePageIndex:= 0;
+
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -258,9 +246,16 @@ begin
   FreeAndNil(FRepos);
 end;
 
+procedure TfrmMain.FormShow(Sender: TObject);
+begin
+
+  frmSetup.LoadFromConfig;
+
+end;
+
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  SaveConfig;
+  frmSetup.SaveToConfig;
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -268,74 +263,6 @@ begin
   if not FEnabled then begin
     CanClose:= False;
     MessageDlg('Cannot close while download is in progress.', mtError, [mbOK], 0);
-  end;
-end;
-
-function TfrmMain.ConfigFilename: String;
-begin
-  //TODO: Switch to new TJDConfig object
-  Result:= TPath.GetHomePath;
-  Result:= TPath.Combine(Result, 'RM Innovation');
-  Result:= TPath.Combine(Result, 'GitHub Backup');
-  Result:= TPath.Combine(Result, 'Config.json');
-end;
-
-function TfrmMain.LoadConfig: Boolean;
-var
-  L: TStringList;
-  O: ISuperObject;
-begin
-  //TODO: Switch to new TJDConfig object
-  Result:= False;
-  L:= TStringList.Create;
-  try
-    if FileExists(ConfigFilename) then begin
-      L.LoadFromFile(ConfigFilename);
-      O:= SO(L.Text);
-      if Assigned(O) then begin
-        txtUser.Text:= O.S['user'];
-        cboUserType.ItemIndex:= O.I['userType'];
-        txtToken.Text:= O.S['token'];
-        txtBackupDir.Text:= O.S['dir'];
-        cboVisibility.ItemIndex:= O.I['visibility'];
-        cboType.ItemIndex:= O.I['type'];
-        cboSort.ItemIndex:= O.I['sort'];
-        btnSortDir.Tag:= O.I['sort_dir'];
-        if btnSortDir.Tag = 0 then begin
-          btnSortDir.Caption:= 'A..Z';
-        end else begin
-          btnSortDir.Caption:= 'Z..A';
-        end;
-        Result:= True;
-      end;
-    end;
-  finally
-    L.Free;
-  end;
-end;
-
-procedure TfrmMain.SaveConfig;
-var
-  L: TStringList;
-  O: ISuperObject;
-begin
-  //TODO: Switch to new TJDConfig object
-  L:= TStringList.Create;
-  try
-    O:= SO;
-    O.S['user']:= txtUser.Text;
-    O.I['userType']:= cboUserType.ItemIndex;
-    O.S['token']:= txtToken.Text;
-    O.S['dir']:= txtBackupDir.Text;
-    O.I['visibility']:= cboVisibility.ItemIndex;
-    O.I['type']:= cboType.ItemIndex;
-    O.I['sort']:= cboSort.ItemIndex;
-    O.I['sort_dir']:= btnSortDir.Tag;
-    L.Text:= O.AsJSON(True);
-    ForceDirectories(ExtractFilePath(ConfigFilename));
-    L.SaveToFile(ConfigFilename);
-  finally
-    L.Free;
   end;
 end;
 
@@ -422,7 +349,7 @@ begin
   //Root function for all interaction with GitHub API
   //Returns JSON objects via Super Object
   Result:= nil;
-  FWeb.Request.Username:= txtToken.Text;
+  FWeb.Request.Username:= frmSetup.Token;
   R:= FWeb.Get('https://api.github.com'+URL);
   Result:= SO(R);
 end;
@@ -459,9 +386,9 @@ var
   Q: String;
 begin
   Q:= '&visibility='+RepoVisibility+'&type='+RepoType;
-  case cboUserType.ItemIndex of
-    0: Result:= GetJSON('/users/'+txtUser.Text+'/repos?page='+IntToStr(PageNum)+Q).AsArray;
-    1: Result:= GetJSON('/orgs/'+txtUser.Text+'/repos?page='+IntToStr(PageNum)+Q).AsArray;
+  case frmSetup.UserType of
+    0: Result:= GetJSON('/users/'+frmSetup.User+'/repos?page='+IntToStr(PageNum)+Q).AsArray;
+    1: Result:= GetJSON('/orgs/'+frmSetup.User+'/repos?page='+IntToStr(PageNum)+Q).AsArray;
   end;
 end;
 
@@ -717,69 +644,9 @@ begin
   end;
 end;
 
-procedure TfrmMain.PagesChanging(Sender: TObject; var AllowChange: Boolean);
-begin
-  //TODO: As soon as the setup is migrated into its own module,
-  //  this function will be completely unnecessary because
-  //  the entire page control will be removed and the main form
-  //  will become the base of the project in itself.
-  //  Not to mention there will no longer be a need to validate
-  //  the setup anymore anyway.
-  AllowChange:= FEnabled; //Prevent changing if in progress
-  if AllowChange then begin
-    case Pages.ActivePageIndex of
-      0: begin
-        //Setup page - Validate setup first...
-
-        try
-          ForceDirectories(txtBackupDir.Text);
-        except
-          on E: Exception do begin
-            //I guess do nothing here because error will appear anyway...
-          end;
-        end;
-        if not DirectoryExists(txtBackupDir.Text) then begin
-          MessageDlg('Invalid backup directory!', mtError, [mbOK], 0);
-          AllowChange:= False;
-          txtBackupDir.SetFocus;
-          txtBackupDir.SelectAll;
-          Exit;
-        end;
-
-        if Trim(txtUser.Text) = '' then begin
-          MessageDlg('Invalid user account!', mtError, [mbOK], 0);
-          AllowChange:= False;
-          txtUser.SetFocus;
-          txtUser.SelectAll;
-          Exit;
-        end;
-
-        if Trim(txtToken.Text) = '' then begin
-          MessageDlg('Invalid access token!', mtError, [mbOK], 0);
-          AllowChange:= False;
-          txtToken.SetFocus;
-          txtToken.SelectAll;
-          Exit;
-        end;
-
-        SaveConfig;
-
-      end;
-      1: begin
-        //Repository page...
-
-      end;
-      2: begin
-        //List grid test page...
-
-      end;
-    end;
-  end;
-end;
-
 function TfrmMain.DestDir: String;
 begin
-  Result:= txtBackupDir.Text;
+  Result:= frmSetup.BackupDir;
 end;
 
 procedure TfrmMain.actCheckAllExecute(Sender: TObject);
@@ -805,8 +672,11 @@ end;
 procedure TfrmMain.actSetupExecute(Sender: TObject);
 begin
   //Setup App...
-  frmSetup.ShowModal;
+  frmSetup.LoadFromConfig;
+  if frmSetup.ShowModal = mrOK then begin
+    frmSetup.SaveToConfig;
 
+  end;
 end;
 
 procedure TfrmMain.actConfigColsExecute(Sender: TObject);
@@ -818,17 +688,6 @@ end;
 procedure TfrmMain.actExitExecute(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TfrmMain.btnBrowseDirClick(Sender: TObject);
-begin
-  //TODO: Migrate to setup form
-  {$WARN SYMBOL_PLATFORM OFF}
-  dlgBrowseDir.FileName:= txtBackupDir.Text;
-  if dlgBrowseDir.Execute then begin
-    txtBackupDir.Text:= dlgBrowseDir.FileName;
-  end;
-  {$WARN SYMBOL_PLATFORM ON}
 end;
 
 function TfrmMain.CheckedCount: Integer;
@@ -955,7 +814,7 @@ function TfrmMain.CreateDownloadThread: TDownloadThread;
 begin
   //Create a new instance of download thread
   Result:= TDownloadThread.Create;
-  Result.Token:= txtToken.Text;
+  Result.Token:= frmSetup.Token;
   Result.OnDownloadBegin:= ThreadBegin;
   Result.OnDownloadDone:= ThreadDone;
   Result.OnProgress:= ThreadProgress;
@@ -1005,10 +864,8 @@ begin
     on E: Exception do begin
       if not DirectoryExists(DestDir) then begin
         MessageDlg('Invalid destination directory!', mtError, [mbOK], 0);
-        Pages.ActivePageIndex:= 0;
         Application.ProcessMessages;
-        txtBackupDir.SetFocus;
-        txtBackupDir.SelectAll;
+        actSetup.Execute;
         Exit;
       end;
     end;

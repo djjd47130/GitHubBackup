@@ -110,6 +110,7 @@ begin
     L.Text:= FConfig.AsJSON(True);
     ForceDirectories(ExtractFilePath(Filename));
     L.SaveToFile(Filename);
+    Result:= True;
   finally
     L.Free;
   end;

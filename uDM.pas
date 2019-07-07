@@ -13,7 +13,7 @@ type
   private
     FConfig: TJDConfig;
   public
-    { Public declarations }
+    property Config: TJDConfig read FConfig;
   end;
 
 var
