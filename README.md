@@ -43,6 +43,10 @@ You need to choose the folder on your local computer where you want to download 
 
 The main screen allows you to fetch a list of all the repositories the chosen access token allows you to see in the chosen account. It describes various attributes about each repository. 
 
+### Important Note
+
+The "Size" of the repositories is not accurate. At this time, it's unknown exactly how GitHub calculates this size, but it does not appear to account for binary files (which consume a majority of space). In the screenshot above, you can see a repository `jd-artwork` which is actually the largest Repo I have - but it reports a size of `0`.
+
 ## Downloading Repositories
 
 To the left of each list item, you can place a check next to each repository you wish to download, or you can select all. By clicking the main "Download" button, you initiate the bulk download of all the checked repositories. 
