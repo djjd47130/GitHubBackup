@@ -206,12 +206,13 @@ begin
   FRepos:= TObjectList<TRepo>.Create(True);
   FWeb:= TIndyHttpTransport.Create;
 
+  //Prepare UI Controls
   lstRepos.Align:= alClient;
   txtErrorLog.Align:= alClient;
-
   SetEnabledState(True);
   ShowErrorLog(False);
 
+  //Populate list of columns that can be sorted
   cboSort.Items.Clear;
   ListRepoFields(cboSort.Items);
   cboSort.ItemIndex:= 0;
@@ -228,16 +229,19 @@ procedure TfrmMain.FormShow(Sender: TObject);
 begin
 
   frmSetup.LoadFromConfig;
+  //TODO: If app is not yet configured, clearly notify user, and enter setup
 
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  frmSetup.SaveToConfig;
+  frmSetup.SaveToConfig; //TODO: Is this the best place for this?
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  //Protect from closing app while busy
+  //TODO: Prompt to cancel download if in progress
   if not FEnabled then begin
     CanClose:= False;
     MessageDlg('Cannot close while download is in progress.', mtError, [mbOK], 0);
@@ -252,20 +256,21 @@ begin
   //Returns JSON objects via Super Object
   Result:= nil;
 
-  if Assigned(FWeb.Request.Authentication) then
-    begin
-      FWeb.Request.Authentication.Free;
-      FWeb.Request.Authentication:=nil;
-    end;
-
+  //Clear authentication and provide new credentials
+  if Assigned(FWeb.Request.Authentication) then begin
+    FWeb.Request.Authentication.Free;
+    FWeb.Request.Authentication:=nil;
+  end;
   FWeb.Request.Username:= frmSetup.Token;
-  R:= FWeb.Get('https://api.github.com'+URL);
+
+  R:= FWeb.Get('https://api.github.com'+URL); //ACTUAL HTTP GET
+
   Result:= SO(R);
 end;
 
 function TfrmMain.RepoVisibility: String;
 begin
-  //Filter
+  //Filter by Visibility
   case cboVisibility.ItemIndex of
     0: Result:= 'all';
     1: Result:= 'public';
@@ -275,7 +280,7 @@ end;
 
 function TfrmMain.RepoType: String;
 begin
-  //Filter
+  //Filter by Repository Type
   case cboType.ItemIndex of
     0: Result:= 'all';
     1: Result:= 'owner';
@@ -287,6 +292,7 @@ end;
 
 function TfrmMain.RepoSort: Integer;
 begin
+  //Which column index to sort by
   Result:= cboSort.ItemIndex;
 end;
 
@@ -294,6 +300,7 @@ function TfrmMain.GetRepos(const PageNum: Integer): ISuperArray;
 var
   Q: String;
 begin
+  //Core function to build request URL and fetch repositories
   Q:= '&visibility='+RepoVisibility+'&type='+RepoType;
   case frmSetup.UserType of
     0: Result:= GetJSON('/users/'+frmSetup.User+'/repos?page='+IntToStr(PageNum)+Q).AsArray;
