@@ -52,10 +52,11 @@ object frmRepoDetail: TfrmRepoDetail
   object Label2: TLabel
     AlignWithMargins = True
     Left = 50
-    Top = 96
+    Top = 143
     Width = 480
-    Height = 81
+    Height = 105
     Margins.Left = 50
+    Margins.Top = 50
     Margins.Right = 50
     Align = alTop
     Alignment = taCenter
@@ -71,6 +72,8 @@ object frmRepoDetail: TfrmRepoDetail
     Font.Style = []
     ParentFont = False
     WordWrap = True
+    ExplicitLeft = 74
+    ExplicitTop = 314
   end
   object Panel1: TPanel
     Left = 0

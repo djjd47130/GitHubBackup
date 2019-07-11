@@ -81,9 +81,9 @@ type
     N6: TMenuItem;
     ConfigureColumns1: TMenuItem;
     actSortAZ: TAction;
-    Sort1: TMenuItem;
-    SortAscending1: TMenuItem;
-    SortDescending1: TMenuItem;
+    mSort: TMenuItem;
+    mSortAsc: TMenuItem;
+    mSortDesc: TMenuItem;
     N7: TMenuItem;
     Cancel1: TMenuItem;
     pRepoTop: TPanel;
@@ -128,6 +128,7 @@ type
     procedure ActsUpdate(Action: TBasicAction; var Handled: Boolean);
     procedure lstReposDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure mSortAscOrDescClick(Sender: TObject);
   private                    
     FEnabled: Boolean;
     FRepos: TObjectList<TRepo>;
@@ -156,6 +157,8 @@ type
     procedure DisplayRepos;
     procedure ShowErrorLog(const AShow: Boolean = True);
     function AppIsConfigured: Boolean;
+    procedure PopulateMainMenuSort;
+    procedure MenuSortClick(Sender: TObject);
   public
     function DestDir: String;
   end;
@@ -216,6 +219,7 @@ begin
   cboSort.Items.Clear;
   ListRepoFields(cboSort.Items);
   cboSort.ItemIndex:= 0;
+  PopulateMainMenuSort;
 
 end;
 
@@ -346,8 +350,22 @@ begin
 end;
 
 procedure TfrmMain.SortRepos;
+var
+  X: Integer;
 begin
   //TODO: Support virtually any column...
+
+  case Self.btnSortDir.Tag of
+    0: mSortAsc.Checked:= True;
+    1: mSortDesc.Checked:= True;
+  end;
+
+  for X := 0 to mSort.Count-1 do begin
+    if (mSort.Items[X].GroupIndex = 1) and (mSort.Items[X].Tag = cboSort.ItemIndex) then begin
+      mSort.Items[X].Checked:= True;
+    end;
+  end;
+
   FRepos.Sort(TComparer<TRepo>.Construct(
     function (const L, R: TRepo): Integer
     var
@@ -574,6 +592,58 @@ begin
       UpdateCheckAll;
     end;
   end;
+end;
+
+procedure TfrmMain.PopulateMainMenuSort;
+var
+  L: TStringList;
+  X: Integer;
+  M: TMenuItem;
+begin
+  //TODO: Populate menu items in the main menu for column sorting...
+  //IMPORTANT: This shall be a one-time thing, due to the nature
+  //of how this particular submenu is formatted.
+  L:= TStringList.Create;
+  try
+    ListRepoFields(L);
+    for X := 0 to L.Count-1 do begin
+      //mSort
+      M:= TMenuItem.Create(mSort);
+      M.Caption:= L[X];
+      M.Tag:= X;
+      M.AutoCheck:= True;
+      M.RadioItem:= True;
+      M.GroupIndex:= 1;
+      M.OnClick:= MenuSortClick;
+      if X = Self.cboSort.ItemIndex then
+        M.Checked:= True;
+      mSort.Add(M);
+    end;
+  finally
+    L.Free;
+  end;
+end;
+
+procedure TfrmMain.MenuSortClick(Sender: TObject);
+var
+  M: TMenuItem;
+begin
+  //TODO: Apply sorting by selected column...
+  M:= TMenuItem(Sender);
+  Self.cboSort.ItemIndex:= M.Tag;
+  Self.SortRepos;
+end;
+
+procedure TfrmMain.mSortAscOrDescClick(Sender: TObject);
+begin
+  if mSortAsc.Checked then begin
+    Self.btnSortDir.Caption:= 'A..Z';
+    Self.btnSortDir.Tag:= 0;
+  end else begin
+    Self.btnSortDir.Caption:= 'Z..A';
+    Self.btnSortDir.Tag:= 1;
+  end;
+  Self.SortRepos;
 end;
 
 function TfrmMain.DestDir: String;

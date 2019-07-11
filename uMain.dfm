@@ -2,8 +2,8 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'GitHub Repository Backup'
-  ClientHeight = 469
-  ClientWidth = 1010
+  ClientHeight = 416
+  ClientWidth = 981
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -22,8 +22,8 @@ object frmMain: TfrmMain
   TextHeight = 14
   object spErrorLog: TSplitter
     Left = 0
-    Top = 445
-    Width = 1010
+    Top = 392
+    Width = 981
     Height = 5
     Cursor = crVSplit
     Align = alBottom
@@ -33,8 +33,8 @@ object frmMain: TfrmMain
   end
   object Stat: TStatusBar
     Left = 0
-    Top = 450
-    Width = 1010
+    Top = 397
+    Width = 981
     Height = 19
     Panels = <
       item
@@ -54,7 +54,7 @@ object frmMain: TfrmMain
   object pRepoTop: TPanel
     Left = 0
     Top = 0
-    Width = 1010
+    Width = 981
     Height = 29
     Align = alTop
     BevelOuter = bvNone
@@ -66,7 +66,7 @@ object frmMain: TfrmMain
       AlignWithMargins = True
       Left = 540
       Top = 3
-      Width = 467
+      Width = 438
       Height = 23
       Align = alClient
       TabOrder = 4
@@ -226,15 +226,15 @@ object frmMain: TfrmMain
   object lstRepos: TListView
     Left = 0
     Top = 29
-    Width = 1010
-    Height = 164
+    Width = 981
+    Height = 84
     Align = alTop
     BorderStyle = bsNone
     Checkboxes = True
     Columns = <
       item
         Caption = '    Repository Name'
-        Width = 200
+        Width = 180
       end
       item
         Caption = 'Default Branch'
@@ -242,11 +242,11 @@ object frmMain: TfrmMain
       end
       item
         Caption = 'Visibility'
-        Width = 70
+        Width = 66
       end
       item
         Caption = 'Language'
-        Width = 80
+        Width = 76
       end
       item
         Caption = 'Size'
@@ -268,20 +268,22 @@ object frmMain: TfrmMain
     OnClick = lstReposClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
+    ExplicitWidth = 1010
   end
   object pErrorLog: TPanel
     Left = 0
-    Top = 312
-    Width = 1010
+    Top = 259
+    Width = 981
     Height = 133
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
+    ExplicitTop = 312
     ExplicitWidth = 1037
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
-      Width = 1010
+      Width = 981
       Height = 24
       Align = alTop
       BevelOuter = bvNone
@@ -309,7 +311,7 @@ object frmMain: TfrmMain
       end
       object btnCloseErrorLog: TButton
         AlignWithMargins = True
-        Left = 985
+        Left = 956
         Top = 2
         Width = 23
         Height = 20
@@ -328,7 +330,7 @@ object frmMain: TfrmMain
     object txtErrorLog: TMemo
       Left = 0
       Top = 56
-      Width = 1010
+      Width = 981
       Height = 77
       Align = alBottom
       BorderStyle = bsNone
@@ -352,18 +354,18 @@ object frmMain: TfrmMain
     Interval = 200
     OnTimer = tmrDisplayTimer
     Left = 36
-    Top = 230
+    Top = 126
   end
   object Taskbar: TTaskbar
     TaskBarButtons = <>
     TabProperties = []
     ToolTip = 'GitHub Backup'
     Left = 100
-    Top = 230
+    Top = 126
   end
   object MM: TMainMenu
     Left = 144
-    Top = 230
+    Top = 126
     object mRepositories: TMenuItem
       Caption = 'Repositories'
       object CheckAll1: TMenuItem
@@ -411,6 +413,25 @@ object frmMain: TfrmMain
       object N1: TMenuItem
         Caption = '-'
       end
+      object mSort: TMenuItem
+        Caption = 'Sort'
+        object mSortAsc: TMenuItem
+          AutoCheck = True
+          Caption = 'Sort Ascending'
+          Checked = True
+          RadioItem = True
+          OnClick = mSortAscOrDescClick
+        end
+        object mSortDesc: TMenuItem
+          AutoCheck = True
+          Caption = 'Sort Descending'
+          RadioItem = True
+          OnClick = mSortAscOrDescClick
+        end
+        object N7: TMenuItem
+          Caption = '-'
+        end
+      end
       object mColumns: TMenuItem
         Caption = 'Columns'
         Enabled = False
@@ -418,24 +439,6 @@ object frmMain: TfrmMain
           Action = actConfigCols
         end
         object N2: TMenuItem
-          Caption = '-'
-        end
-      end
-      object Sort1: TMenuItem
-        Caption = 'Sort'
-        Enabled = False
-        object SortAscending1: TMenuItem
-          AutoCheck = True
-          Caption = 'Sort Ascending'
-          Checked = True
-          RadioItem = True
-        end
-        object SortDescending1: TMenuItem
-          AutoCheck = True
-          Caption = 'Sort Descending'
-          RadioItem = True
-        end
-        object N7: TMenuItem
           Caption = '-'
         end
       end
@@ -448,7 +451,7 @@ object frmMain: TfrmMain
     Images = Img16
     OnUpdate = ActsUpdate
     Left = 184
-    Top = 230
+    Top = 126
     StyleName = 'Platform Default'
     object actSetup: TAction
       Category = 'Options'
@@ -513,6 +516,6 @@ object frmMain: TfrmMain
   end
   object Img16: TImageList
     Left = 256
-    Top = 232
+    Top = 128
   end
 end
