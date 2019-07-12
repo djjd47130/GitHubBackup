@@ -1,6 +1,10 @@
 # GitHub Backup Application
 Simple UI for bulk downloading GitHub repositories
 
+## Download the Latest Version
+
+[Click here](https://github.com/djjd47130/GitHubBackup/releases) to download the latest release.
+
 ## IMPORTANT NOTE
 
 This project is currently under active development, and is not a complete solution yet. It is however fully functional in its current state for what it needs to do. There are many improvements which are being worked on at this time, and the internal structure will undergo complete revisions.
