@@ -37,7 +37,8 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\GitHubBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion     
+Source: "D:\Development\GitHub\GitHubBackup\Help_output\HTML Help\JDGitHubBackupHelp.chm"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
