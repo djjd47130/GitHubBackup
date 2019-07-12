@@ -15,6 +15,7 @@ type
     Label3: TLabel;
     Label4: TLabel;
     procedure Label4Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,6 +28,36 @@ var
 implementation
 
 {$R *.dfm}
+
+function FileVersion(const FileName: TFileName): String;
+var
+  VerInfoSize: Cardinal;
+  VerValueSize: Cardinal;
+  Dummy: Cardinal;
+  PVerInfo: Pointer;
+  PVerValue: PVSFixedFileInfo;
+begin
+  Result := '';
+  VerInfoSize := GetFileVersionInfoSize(PChar(FileName), Dummy);
+  GetMem(PVerInfo, VerInfoSize);
+  try
+    if GetFileVersionInfo(PChar(FileName), 0, VerInfoSize, PVerInfo) then
+      if VerQueryValue(PVerInfo, '\', Pointer(PVerValue), VerValueSize) then
+        with PVerValue^ do
+          Result := Format('v%d.%d.%d build %d', [
+            HiWord(dwFileVersionMS), //Major
+            LoWord(dwFileVersionMS), //Minor
+            HiWord(dwFileVersionLS), //Release
+            LoWord(dwFileVersionLS)]); //Build
+  finally
+    FreeMem(PVerInfo, VerInfoSize);
+  end;
+end;
+
+procedure TfrmAbout.FormCreate(Sender: TObject);
+begin
+  lblVersion.Caption:= FileVersion(Application.ExeName);
+end;
 
 procedure TfrmAbout.Label4Click(Sender: TObject);
 var
