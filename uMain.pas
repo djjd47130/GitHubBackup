@@ -41,7 +41,8 @@ uses
   JD.IndyUtils,
   JD.GitHub.Common,
   uSetup,
-  uRepoDetail;
+  uRepoDetail,
+  uDM;
 
 type
   {$WARN SYMBOL_PLATFORM OFF}
@@ -159,6 +160,8 @@ type
     function AppIsConfigured: Boolean;
     procedure PopulateMainMenuSort;
     procedure MenuSortClick(Sender: TObject);
+    procedure LoadConfig;
+    procedure SaveConfig;
   public
     function DestDir: String;
   end;
@@ -231,15 +234,12 @@ end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
-
-  frmSetup.LoadFromConfig;
-  //TODO: If app is not yet configured, clearly notify user, and enter setup
-
+  LoadConfig;
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  frmSetup.SaveToConfig; //TODO: Is this the best place for this?
+  SaveConfig;
 end;
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -250,6 +250,29 @@ begin
     CanClose:= False;
     MessageDlg('Cannot close while download is in progress.', mtError, [mbOK], 0);
   end;
+end;
+
+procedure TfrmMain.LoadConfig;
+begin
+
+  frmSetup.LoadFromConfig;
+  //TODO: If app is not yet configured, clearly notify user, and enter setup
+
+
+  cboSort.ItemIndex:= DM.Config.I['sortCol'];
+  btnSortDir.Tag:= DM.Config.I['sortDir'];
+  case btnSortDir.Tag of
+    0: btnSortDir.Caption:= 'A..Z';
+    1: btnSortDir.Caption:= 'Z..A';
+  end;
+  SortRepos;
+end;
+
+procedure TfrmMain.SaveConfig;
+begin
+  DM.Config.I['sortCol']:= cboSort.ItemIndex;
+  DM.Config.I['sortDir']:= btnSortDir.Tag;
+  frmSetup.SaveToConfig; //TODO: Is this the best place for this?
 end;
 
 function TfrmMain.GetJSON(const URL: String): ISuperObject;
@@ -355,7 +378,7 @@ var
 begin
   //TODO: Support virtually any column...
 
-  case Self.btnSortDir.Tag of
+  case btnSortDir.Tag of
     0: mSortAsc.Checked:= True;
     1: mSortDesc.Checked:= True;
   end;
