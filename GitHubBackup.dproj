@@ -137,8 +137,8 @@
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
         <VerInfo_PreRelease>true</VerInfo_PreRelease>
         <VerInfo_Release>2</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.1.2.13;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHub Backup;ProductVersion=0.1.2;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
-        <VerInfo_Build>13</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.1.2.15;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHub Backup;ProductVersion=0.1.2;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Build>15</VerInfo_Build>
         <BT_BuildType>Debug</BT_BuildType>
         <Icon_MainIcon>Icons\media (1).ico</Icon_MainIcon>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>

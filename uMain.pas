@@ -87,13 +87,9 @@ type
     N7: TMenuItem;
     Cancel1: TMenuItem;
     pRepoTop: TPanel;
-    Prog: TProgressBar;
     Panel4: TPanel;
-    Label4: TLabel;
     cboVisibility: TComboBox;
     cboType: TComboBox;
-    cboSort: TComboBox;
-    btnSortDir: TButton;
     btnListRepos: TButton;
     btnDownload: TButton;
     btnCancel: TButton;
@@ -105,6 +101,10 @@ type
     btnCloseErrorLog: TButton;
     txtErrorLog: TMemo;
     chkCheckAll: TCheckBox;
+    Prog: TProgressBar;
+    btnSortDir: TButton;
+    cboSort: TComboBox;
+    Label4: TLabel;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

@@ -36,6 +36,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnBrowseDirClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     function GetBackupDir: String;
     function GetToken: String;
@@ -58,6 +59,9 @@ var
 implementation
 
 {$R *.dfm}
+
+uses
+  System.IOUtils;
 
 procedure TfrmSetup.btnSaveClick(Sender: TObject);
 begin
@@ -98,6 +102,15 @@ end;
 procedure TfrmSetup.FormCreate(Sender: TObject);
 begin
   Pages.Align:= alClient;
+end;
+
+procedure TfrmSetup.FormShow(Sender: TObject);
+begin
+  //TODO: Default directory if necessary...
+  if Self.txtBackupDir.Text = '' then begin
+    Self.txtBackupDir.Text:= TPath.Combine(TPath.GetDocumentsPath, 'GitHub Backups');
+
+  end;
 end;
 
 function TfrmSetup.GetBackupDir: String;

@@ -14,6 +14,7 @@ object frmSetup: TfrmSetup
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Pages: TPageControl
@@ -24,10 +25,12 @@ object frmSetup: TfrmSetup
     ActivePage = tabRepositories
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 521
     object tabAccount: TTabSheet
       Caption = 'Account'
+      ExplicitLeft = 0
+      ExplicitTop = 0
       ExplicitWidth = 513
+      ExplicitHeight = 0
       object gbAccountAccess: TGroupBox
         Left = 0
         Top = 0
@@ -90,7 +93,6 @@ object frmSetup: TfrmSetup
     object tabRepositories: TTabSheet
       Caption = 'Repositories'
       ImageIndex = 1
-      ExplicitWidth = 513
       object gbBackupDir: TGroupBox
         Left = 0
         Top = 0
@@ -99,7 +101,6 @@ object frmSetup: TfrmSetup
         Align = alTop
         Caption = 'Backup Directory'
         TabOrder = 0
-        ExplicitWidth = 513
         object txtBackupDir: TEdit
           AlignWithMargins = True
           Left = 5
@@ -110,7 +111,6 @@ object frmSetup: TfrmSetup
           Align = alClient
           TabOrder = 0
           OnDblClick = btnBrowseDirClick
-          ExplicitWidth = 471
         end
         object btnBrowseDir: TBitBtn
           AlignWithMargins = True
@@ -124,7 +124,6 @@ object frmSetup: TfrmSetup
           Caption = '...'
           TabOrder = 1
           OnClick = btnBrowseDirClick
-          ExplicitLeft = 482
         end
       end
       object GroupBox1: TGroupBox
@@ -135,7 +134,6 @@ object frmSetup: TfrmSetup
         Align = alTop
         Caption = 'Pagination'
         TabOrder = 1
-        ExplicitWidth = 513
         object Label1: TLabel
           AlignWithMargins = True
           Left = 5
@@ -171,7 +169,6 @@ object frmSetup: TfrmSetup
         Align = alTop
         Caption = 'Account to List'
         TabOrder = 2
-        ExplicitWidth = 513
         object txtUser: TEdit
           AlignWithMargins = True
           Left = 5
@@ -181,7 +178,6 @@ object frmSetup: TfrmSetup
           Margins.Bottom = 8
           Align = alClient
           TabOrder = 0
-          ExplicitWidth = 399
         end
         object cboUserType: TComboBox
           AlignWithMargins = True
@@ -198,14 +194,16 @@ object frmSetup: TfrmSetup
           Items.Strings = (
             'User'
             'Organization')
-          ExplicitLeft = 410
         end
       end
     end
     object tabView: TTabSheet
       Caption = 'View'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
       ExplicitWidth = 513
+      ExplicitHeight = 0
     end
   end
   object pBottom: TPanel
@@ -215,8 +213,6 @@ object frmSetup: TfrmSetup
     Height = 35
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 312
-    ExplicitWidth = 521
     object btnSave: TBitBtn
       AlignWithMargins = True
       Left = 452
@@ -227,7 +223,6 @@ object frmSetup: TfrmSetup
       Caption = 'Save'
       TabOrder = 0
       OnClick = btnSaveClick
-      ExplicitLeft = 442
     end
     object btnCancel: TBitBtn
       AlignWithMargins = True
@@ -239,7 +234,6 @@ object frmSetup: TfrmSetup
       Caption = 'Cancel'
       ModalResult = 2
       TabOrder = 1
-      ExplicitLeft = 361
     end
   end
   object dlgBrowseDir: TFileOpenDialog
