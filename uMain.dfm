@@ -48,8 +48,6 @@ object frmMain: TfrmMain
       item
         Width = 50
       end>
-    ExplicitTop = 573
-    ExplicitWidth = 1114
   end
   object pRepoTop: TPanel
     Left = 0
@@ -59,9 +57,6 @@ object frmMain: TfrmMain
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 16
-    ExplicitTop = -5
-    ExplicitWidth = 1114
     object Label4: TLabel
       AlignWithMargins = True
       Left = 780
@@ -102,7 +97,6 @@ object frmMain: TfrmMain
           'All Visibility'
           'Public'
           'Private')
-        ExplicitLeft = 202
       end
       object cboType: TComboBox
         AlignWithMargins = True
@@ -123,7 +117,6 @@ object frmMain: TfrmMain
           'Public'
           'Private'
           'Member')
-        ExplicitLeft = 294
       end
     end
     object btnListRepos: TButton
@@ -192,9 +185,8 @@ object frmMain: TfrmMain
       Margins.Bottom = 4
       Align = alRight
       Caption = 'A..Z'
-      TabOrder = 4
+      TabOrder = 5
       OnClick = btnSortDirClick
-      ExplicitLeft = 164
     end
     object cboSort: TComboBox
       AlignWithMargins = True
@@ -206,7 +198,7 @@ object frmMain: TfrmMain
       Align = alRight
       Style = csDropDownList
       ItemIndex = 0
-      TabOrder = 5
+      TabOrder = 4
       Text = 'Sort Name'
       OnClick = cboSortClick
       Items.Strings = (
@@ -214,7 +206,6 @@ object frmMain: TfrmMain
         'Sort Created'
         'Sort Updated'
         'Sort Pushed')
-      ExplicitLeft = 40
     end
   end
   object lstRepos: TListView
@@ -257,12 +248,11 @@ object frmMain: TfrmMain
     HotTrackStyles = [htHandPoint, htUnderlineHot]
     ReadOnly = True
     RowSelect = True
-    TabOrder = 2
+    TabOrder = 0
     ViewStyle = vsReport
     OnClick = lstReposClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
-    ExplicitWidth = 981
   end
   object pErrorLog: TPanel
     Left = 0
@@ -272,8 +262,6 @@ object frmMain: TfrmMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitTop = 312
-    ExplicitWidth = 1037
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
@@ -281,8 +269,7 @@ object frmMain: TfrmMain
       Height = 24
       Align = alTop
       BevelOuter = bvNone
-      TabOrder = 0
-      ExplicitWidth = 1106
+      TabOrder = 1
       object lblErrorLogTitle: TLabel
         AlignWithMargins = True
         Left = 3
@@ -318,7 +305,6 @@ object frmMain: TfrmMain
         Caption = 'X'
         TabOrder = 0
         OnClick = btnCloseErrorLogClick
-        ExplicitLeft = 1081
       end
     end
     object txtErrorLog: TMemo
@@ -330,9 +316,8 @@ object frmMain: TfrmMain
       BorderStyle = bsNone
       ReadOnly = True
       ScrollBars = ssBoth
-      TabOrder = 1
+      TabOrder = 0
       WordWrap = False
-      ExplicitWidth = 1037
     end
   end
   object chkCheckAll: TCheckBox
@@ -353,9 +338,6 @@ object frmMain: TfrmMain
     Align = alTop
     TabOrder = 5
     Visible = False
-    ExplicitLeft = 19
-    ExplicitTop = 27
-    ExplicitWidth = 975
   end
   object tmrDisplay: TTimer
     Interval = 200
@@ -453,6 +435,16 @@ object frmMain: TfrmMain
     end
     object mHelp: TMenuItem
       Caption = 'Help'
+      object OpenHelp1: TMenuItem
+        Caption = 'Open Help'
+        Enabled = False
+      end
+      object N3: TMenuItem
+        Caption = '-'
+      end
+      object About1: TMenuItem
+        Action = actAbout
+      end
     end
   end
   object Acts: TActionManager
@@ -526,12 +518,17 @@ object frmMain: TfrmMain
       Caption = 'A..Z'
       Hint = 'Sort Ascending'
     end
+    object actAbout: TAction
+      Category = 'Help'
+      Caption = 'About'
+      OnExecute = actAboutExecute
+    end
   end
   object Img16: TImageList
     Left = 240
     Top = 160
     Bitmap = {
-      494C01015E006000140010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01015E006000180010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000008001000001002000000000000080
       0100000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000C2C2

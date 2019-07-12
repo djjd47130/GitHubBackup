@@ -88,7 +88,6 @@
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DataSnapServerMidas;DBXDb2Driver;DBXInterBaseDriver;vclactnband;frxe23;vclFireDAC;emsclientfiredac;DataSnapFireDAC;svnui;tethering;FireDACADSDriver;DBXMSSQLDriver;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;vcltouch;vcldb;bindcompfmx;svn;Intraweb;DBXOracleDriver;inetdb;RaizeComponentsVcl;FmxTeeUI;RaizeComponentsVclDb;EdoniaCompPackage;FireDACIBDriver;fmx;fmxdae;vclib;FireDACDBXDriver;dbexpress;IndyCore;vclx;dsnap;DataSnapCommon;emsclient;FireDACCommon;RMProDemoComps;RESTBackendComponents;DataSnapConnectors;QR506RunDXE10;VCLRESTComponents;soapserver;frxTee23;RDBComp_DXE8;vclie;bindengine;DBXMySQLDriver;FireDACOracleDriver;CloudService;FireDACMySQLDriver;DBXFirebirdDriver;FireDACCommonDriver;hclcore_xe10;DataSnapClient;FloatBarComponents;LockBoxDR;inet;bindcompdbx;IndyIPCommon;vcl;DBXSybaseASEDriver;IndyIPServer;IndySystem;htmleditfm_xe10;FireDACDb2Driver;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;TeeDB;FireDAC;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FireDACASADriver;htmlcompfm_xe10;DBXOdbcDriver;FireDACTDataDriver;FMXTee;soaprtl;DbxCommonDriver;ibxpress;Tee;htmlcomp_xe10;DataSnapServer;xmlrtl;soapmidas;DataSnapNativeClient;fmxobj;vclwinx;ibxbindings;rtl;FireDACDSDriver;DbxClientDriver;DBXSybaseASADriver;CustomIPTransport;vcldsnap;bindcomp;appanalytics;DBXInformixDriver;IndyIPClient;bindcompvcl;frxDB23;TeeUI;vclribbon;dbxcds;VclSmp;adortl;FireDACODBCDriver;htmledit_xe10;DataSnapIndy10ServerTransport;htmleditcore_xe10;RDBSorters_DXE8;dsnapxml;DataSnapProviderClient;dbrtl;inetdbxpress;FireDACMongoDBDriver;IndyProtocols;frx23;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.1.1.0;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHub Backup;ProductVersion=0.1;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -132,15 +131,12 @@
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_MinorVer>1</VerInfo_MinorVer>
-        <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_Release>4</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.1.4.19;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHub Backup;ProductVersion=0.1.4;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
-        <VerInfo_Build>19</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.2.0.0;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;LegalTrademarks=;OriginalFilename=GitHub Backup;ProductVersion=0.2.0;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
         <BT_BuildType>Debug</BT_BuildType>
         <Icon_MainIcon>Icons\media (1).ico</Icon_MainIcon>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
     </PropertyGroup>
@@ -173,12 +169,16 @@
             <Form>frmRepoDetail</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <BuildConfiguration Include="Base">
-            <Key>Base</Key>
-        </BuildConfiguration>
+        <DCCReference Include="uAbout.pas">
+            <Form>frmAbout</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
         </BuildConfiguration>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_1</Key>

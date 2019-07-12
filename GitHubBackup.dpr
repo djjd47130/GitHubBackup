@@ -11,7 +11,8 @@ uses
   JD.Config in 'JD.Config.pas',
   JD.GitHub.Common in 'JD.GitHub.Common.pas',
   uDM in 'uDM.pas' {DM: TDataModule},
-  uRepoDetail in 'uRepoDetail.pas' {frmRepoDetail};
+  uRepoDetail in 'uRepoDetail.pas' {frmRepoDetail},
+  uAbout in 'uAbout.pas' {frmAbout};
 
 {$R *.res}
 
@@ -24,5 +25,6 @@ begin
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmSetup, frmSetup);
   Application.CreateForm(TfrmRepoDetail, frmRepoDetail);
+  Application.CreateForm(TfrmAbout, frmAbout);
   Application.Run;
 end.

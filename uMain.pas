@@ -42,7 +42,8 @@ uses
   JD.GitHub.Common,
   uSetup,
   uRepoDetail,
-  uDM;
+  uDM,
+  uAbout;
 
 type
   {$WARN SYMBOL_PLATFORM OFF}
@@ -106,6 +107,10 @@ type
     btnSortDir: TButton;
     cboSort: TComboBox;
     Label4: TLabel;
+    actAbout: TAction;
+    OpenHelp1: TMenuItem;
+    N3: TMenuItem;
+    About1: TMenuItem;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -130,6 +135,7 @@ type
     procedure lstReposDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure mSortAscOrDescClick(Sender: TObject);
+    procedure actAboutExecute(Sender: TObject);
   private                    
     FEnabled: Boolean;
     FRepos: TObjectList<TRepo>;
@@ -847,6 +853,11 @@ begin
   Result.OnException:= ThreadException;
   Result.FreeOnTerminate:= True;
   FThreadCancel:= Result.Cancel;
+end;
+
+procedure TfrmMain.actAboutExecute(Sender: TObject);
+begin
+  frmAbout.ShowModal;
 end;
 
 procedure TfrmMain.actCancelDownloadExecute(Sender: TObject);
