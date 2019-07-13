@@ -1,4 +1,4 @@
-# GitHub Backup Application
+# JD GitHub Backup Application
 Simple UI for bulk downloading GitHub repositories
 
 ## Download the Latest Version
