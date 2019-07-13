@@ -12,7 +12,7 @@ unit uMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
+  Winapi.Windows, Winapi.Messages, Winapi.ShellApi,
   System.SysUtils, System.Variants, System.Classes,
   System.Generics.Collections, System.Generics.Defaults,
   System.UITypes, System.Win.TaskbarCore, System.Actions,
@@ -44,7 +44,7 @@ uses
   uSetup,
   uRepoDetail,
   uDM,
-  uAbout;
+  uAbout, Vcl.AppEvnts;
 
 type
   {$WARN SYMBOL_PLATFORM OFF}
@@ -113,6 +113,7 @@ type
     N3: TMenuItem;
     About1: TMenuItem;
     actHelpContents: TAction;
+    AppEvents: TApplicationEvents;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -139,6 +140,8 @@ type
     procedure mSortAscOrDescClick(Sender: TObject);
     procedure actAboutExecute(Sender: TObject);
     procedure actHelpContentsExecute(Sender: TObject);
+    function AppEventsHelp(Command: Word; Data: NativeInt;
+      var CallHelp: Boolean): Boolean;
   private                    
     FEnabled: Boolean;
     FRepos: TObjectList<TRepo>;
@@ -171,6 +174,7 @@ type
     procedure MenuSortClick(Sender: TObject);
     procedure LoadConfig;
     procedure SaveConfig;
+    procedure CloseHelpWnd;
   public
     function DestDir: String;
   end;
@@ -241,6 +245,7 @@ procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FWeb);
   FreeAndNil(FRepos);
+  CloseHelpWnd;
 end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
@@ -476,6 +481,27 @@ begin
   finally
     lstRepos.Items.EndUpdate;
   end;
+end;
+
+procedure TfrmMain.CloseHelpWnd;
+var
+  HlpWind: HWND;
+const
+  HelpTitle = 'JD GitHub Backup Help';
+begin
+  //Fix for Help Window: https://stackoverflow.com/questions/44378837/chm-file-not-displaying-correctly-when-delphi-vcl-style-active?rq=1
+  HlpWind := FindWindow('HH Parent',HelpTitle);
+  if HlpWind <> 0 then PostMessage(HlpWind,WM_Close,0,0);
+end;
+
+function TfrmMain.AppEventsHelp(Command: Word; Data: NativeInt;
+  var CallHelp: Boolean): Boolean;
+begin
+  //Fix for Help Window: https://stackoverflow.com/questions/44378837/chm-file-not-displaying-correctly-when-delphi-vcl-style-active?rq=1
+  CloseHelpWnd;
+  Result := ShellExecute(0,'open','hh.exe', PWideChar('-mapid '+IntToStr(Data) +
+    ' ms-its:'+Application.HelpFile), nil,SW_SHOW) = 32;
+  CallHelp := false;
 end;
 
 function TfrmMain.AppIsConfigured: Boolean;

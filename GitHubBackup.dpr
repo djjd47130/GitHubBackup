@@ -19,7 +19,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'GitHub Backup';
+  Application.Title := 'JD GitHub Backup';
   TStyleManager.TrySetStyle('Glossy');
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TfrmMain, frmMain);

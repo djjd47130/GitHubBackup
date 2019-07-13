@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
-  Caption = 'GitHub Repository Backup'
+  Caption = 'JD GitHub Repository Backup'
   ClientHeight = 416
   ClientWidth = 976
   Color = clBtnFace
@@ -3709,5 +3709,10 @@ object frmMain: TfrmMain
       80010000E007F01FF81F0000E007F01FF81F0000E007F01FF81F0000E007F01F
       F81F0000F00FF01FFFFF8001FC3FF01F00000000000000000000000000000000
       000000000000}
+  end
+  object AppEvents: TApplicationEvents
+    OnHelp = AppEventsHelp
+    Left = 344
+    Top = 160
   end
 end
