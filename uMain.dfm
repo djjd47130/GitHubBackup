@@ -213,6 +213,7 @@ object frmMain: TfrmMain
     Top = 58
     Width = 976
     Height = 87
+    HelpContext = 1006
     Align = alTop
     BorderStyle = bsNone
     Checkboxes = True
@@ -245,6 +246,7 @@ object frmMain: TfrmMain
         Caption = 'Description'
         Width = 300
       end>
+    HideSelection = False
     HotTrackStyles = [htHandPoint, htUnderlineHot]
     ReadOnly = True
     RowSelect = True
@@ -436,8 +438,7 @@ object frmMain: TfrmMain
     object mHelp: TMenuItem
       Caption = 'Help'
       object OpenHelp1: TMenuItem
-        Caption = 'Open Help'
-        Enabled = False
+        Action = actHelpContents
       end
       object N3: TMenuItem
         Caption = '-'
@@ -523,12 +524,18 @@ object frmMain: TfrmMain
       Caption = 'About'
       OnExecute = actAboutExecute
     end
+    object actHelpContents: TAction
+      Category = 'Help'
+      Caption = 'Contents'
+      ImageIndex = 41
+      OnExecute = actHelpContentsExecute
+    end
   end
   object Img16: TImageList
     Left = 240
     Top = 160
     Bitmap = {
-      494C01015E006000180010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01015E0060001C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000008001000001002000000000000080
       0100000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000C2C2

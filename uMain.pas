@@ -20,6 +20,7 @@ uses
   Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Taskbar, Vcl.CheckLst,
   Vcl.Menus, Vcl.PlatformDefaultStyleActnCtrls,
   Vcl.ActnList, Vcl.ActnMan, System.ImageList, Vcl.ImgList,
+  HtmlHelpViewer,
 {$IFDEF USE_VCL_STYLE_UTILS}
   //Recommended to use vcl-styles-utils to fix issues in Windows dialogs
   //  If you don't have this, remove the conditional from the project's
@@ -111,6 +112,7 @@ type
     OpenHelp1: TMenuItem;
     N3: TMenuItem;
     About1: TMenuItem;
+    actHelpContents: TAction;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -136,6 +138,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure mSortAscOrDescClick(Sender: TObject);
     procedure actAboutExecute(Sender: TObject);
+    procedure actHelpContentsExecute(Sender: TObject);
   private                    
     FEnabled: Boolean;
     FRepos: TObjectList<TRepo>;
@@ -217,6 +220,8 @@ begin
 
   FRepos:= TObjectList<TRepo>.Create(True);
   FWeb:= TIndyHttpTransport.Create;
+
+  Application.HelpFile:= TPath.Combine(ExtractFilePath(Application.ExeName), 'JDGitHubBackupHelp.chm');
 
   //Prepare UI Controls
   lstRepos.Align:= alClient;
@@ -721,6 +726,12 @@ begin
   Close;
 end;
 
+procedure TfrmMain.actHelpContentsExecute(Sender: TObject);
+begin
+
+  Application.HelpContext(0);
+end;
+
 function TfrmMain.CheckedCount: Integer;
 var
   X: Integer;
@@ -771,6 +782,7 @@ begin
   cboVisibility.Enabled:= Enabled;
   cboType.Enabled:= Enabled;
   cboSort.Enabled:= Enabled;
+  mSort.Enabled:= Enabled;
   btnSortDir.Enabled:= Enabled;
   UpdateDownloadAction;
 end;
