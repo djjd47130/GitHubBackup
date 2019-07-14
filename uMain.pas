@@ -226,7 +226,12 @@ begin
   FRepos:= TObjectList<TRepo>.Create(True);
   FWeb:= TIndyHttpTransport.Create;
 
+  {$IFDEF DEBUG}
+  //TODO: If debug build, use CHM from release folder
   Application.HelpFile:= TPath.Combine(ExtractFilePath(Application.ExeName), 'JDGitHubBackupHelp.chm');
+  {$ELSE}
+  Application.HelpFile:= TPath.Combine(ExtractFilePath(Application.ExeName), 'JDGitHubBackupHelp.chm');
+  {$ENDIF}
 
   //Prepare UI Controls
   lstRepos.Align:= alClient;
@@ -502,14 +507,17 @@ var
 begin
   //Fix for Help Window: https://stackoverflow.com/questions/44378837/chm-file-not-displaying-correctly-when-delphi-vcl-style-active?rq=1
   CloseHelpWnd;
-  //TODO: Figure out why this fails sometimes...
 
   Params:= '';
-  if AContextID > 0 then
+  //TODO: Figure out why this fails sometimes...
+  if AContextID > 0 then begin
     Params:= Params + ' -mapid ' + IntToStr(AContextID);
+  end else begin
+    Params:= Params + ' -mapid 1000';
+  end;
   Params:= Params + ' ms-its:' + Application.HelpFile;
 
-  R:= ShellExecute(0, 'open', 'hh.exe', PWideChar(Params), nil, SW_SHOW);
+  R:= ShellExecuteW(0, 'open', 'hh.exe', PWideChar(Params), nil, SW_SHOW);
   Result := R = 32;
 
 
@@ -518,7 +526,8 @@ end;
 function TfrmMain.AppEventsHelp(Command: Word; Data: NativeInt;
   var CallHelp: Boolean): Boolean;
 begin
-  OpenHelp(Data);
+  //Fix for Help Window: https://stackoverflow.com/questions/44378837/chm-file-not-displaying-correctly-when-delphi-vcl-style-active?rq=1
+  Result:= OpenHelp(Data);
   CallHelp := False;
 end;
 
