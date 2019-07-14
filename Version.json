@@ -1,0 +1,40 @@
+{
+	"note": "This file is dedicated to recording release version history. It is to be used by the update check system via GitHub.",
+	"versions": [
+		{
+			"title": "Version 0.1.2",
+			"major": 0,
+			"minor": 1,
+			"release": 2,
+			"url": ""
+		},
+		{
+			"title": "Version 0.1.3",
+			"major": 0,
+			"minor": 1,
+			"release": 3,
+			"url": ""
+		},
+		{
+			"title": "Version 0.1.4",
+			"major": 0,
+			"minor": 1,
+			"release": 4,
+			"url": ""
+		},
+		{
+			"title": "Version 0.2.1",
+			"major": 0,
+			"minor": 2,
+			"release": 1,
+			"url": ""
+		},
+		{
+			"title": "Version 0.2.2",
+			"major": 0,
+			"minor": 2,
+			"release": 2,
+			"url": ""
+		}
+	]
+}
