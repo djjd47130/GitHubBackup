@@ -61,7 +61,7 @@ Either way, the progress is also shown in the taskbar icon for the application.
 
 ### Delphi Version
 
-This app was originally written in Delphi 10.0 Seattle but later revised in Delphi 10.1 Berlin. It has not been tested in any other Delphi versions, but it's anticipated to make this library work on multiple Delphi versions. 
+This app was originally written in Delphi 10.0 Seattle but later revised in Delphi 10.1 Berlin. It has not been tested in any other Delphi versions, but it's anticipated to make this library work on multiple Delphi versions. Theoretically, it *should* work back to Delphi XE3, when VCL Styles were introduced. 
 
 ### Inno Setup
 
