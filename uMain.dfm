@@ -1,6 +1,8 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
+  HelpContext = 1000
+  BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   Caption = 'JD GitHub Repository Backup'
   ClientHeight = 416
   ClientWidth = 976
@@ -13,6 +15,7 @@ object frmMain: TfrmMain
   Font.Style = []
   Menu = MM
   OldCreateOrder = False
+  ShowHint = True
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -62,7 +65,7 @@ object frmMain: TfrmMain
       Left = 780
       Top = 3
       Width = 31
-      Height = 23
+      Height = 26
       Align = alRight
       Alignment = taRightJustify
       AutoSize = False
@@ -70,6 +73,7 @@ object frmMain: TfrmMain
       Layout = tlCenter
       ExplicitLeft = 11
       ExplicitTop = 6
+      ExplicitHeight = 23
     end
     object Panel4: TPanel
       Left = 0
@@ -87,6 +91,8 @@ object frmMain: TfrmMain
         Width = 86
         Height = 22
         Cursor = crHandPoint
+        Hint = 'Filter by visibility'
+        HelpContext = 1006
         Align = alLeft
         Style = csDropDownList
         ItemIndex = 0
@@ -105,6 +111,8 @@ object frmMain: TfrmMain
         Width = 86
         Height = 22
         Cursor = crHandPoint
+        Hint = 'Filter by repository type'
+        HelpContext = 1006
         Align = alLeft
         Style = csDropDownList
         ItemIndex = 0
@@ -126,6 +134,8 @@ object frmMain: TfrmMain
       Width = 76
       Height = 23
       Cursor = crHandPoint
+      Hint = 'Fetch list of repositories from GitHub'
+      HelpContext = 1006
       Action = actRefresh
       Align = alLeft
       Font.Charset = DEFAULT_CHARSET
@@ -144,6 +154,8 @@ object frmMain: TfrmMain
       Width = 159
       Height = 23
       Cursor = crHandPoint
+      Hint = 'Initiate bulk download'
+      HelpContext = 1008
       Action = actDownloadRepos
       Align = alLeft
       Font.Charset = DEFAULT_CHARSET
@@ -162,6 +174,8 @@ object frmMain: TfrmMain
       Width = 75
       Height = 23
       Cursor = crHandPoint
+      Hint = 'Cancel the download'
+      HelpContext = 1008
       Action = actCancelDownload
       Align = alLeft
       Font.Charset = DEFAULT_CHARSET
@@ -180,6 +194,8 @@ object frmMain: TfrmMain
       Width = 32
       Height = 23
       Cursor = crHandPoint
+      Hint = 'Toggle sort between ascending / descending'
+      HelpContext = 1006
       Margins.Left = 0
       Margins.Top = 2
       Margins.Bottom = 4
@@ -195,6 +211,8 @@ object frmMain: TfrmMain
       Width = 121
       Height = 22
       Cursor = crHandPoint
+      Hint = 'Change which column to sort by'
+      HelpContext = 1006
       Align = alRight
       Style = csDropDownList
       ItemIndex = 0
@@ -261,6 +279,7 @@ object frmMain: TfrmMain
     Top = 259
     Width = 976
     Height = 133
+    HelpContext = 1008
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
@@ -269,6 +288,7 @@ object frmMain: TfrmMain
       Top = 0
       Width = 976
       Height = 24
+      HelpContext = 1008
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 1
@@ -277,7 +297,8 @@ object frmMain: TfrmMain
         Left = 3
         Top = 3
         Width = 317
-        Height = 18
+        Height = 21
+        HelpContext = 1008
         Align = alLeft
         AutoSize = False
         Caption = 'Error Log'
@@ -299,6 +320,8 @@ object frmMain: TfrmMain
         Width = 23
         Height = 20
         Cursor = crHandPoint
+        Hint = 'Close error log'
+        HelpContext = 1008
         Margins.Left = 2
         Margins.Top = 2
         Margins.Right = 2
@@ -314,6 +337,7 @@ object frmMain: TfrmMain
       Top = 56
       Width = 976
       Height = 77
+      HelpContext = 1008
       Align = alBottom
       BorderStyle = bsNone
       ReadOnly = True
@@ -337,6 +361,7 @@ object frmMain: TfrmMain
     Top = 32
     Width = 970
     Height = 23
+    HelpContext = 1008
     Align = alTop
     TabOrder = 5
     Visible = False
@@ -351,12 +376,12 @@ object frmMain: TfrmMain
     TaskBarButtons = <>
     TabProperties = []
     ToolTip = 'GitHub Backup'
-    Left = 84
+    Left = 68
     Top = 158
   end
   object MM: TMainMenu
     Images = Img16
-    Left = 128
+    Left = 112
     Top = 158
     object mRepositories: TMenuItem
       Caption = 'Repositories'
@@ -451,7 +476,7 @@ object frmMain: TfrmMain
   object Acts: TActionManager
     Images = Img16
     OnUpdate = ActsUpdate
-    Left = 168
+    Left = 152
     Top = 158
     StyleName = 'Platform Default'
     object actSetup: TAction
@@ -512,6 +537,7 @@ object frmMain: TfrmMain
       Caption = 'Cancel'
       Enabled = False
       ImageIndex = 21
+      ShortCut = 27
       OnExecute = actCancelDownloadExecute
     end
     object actSortAZ: TAction
@@ -522,6 +548,7 @@ object frmMain: TfrmMain
     object actAbout: TAction
       Category = 'Help'
       Caption = 'About'
+      ShortCut = 16450
       OnExecute = actAboutExecute
     end
     object actHelpContents: TAction
@@ -532,10 +559,10 @@ object frmMain: TfrmMain
     end
   end
   object Img16: TImageList
-    Left = 240
+    Left = 200
     Top = 160
     Bitmap = {
-      494C01015E0060001C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01015E006000200010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000008001000001002000000000000080
       0100000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000C2C2
@@ -3712,7 +3739,7 @@ object frmMain: TfrmMain
   end
   object AppEvents: TApplicationEvents
     OnHelp = AppEventsHelp
-    Left = 344
+    Left = 248
     Top = 160
   end
 end

@@ -1,6 +1,7 @@
 object frmSetup: TfrmSetup
   Left = 0
   Top = 0
+  HelpContext = 1001
   BorderStyle = bsDialog
   Caption = 'Setup'
   ClientHeight = 357
@@ -13,6 +14,7 @@ object frmSetup: TfrmSetup
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  ShowHint = True
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -22,24 +24,22 @@ object frmSetup: TfrmSetup
     Top = 0
     Width = 531
     Height = 257
+    HelpContext = 1001
     ActivePage = tabRepositories
     Align = alTop
     TabOrder = 0
     object tabAccount: TTabSheet
+      HelpContext = 1002
       Caption = 'Account'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 513
-      ExplicitHeight = 0
       object gbAccountAccess: TGroupBox
         Left = 0
         Top = 0
         Width = 523
         Height = 145
+        HelpContext = 1002
         Align = alTop
         Caption = 'Account Access'
         TabOrder = 0
-        ExplicitWidth = 513
         object Label4: TLabel
           AlignWithMargins = True
           Left = 12
@@ -68,7 +68,7 @@ object frmSetup: TfrmSetup
         object lblAccessToken: TLabel
           AlignWithMargins = True
           Left = 5
-          Top = 79
+          Top = 76
           Width = 513
           Height = 13
           Align = alTop
@@ -81,16 +81,17 @@ object frmSetup: TfrmSetup
         object txtAccessToken: TEdit
           AlignWithMargins = True
           Left = 5
-          Top = 98
+          Top = 92
           Width = 513
           Height = 21
+          HelpContext = 1002
           Align = alTop
           TabOrder = 0
-          ExplicitWidth = 503
         end
       end
     end
     object tabRepositories: TTabSheet
+      HelpContext = 1003
       Caption = 'Repositories'
       ImageIndex = 1
       object gbBackupDir: TGroupBox
@@ -98,6 +99,7 @@ object frmSetup: TfrmSetup
         Top = 0
         Width = 523
         Height = 49
+        HelpContext = 1003
         Align = alTop
         Caption = 'Backup Directory'
         TabOrder = 0
@@ -107,6 +109,8 @@ object frmSetup: TfrmSetup
           Top = 18
           Width = 481
           Height = 21
+          Hint = 'Directory where the downloaded ZIP files are to be saved'
+          HelpContext = 1003
           Margins.Bottom = 8
           Align = alClient
           TabOrder = 0
@@ -119,6 +123,8 @@ object frmSetup: TfrmSetup
           Width = 26
           Height = 21
           Cursor = crHandPoint
+          Hint = 'Browse Backup Directory...'
+          HelpContext = 1003
           Margins.Bottom = 8
           Align = alRight
           Caption = '...'
@@ -131,6 +137,7 @@ object frmSetup: TfrmSetup
         Top = 98
         Width = 523
         Height = 48
+        HelpContext = 1003
         Align = alTop
         Caption = 'Pagination'
         TabOrder = 1
@@ -153,6 +160,8 @@ object frmSetup: TfrmSetup
           Top = 18
           Width = 42
           Height = 20
+          Hint = 'Number of pages to fetch at a time when refreshing'
+          HelpContext = 1003
           Margins.Bottom = 8
           Align = alLeft
           Enabled = False
@@ -166,6 +175,7 @@ object frmSetup: TfrmSetup
         Top = 49
         Width = 523
         Height = 49
+        HelpContext = 1003
         Align = alTop
         Caption = 'Account to List'
         TabOrder = 2
@@ -175,9 +185,12 @@ object frmSetup: TfrmSetup
           Top = 18
           Width = 409
           Height = 21
+          Hint = 'Unique account name of user or organization'
+          HelpContext = 1003
           Margins.Bottom = 8
           Align = alClient
           TabOrder = 0
+          ExplicitTop = 20
         end
         object cboUserType: TComboBox
           AlignWithMargins = True
@@ -186,6 +199,8 @@ object frmSetup: TfrmSetup
           Width = 98
           Height = 21
           Cursor = crHandPoint
+          Hint = 'Whether account is a user or organization'
+          HelpContext = 1003
           Align = alRight
           Style = csDropDownList
           ItemIndex = 0
@@ -200,10 +215,6 @@ object frmSetup: TfrmSetup
     object tabView: TTabSheet
       Caption = 'View'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 513
-      ExplicitHeight = 0
     end
   end
   object pBottom: TPanel
@@ -211,6 +222,7 @@ object frmSetup: TfrmSetup
     Top = 322
     Width = 531
     Height = 35
+    HelpContext = 1001
     Align = alBottom
     TabOrder = 1
     object btnSave: TBitBtn
@@ -219,6 +231,8 @@ object frmSetup: TfrmSetup
       Top = 4
       Width = 75
       Height = 27
+      Hint = 'Save Configuration'
+      HelpContext = 1001
       Align = alRight
       Caption = 'Save'
       TabOrder = 0
@@ -230,6 +244,8 @@ object frmSetup: TfrmSetup
       Top = 4
       Width = 75
       Height = 27
+      Hint = 'Cancel Changes'
+      HelpContext = 1001
       Align = alRight
       Caption = 'Cancel'
       ModalResult = 2

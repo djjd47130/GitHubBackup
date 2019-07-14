@@ -175,6 +175,7 @@ type
     procedure LoadConfig;
     procedure SaveConfig;
     procedure CloseHelpWnd;
+    function OpenHelp(const AContextID: Integer): Boolean;
   public
     function DestDir: String;
   end;
@@ -490,18 +491,35 @@ const
   HelpTitle = 'JD GitHub Backup Help';
 begin
   //Fix for Help Window: https://stackoverflow.com/questions/44378837/chm-file-not-displaying-correctly-when-delphi-vcl-style-active?rq=1
-  HlpWind := FindWindow('HH Parent',HelpTitle);
-  if HlpWind <> 0 then PostMessage(HlpWind,WM_Close,0,0);
+  HlpWind := FindWindow('HH Parent', HelpTitle);
+  if HlpWind <> 0 then PostMessage(HlpWind, WM_Close, 0, 0);
+end;
+
+function TfrmMain.OpenHelp(const AContextID: Integer): Boolean;
+var
+  Params: String;
+  R: Integer;
+begin
+  //Fix for Help Window: https://stackoverflow.com/questions/44378837/chm-file-not-displaying-correctly-when-delphi-vcl-style-active?rq=1
+  CloseHelpWnd;
+  //TODO: Figure out why this fails sometimes...
+
+  Params:= '';
+  if AContextID > 0 then
+    Params:= Params + ' -mapid ' + IntToStr(AContextID);
+  Params:= Params + ' ms-its:' + Application.HelpFile;
+
+  R:= ShellExecute(0, 'open', 'hh.exe', PWideChar(Params), nil, SW_SHOW);
+  Result := R = 32;
+
+
 end;
 
 function TfrmMain.AppEventsHelp(Command: Word; Data: NativeInt;
   var CallHelp: Boolean): Boolean;
 begin
-  //Fix for Help Window: https://stackoverflow.com/questions/44378837/chm-file-not-displaying-correctly-when-delphi-vcl-style-active?rq=1
-  CloseHelpWnd;
-  Result := ShellExecute(0,'open','hh.exe', PWideChar('-mapid '+IntToStr(Data) +
-    ' ms-its:'+Application.HelpFile), nil,SW_SHOW) = 32;
-  CallHelp := false;
+  OpenHelp(Data);
+  CallHelp := False;
 end;
 
 function TfrmMain.AppIsConfigured: Boolean;

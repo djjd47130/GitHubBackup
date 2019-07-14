@@ -106,10 +106,16 @@ end;
 
 procedure TfrmSetup.FormShow(Sender: TObject);
 begin
-  //TODO: Default directory if necessary...
   if Self.txtBackupDir.Text = '' then begin
     Self.txtBackupDir.Text:= TPath.Combine(TPath.GetDocumentsPath, 'GitHub Backups');
+  end;
 
+  if Self.txtAccessToken.Text = '' then begin
+    Self.Pages.ActivePageIndex:= 0;
+    Self.txtAccessToken.SetFocus;
+  end else begin
+    Self.Pages.ActivePageIndex:= 1;
+    Self.txtBackupDir.SetFocus;
   end;
 end;
 
