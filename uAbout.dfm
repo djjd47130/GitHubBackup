@@ -2,7 +2,7 @@ object frmAbout: TfrmAbout
   Left = 0
   Top = 0
   BorderStyle = bsDialog
-  Caption = 'About GitHub Backup'
+  Caption = 'About JD GitHub Backup'
   ClientHeight = 261
   ClientWidth = 436
   Color = clBtnFace

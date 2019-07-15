@@ -231,6 +231,7 @@ object frmSetup: TfrmSetup
       Top = 4
       Width = 75
       Height = 27
+      Cursor = crHandPoint
       Hint = 'Save Configuration'
       HelpContext = 1001
       Align = alRight
@@ -244,6 +245,7 @@ object frmSetup: TfrmSetup
       Top = 4
       Width = 75
       Height = 27
+      Cursor = crHandPoint
       Hint = 'Cancel Changes'
       HelpContext = 1001
       Align = alRight

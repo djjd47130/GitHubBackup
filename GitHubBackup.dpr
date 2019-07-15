@@ -12,7 +12,8 @@ uses
   JD.GitHub.Common in 'JD.GitHub.Common.pas',
   uDM in 'uDM.pas' {DM: TDataModule},
   uRepoDetail in 'uRepoDetail.pas' {frmRepoDetail},
-  uAbout in 'uAbout.pas' {frmAbout};
+  uAbout in 'uAbout.pas' {frmAbout},
+  JD.GitHub.Update in 'JD.GitHub.Update.pas';
 
 {$R *.res}
 
