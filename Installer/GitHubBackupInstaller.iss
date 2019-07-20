@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "JD GitHub Backup"
-#define MyAppVersion "0.2.2"
+#define MyAppVersion "0.2.3"
 #define MyAppPublisher "JD Software Inc"
 #define MyAppURL "http://www.jerrydodge.com/GitHubBackup"
 #define MyAppExeName "GitHubBackup.exe"
@@ -14,7 +14,7 @@
 AppId={{C07914D4-3BDD-433C-9CB6-A3F3EB25F99F}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
