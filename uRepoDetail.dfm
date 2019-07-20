@@ -34,7 +34,7 @@ object frmRepoDetail: TfrmRepoDetail
   object lblRepoOwner: TLabel
     AlignWithMargins = True
     Left = 11
-    Top = 37
+    Top = 34
     Width = 566
     Height = 24
     Margins.Left = 11
@@ -47,12 +47,13 @@ object frmRepoDetail: TfrmRepoDetail
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    ExplicitTop = 37
     ExplicitWidth = 743
   end
   object Label2: TLabel
     AlignWithMargins = True
     Left = 50
-    Top = 143
+    Top = 137
     Width = 480
     Height = 105
     Margins.Left = 50
@@ -77,30 +78,27 @@ object frmRepoDetail: TfrmRepoDetail
   end
   object Panel1: TPanel
     Left = 0
-    Top = 64
+    Top = 58
     Width = 580
     Height = 29
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 757
     object Label1: TLabel
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 45
-      Height = 23
+      Width = 37
+      Height = 26
       Align = alLeft
       Alignment = taRightJustify
       Caption = 'Branch:'
       Layout = tlCenter
-      ExplicitLeft = 4
-      ExplicitTop = 4
-      ExplicitHeight = 25
+      ExplicitHeight = 13
     end
     object cboBranch: TComboBox
       AlignWithMargins = True
-      Left = 54
+      Left = 46
       Top = 3
       Width = 145
       Height = 21
@@ -111,8 +109,6 @@ object frmRepoDetail: TfrmRepoDetail
       Text = 'default'
       Items.Strings = (
         'default')
-      ExplicitLeft = 4
-      ExplicitTop = 4
     end
   end
 end

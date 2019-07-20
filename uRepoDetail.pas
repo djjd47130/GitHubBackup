@@ -5,7 +5,10 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  JD.GitHub.Common, Vcl.ExtCtrls;
+  JD.GitHub,
+  JD.GitHub.Common,
+  Vcl.ExtCtrls,
+  uDM;
 
 type
   TfrmRepoDetail = class(TForm)
@@ -17,10 +20,10 @@ type
     Label2: TLabel;
     procedure FormCreate(Sender: TObject);
   private
-    FRepo: TRepo;
+    FRepo: TGitHubRepo;
   public
     procedure Clear;
-    procedure LoadRepo(const ARepo: TRepo);
+    procedure LoadRepo(const ARepo: TGitHubRepo);
     procedure LoadBranches;
   end;
 
@@ -43,7 +46,7 @@ begin
 
 end;
 
-procedure TfrmRepoDetail.LoadRepo(const ARepo: TRepo);
+procedure TfrmRepoDetail.LoadRepo(const ARepo: TGitHubRepo);
 begin
   FRepo:= ARepo;
   lblRepoName.Caption:= FRepo.Name;

@@ -34,203 +34,11 @@ object frmMain: TfrmMain
     ExplicitTop = 317
     ExplicitWidth = 1021
   end
-  object Stat: TStatusBar
-    Left = 0
-    Top = 397
-    Width = 976
-    Height = 19
-    Panels = <
-      item
-        Text = '0 Repositories'
-        Width = 120
-      end
-      item
-        Text = 'Ready'
-        Width = 150
-      end
-      item
-        Width = 50
-      end>
-  end
-  object pRepoTop: TPanel
-    Left = 0
-    Top = 0
-    Width = 976
-    Height = 29
-    Align = alTop
-    BevelOuter = bvNone
-    TabOrder = 1
-    object Label4: TLabel
-      AlignWithMargins = True
-      Left = 780
-      Top = 3
-      Width = 31
-      Height = 26
-      Align = alRight
-      Alignment = taRightJustify
-      AutoSize = False
-      Caption = 'Sort:'
-      Layout = tlCenter
-      ExplicitLeft = 11
-      ExplicitTop = 6
-      ExplicitHeight = 23
-    end
-    object Panel4: TPanel
-      Left = 0
-      Top = 0
-      Width = 209
-      Height = 29
-      Align = alLeft
-      BevelOuter = bvNone
-      TabOrder = 0
-      Visible = False
-      object cboVisibility: TComboBox
-        AlignWithMargins = True
-        Left = 3
-        Top = 3
-        Width = 86
-        Height = 22
-        Cursor = crHandPoint
-        Hint = 'Filter by visibility'
-        HelpContext = 1006
-        Align = alLeft
-        Style = csDropDownList
-        ItemIndex = 0
-        TabOrder = 0
-        Text = 'All Visibility'
-        Visible = False
-        Items.Strings = (
-          'All Visibility'
-          'Public'
-          'Private')
-      end
-      object cboType: TComboBox
-        AlignWithMargins = True
-        Left = 95
-        Top = 3
-        Width = 86
-        Height = 22
-        Cursor = crHandPoint
-        Hint = 'Filter by repository type'
-        HelpContext = 1006
-        Align = alLeft
-        Style = csDropDownList
-        ItemIndex = 0
-        TabOrder = 1
-        Text = 'All Types'
-        Visible = False
-        Items.Strings = (
-          'All Types'
-          'Owner'
-          'Public'
-          'Private'
-          'Member')
-      end
-    end
-    object btnListRepos: TButton
-      AlignWithMargins = True
-      Left = 212
-      Top = 3
-      Width = 76
-      Height = 23
-      Cursor = crHandPoint
-      Hint = 'Fetch list of repositories from GitHub'
-      HelpContext = 1006
-      Action = actRefresh
-      Align = alLeft
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 16762519
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 1
-      StyleElements = [seClient, seBorder]
-    end
-    object btnDownload: TButton
-      AlignWithMargins = True
-      Left = 294
-      Top = 3
-      Width = 159
-      Height = 23
-      Cursor = crHandPoint
-      Hint = 'Initiate bulk download'
-      HelpContext = 1008
-      Action = actDownloadRepos
-      Align = alLeft
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clLime
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 2
-      StyleElements = [seClient, seBorder]
-    end
-    object btnCancel: TButton
-      AlignWithMargins = True
-      Left = 459
-      Top = 3
-      Width = 75
-      Height = 23
-      Cursor = crHandPoint
-      Hint = 'Cancel the download'
-      HelpContext = 1008
-      Action = actCancelDownload
-      Align = alLeft
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 3
-      StyleElements = [seClient, seBorder]
-    end
-    object btnSortDir: TButton
-      AlignWithMargins = True
-      Left = 941
-      Top = 2
-      Width = 32
-      Height = 23
-      Cursor = crHandPoint
-      Hint = 'Toggle sort between ascending / descending'
-      HelpContext = 1006
-      Margins.Left = 0
-      Margins.Top = 2
-      Margins.Bottom = 4
-      Align = alRight
-      Caption = 'A..Z'
-      TabOrder = 5
-      OnClick = btnSortDirClick
-    end
-    object cboSort: TComboBox
-      AlignWithMargins = True
-      Left = 817
-      Top = 3
-      Width = 121
-      Height = 22
-      Cursor = crHandPoint
-      Hint = 'Change which column to sort by'
-      HelpContext = 1006
-      Align = alRight
-      Style = csDropDownList
-      ItemIndex = 0
-      TabOrder = 4
-      Text = 'Sort Name'
-      OnClick = cboSortClick
-      Items.Strings = (
-        'Sort Name'
-        'Sort Created'
-        'Sort Updated'
-        'Sort Pushed')
-    end
-  end
   object lstRepos: TListView
     Left = 0
     Top = 58
     Width = 976
-    Height = 87
+    Height = 55
     HelpContext = 1006
     Align = alTop
     BorderStyle = bsNone
@@ -273,6 +81,149 @@ object frmMain: TfrmMain
     OnClick = lstReposClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
+  end
+  object Stat: TStatusBar
+    Left = 0
+    Top = 397
+    Width = 976
+    Height = 19
+    Panels = <
+      item
+        Text = '0 Repositories'
+        Width = 120
+      end
+      item
+        Text = 'Ready'
+        Width = 150
+      end
+      item
+        Width = 50
+      end>
+  end
+  object pRepoTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 976
+    Height = 29
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 1
+    object Label4: TLabel
+      AlignWithMargins = True
+      Left = 780
+      Top = 3
+      Width = 31
+      Height = 26
+      Align = alRight
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Sort:'
+      Layout = tlCenter
+      ExplicitLeft = 11
+      ExplicitTop = 6
+      ExplicitHeight = 23
+    end
+    object btnListRepos: TButton
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 76
+      Height = 23
+      Cursor = crHandPoint
+      Hint = 'Fetch list of repositories from GitHub'
+      HelpContext = 1006
+      Action = actRefresh
+      Align = alLeft
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 16762519
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 0
+      StyleElements = [seClient, seBorder]
+      ExplicitLeft = 212
+    end
+    object btnDownload: TButton
+      AlignWithMargins = True
+      Left = 85
+      Top = 3
+      Width = 159
+      Height = 23
+      Cursor = crHandPoint
+      Hint = 'Initiate bulk download'
+      HelpContext = 1008
+      Action = actDownloadRepos
+      Align = alLeft
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clLime
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 1
+      StyleElements = [seClient, seBorder]
+      ExplicitLeft = 294
+    end
+    object btnCancel: TButton
+      AlignWithMargins = True
+      Left = 250
+      Top = 3
+      Width = 75
+      Height = 23
+      Cursor = crHandPoint
+      Hint = 'Cancel the download'
+      HelpContext = 1008
+      Action = actCancelDownload
+      Align = alLeft
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 2
+      StyleElements = [seClient, seBorder]
+      ExplicitLeft = 459
+    end
+    object btnSortDir: TButton
+      AlignWithMargins = True
+      Left = 941
+      Top = 2
+      Width = 32
+      Height = 23
+      Cursor = crHandPoint
+      Hint = 'Toggle sort between ascending / descending'
+      HelpContext = 1006
+      Margins.Left = 0
+      Margins.Top = 2
+      Margins.Bottom = 4
+      Align = alRight
+      Caption = 'A..Z'
+      TabOrder = 4
+      OnClick = btnSortDirClick
+    end
+    object cboSort: TComboBox
+      AlignWithMargins = True
+      Left = 817
+      Top = 3
+      Width = 121
+      Height = 22
+      Cursor = crHandPoint
+      Hint = 'Change which column to sort by'
+      HelpContext = 1006
+      Align = alRight
+      Style = csDropDownList
+      ItemIndex = 0
+      TabOrder = 3
+      Text = 'Sort Name'
+      OnClick = cboSortClick
+      Items.Strings = (
+        'Sort Name'
+        'Sort Created'
+        'Sort Updated'
+        'Sort Pushed')
+    end
   end
   object pErrorLog: TPanel
     Left = 0
@@ -559,10 +510,11 @@ object frmMain: TfrmMain
     end
   end
   object Img16: TImageList
+    DrawingStyle = dsTransparent
     Left = 200
     Top = 160
     Bitmap = {
-      494C01015E006000200010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01015E006000240010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000008001000001002000000000000080
       0100000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000000000000000000000C2C2

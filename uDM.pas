@@ -12,7 +12,8 @@ interface
 
 uses
   System.SysUtils, System.Classes,
-  JD.Config;
+  JD.Config,
+  JD.GitHub;
 
 type
   TDM = class(TDataModule)
@@ -20,8 +21,10 @@ type
     procedure DataModuleDestroy(Sender: TObject);
   private
     FConfig: TJDConfig;
+    FGitHub: TGitHub;
   public
     property Config: TJDConfig read FConfig;
+    property GitHub: TGitHub read FGitHub;
   end;
 
 var
@@ -38,10 +41,12 @@ begin
   FConfig:= TJDConfig.Create;
   FConfig.Path:= 'JD Software Inc\GitHub Backup';
   FConfig.Load;
+  FGitHub:= TGitHub.Create(nil);
 end;
 
 procedure TDM.DataModuleDestroy(Sender: TObject);
 begin
+  FreeAndNil(FGitHub);
   FConfig.Save;
   FreeAndNil(FConfig);
 end;

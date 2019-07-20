@@ -7,6 +7,7 @@ unit uMain;
   allow the user to check which ones they wish to back up, and
   download all of them in one go. Additional tools are provided to
   assist user in filtering, sorting, and deciding which ones they want.
+  Then, download all at once and monitor progress.
 *)
 
 interface
@@ -20,11 +21,11 @@ uses
   Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Taskbar, Vcl.CheckLst,
   Vcl.Menus, Vcl.PlatformDefaultStyleActnCtrls,
   Vcl.ActnList, Vcl.ActnMan, System.ImageList, Vcl.ImgList,
-  HtmlHelpViewer,
+  Vcl.AppEvnts, Vcl.ToolWin, Vcl.HtmlHelpViewer,
 {$IFDEF USE_VCL_STYLE_UTILS}
   //Recommended to use vcl-styles-utils to fix issues in Windows dialogs
   //  If you don't have this, remove the conditional from the project's
-  //  main compiler settings.
+  //  main compiler settings. NOTE: USE_VCL_STYLE_UTILS is also used elsewhere
   Vcl.Styles, Vcl.Themes,
   Vcl.Styles.FontAwesome,
   Vcl.Styles.Fixes,
@@ -36,15 +37,14 @@ uses
   Vcl.Styles.Utils.SysControls,
   Vcl.Styles.Utils.SysStyleHook,
 {$ENDIF}
-  //Relies on our own copy of X-SuperObject
-  XSuperObject,
   JD.GitHub,
   JD.IndyUtils,
   JD.GitHub.Common,
+  JD.DownloadThread,
   uSetup,
   uRepoDetail,
   uDM,
-  uAbout, Vcl.AppEvnts;
+  uAbout;
 
 type
   {$WARN SYMBOL_PLATFORM OFF}
@@ -90,9 +90,6 @@ type
     N7: TMenuItem;
     Cancel1: TMenuItem;
     pRepoTop: TPanel;
-    Panel4: TPanel;
-    cboVisibility: TComboBox;
-    cboType: TComboBox;
     btnListRepos: TButton;
     btnDownload: TButton;
     btnCancel: TButton;
@@ -143,16 +140,14 @@ type
     function AppEventsHelp(Command: Word; Data: NativeInt;
       var CallHelp: Boolean): Boolean;
   private                    
-    FEnabled: Boolean;
-    FRepos: TObjectList<TRepo>;
-    FWeb: TIndyHttpTransport;
-    FCurFile: TDownloadFile;
-    FCurPos: Integer;
-    FCurMax: Integer;
-    FThreadCancel: TThreadCancelEvent;
-    function GetJSON(const URL: String): ISuperObject;
-    function GetRepos(const PageNum: Integer): ISuperArray;
-    procedure GetPage(const PageNum: Integer);
+    FEnabled: Boolean; //Whether UI controls should be enabled, used for busy state
+    FRepos: TGitHubRepos; //Master list of repositories
+    FCurFile: TDownloadFile; //Current file being downloaded, nil if none
+    FCurPos: Integer; //Download progress current value
+    FCurMax: Integer; //Download progress max value
+    FThreadCancel: TThreadCancelEvent; //Pointer to thread procedure to cancel
+    function GetRepos(const PageNum: Integer): TGitHubRepos;
+    procedure GetRepoPage(const PageNum: Integer);
     function CheckedCount: Integer;
     procedure UpdateDownloadAction;
     procedure SetEnabledState(const Enabled: Boolean);
@@ -163,8 +158,6 @@ type
       const CurFile: TDownloadFile);
     function CreateDownloadThread: TDownloadThread;
     function RepoSort: Integer;
-    function RepoType: String;
-    function RepoVisibility: String;
     procedure UpdateCheckAll;
     procedure SortRepos;
     procedure DisplayRepos;
@@ -191,44 +184,24 @@ implementation
 uses
   System.IOUtils, System.DateUtils, Soap.XSBuiltIns, System.Math;
 
-const
-  REPO_FLD_NAME = 0;
-  REPO_FLD_FULLNAME = 1;
-  REPO_FLD_CREATED = 2;
-  REPO_FLD_UPDATED = 3;
-  REPO_FLD_PUSHED = 4;
-  REPO_FLD_LANGUAGE = 5;
-  REPO_FLD_DEFAULT_BRANCH = 6;
-  REPO_FLD_SIZE = 7;
-  REPO_FLD_DESCRIPTION = 8;
-
-procedure ListRepoFields(AStrings: TStrings);
-begin
-  AStrings.Add('Name');
-  AStrings.Add('Full Name');
-  AStrings.Add('Created');
-  AStrings.Add('Updated');
-  AStrings.Add('Pushed');
-  AStrings.Add('Language');
-  AStrings.Add('Default Branch');
-  AStrings.Add('Size');
-  AStrings.Add('Description');
-end;
-
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+var
+  T: String;
 begin
   {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown:= True;
   {$ENDIF}
 
-  FRepos:= TObjectList<TRepo>.Create(True);
-  FWeb:= TIndyHttpTransport.Create;
+  FRepos:= TGitHubRepos.Create(True);
 
   {$IFDEF DEBUG}
-  //TODO: If debug build, use CHM from release folder
-  Application.HelpFile:= TPath.Combine(ExtractFilePath(Application.ExeName), 'JDGitHubBackupHelp.chm');
+  //If debug build, use CHM from release folder
+  T:= IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
+  T:= T + '..\Release\';
+  T:= TPath.Combine(T, 'JDGitHubBackupHelp.chm');
+  Application.HelpFile:= T;
   {$ELSE}
   Application.HelpFile:= TPath.Combine(ExtractFilePath(Application.ExeName), 'JDGitHubBackupHelp.chm');
   {$ENDIF}
@@ -249,7 +222,6 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(FWeb);
   FreeAndNil(FRepos);
   CloseHelpWnd;
 end;
@@ -276,10 +248,8 @@ end;
 
 procedure TfrmMain.LoadConfig;
 begin
-
   frmSetup.LoadFromConfig;
   //TODO: If app is not yet configured, clearly notify user, and enter setup
-
 
   cboSort.ItemIndex:= DM.Config.I['sortCol'];
   btnSortDir.Tag:= DM.Config.I['sortDir'];
@@ -297,100 +267,49 @@ begin
   frmSetup.SaveToConfig; //TODO: Is this the best place for this?
 end;
 
-function TfrmMain.GetJSON(const URL: String): ISuperObject;
-var
-  R: String;
-begin
-  //Root function for all interaction with GitHub API
-  //Returns JSON objects via Super Object
-  Result:= nil;
-
-  //Clear authentication and provide new credentials
-  if Assigned(FWeb.Request.Authentication) then begin
-    FWeb.Request.Authentication.Free;
-    FWeb.Request.Authentication:=nil;
-  end;
-  FWeb.Request.Username:= frmSetup.Token;
-
-  R:= FWeb.Get('https://api.github.com'+URL); //ACTUAL HTTP GET
-
-  Result:= SO(R);
-end;
-
-function TfrmMain.RepoVisibility: String;
-begin
-  //Filter by Visibility
-  case cboVisibility.ItemIndex of
-    0: Result:= 'all';
-    1: Result:= 'public';
-    2: Result:= 'private';
-  end;
-end;
-
-function TfrmMain.RepoType: String;
-begin
-  //Filter by Repository Type
-  case cboType.ItemIndex of
-    0: Result:= 'all';
-    1: Result:= 'owner';
-    2: Result:= 'public';
-    3: Result:= 'private';
-    4: Result:= 'member';
-  end;
-end;
-
 function TfrmMain.RepoSort: Integer;
 begin
   //Which column index to sort by
   Result:= cboSort.ItemIndex;
 end;
 
-function TfrmMain.GetRepos(const PageNum: Integer): ISuperArray;
-var
-  Q: String;
+function TfrmMain.GetRepos(const PageNum: Integer): TGitHubRepos;
 begin
-  //Core function to build request URL and fetch repositories
-  Q:= '&visibility='+RepoVisibility+'&type='+RepoType;
+  //Fetch repository list from API for a given page number...
+  Result:= nil;
+  DM.GitHub.Token:= frmSetup.Token; //TODO: Find a better place for this
   case frmSetup.UserType of
-    0: Result:= GetJSON('/users/'+frmSetup.User+'/repos?page='+IntToStr(PageNum)+Q).AsArray;
-    1: Result:= GetJSON('/orgs/'+frmSetup.User+'/repos?page='+IntToStr(PageNum)+Q).AsArray;
+    0: Result:= DM.GitHub.GetUserRepos(frmSetup.User, PageNum);
+    1: Result:= DM.GitHub.GetOrgRepos(frmSetup.User, PageNum);
   end;
 end;
 
-procedure TfrmMain.GetPage(const PageNum: Integer);
+procedure TfrmMain.GetRepoPage(const PageNum: Integer);
 var
-  A: ISuperArray;
-  O: ISuperObject;
+  Lst: TGitHubRepos;
   X: Integer;
-  C: Boolean;
-  R: TRepo;
+  Cont: Boolean;
 begin
   //Fetches a single page of repositories
-  Application.ProcessMessages;
+  Application.ProcessMessages; //TODO: Eliminate the need for this garbage
 
   try
-    A:= GetRepos(PageNum);
-    for X := 0 to A.Length-1 do begin
-      O:= A.O[X];
-      R:= TRepo.Create(O);
-      FRepos.Add(R); //O);
+    //Fetch actual page of repositories
+    Lst:= GetRepos(PageNum);
+    try
+      for X := 0 to Lst.Count-1 do begin
+        FRepos.Add(Lst[X]);
+      end;
+      Cont:= Lst.Count > 0;
+    finally
+      Lst.Free;
     end;
-    C:= True;
+    if Cont then
+      GetRepoPage(PageNum+1); //RECURSIVE - Get next page
   except
     on E: Exception do begin
-      case MessageDlg('Failed to get page '+IntToStr(PageNum)+': '+E.Message+sLineBreak+
-        'Would you like to continue anyway?', mtError, [mbYes,mbNo], 0)
-      of
-        mrYes: C:= True;
-        else   C:= False;
-      end;
+      MessageDlg('Error getting repositories: '+E.Message, mtError, [mbOK], 0);
     end;
-  end;
-
-  //If we got any results this time, then try to get next page...
-  if C then begin
-    if A.Length > 0 then
-      GetPage(PageNum+1);
   end;
 end;
 
@@ -411,8 +330,8 @@ begin
     end;
   end;
 
-  FRepos.Sort(TComparer<TRepo>.Construct(
-    function (const L, R: TRepo): Integer
+  FRepos.Sort(TComparer<TGitHubRepo>.Construct(
+    function (const L, R: TGitHubRepo): Integer
     var
       Dir: Integer;
     begin
@@ -462,10 +381,11 @@ end;
 procedure TfrmMain.DisplayRepos;
 var
   X: Integer;
-  O: TRepo;
+  O: TGitHubRepo;
   I: TListItem;
 begin
   //Populates list view with repository items
+  //TODO: Change entire mechanism to use Add/Edit/Delete events
   lstRepos.Items.BeginUpdate;
   try
     lstRepos.Items.Clear;
@@ -480,7 +400,7 @@ begin
       else
         I.SubItems.Add('Public');
       I.SubItems.Add(O.Language);
-      I.SubItems.Add(ConvertBytes(O.Size * 1024)); //TODO: NOT RELIABLE!!!
+      I.SubItems.Add(DataSizeStr(O.Size * 1024)); //TODO: NOT RELIABLE!!!
       I.SubItems.Add(FormatDateTime('yyyy-mm-dd h:nn ampm', O.Pushed));
       I.SubItems.Add(O.Description);
     end;
@@ -519,8 +439,6 @@ begin
 
   R:= ShellExecuteW(0, 'open', 'hh.exe', PWideChar(Params), nil, SW_SHOW);
   Result := R = 32;
-
-
 end;
 
 function TfrmMain.AppEventsHelp(Command: Word; Data: NativeInt;
@@ -555,7 +473,7 @@ begin
           FRepos.Clear;
 
           //Start with page 1, will automatically traverse to all pages...
-          GetPage(1);
+          GetRepoPage(1);
 
           Stat.Panels[0].Text:= IntToStr(FRepos.Count)+' Repositories';
           Application.ProcessMessages;
@@ -646,13 +564,13 @@ end;
 procedure TfrmMain.lstReposDblClick(Sender: TObject);
 var
   I: TListItem;
-  R: TRepo;
+  R: TGitHubRepo;
   F: TfrmRepoDetail;
 begin
   //Open details of repository
   I:= lstRepos.Selected;
   if Assigned(I) then begin
-    R:= TRepo(I.Data);
+    R:= TGitHubRepo(I.Data);
     F:= TfrmRepoDetail.Create(nil);
     try
       F.LoadRepo(R);
@@ -832,8 +750,6 @@ begin
   actCheckNone.Enabled:= Enabled;
   actCheckSelected.Enabled:= Enabled;
   actSetup.Enabled:= Enabled;
-  cboVisibility.Enabled:= Enabled;
-  cboType.Enabled:= Enabled;
   cboSort.Enabled:= Enabled;
   mSort.Enabled:= Enabled;
   btnSortDir.Enabled:= Enabled;
@@ -911,7 +827,7 @@ function TfrmMain.CreateDownloadThread: TDownloadThread;
 begin
   //Create a new instance of download thread
   Result:= TDownloadThread.Create;
-  Result.Token:= frmSetup.Token;
+  Result.Username:= frmSetup.Token;
   Result.OnDownloadBegin:= ThreadBegin;
   Result.OnDownloadDone:= ThreadDone;
   Result.OnProgress:= ThreadProgress;
@@ -954,7 +870,7 @@ end;
 procedure TfrmMain.actDownloadReposExecute(Sender: TObject);
 var
   C: Integer;
-  O: TRepo;
+  O: TGitHubRepo;
   X: Integer;
   T: TDownloadThread;
 begin

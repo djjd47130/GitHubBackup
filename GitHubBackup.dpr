@@ -13,7 +13,8 @@ uses
   uDM in 'uDM.pas' {DM: TDataModule},
   uRepoDetail in 'uRepoDetail.pas' {frmRepoDetail},
   uAbout in 'uAbout.pas' {frmAbout},
-  JD.GitHub.Update in 'JD.GitHub.Update.pas';
+  JD.GitHub.Update in 'JD.GitHub.Update.pas',
+  JD.DownloadThread in 'JD.DownloadThread.pas';
 
 {$R *.res}
 

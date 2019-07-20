@@ -4,20 +4,16 @@ unit JD.GitHub;
   JD.GitHub.pas
   Core unit to implement all GitHub related integration
 
-  IMPORTANT NOTE
+  NOTE: This unit is temporary, and will be re-written as a part of
+  a much larger GitHub API wrapper library.
 
-  This project is in active development, and is in a re-write phsae.
-  A new set of units is being written, mainly JD.GitHub.Intf.pas and
-  JD.GitHub.Impl.pas. These will become the new replacement units.
-  Currently, this unit retains code necessary for current working version,
-  as well as new code which is not yet implemented. This new code will
-  eventually replace the current working code.
+  Main Object: TGitHubAPI
 
-  Main Component: TGitHubAPI
-
-  This component encapsulates all integration with the GitHub API.
-  It is a component which you can drop into your project in design-time
-  and use its properties to set it up the way you need it to work.
+  Usage:
+  - Create an instance of TGitHubAPI
+  - Assign value to Token (GitHub Personal Access Token - Optional)
+    - Ommitting a token will provide public visibility
+  - Use "Get" functions to fetch various information from API
 
 
 
@@ -28,281 +24,378 @@ interface
 uses
   System.Classes, System.SysUtils, System.Generics.Collections,
   XSuperObject,
-  JD.IndyUtils
-  ;
+  JD.IndyUtils;
 
+const
+  REPO_FLD_NAME = 0;
+  REPO_FLD_FULLNAME = 1;
+  REPO_FLD_CREATED = 2;
+  REPO_FLD_UPDATED = 3;
+  REPO_FLD_PUSHED = 4;
+  REPO_FLD_LANGUAGE = 5;
+  REPO_FLD_DEFAULT_BRANCH = 6;
+  REPO_FLD_SIZE = 7;
+  REPO_FLD_DESCRIPTION = 8;
 
 type
-  TDownloadStatus = (dsPending, dsProgress, dsComplete, dsException);
+  TGitHubAPI = class;
+  TGitHub = class;
+  TGitHubRepo = class;
+  TGitHubRepos = class;
 
-  TDownloadFile = class(TObject)
+  TGitHubAccountType = (gaUser, gaOrganization);
+
+  TGitHubAPI = class(TObject)
   private
-    FURL: String;
-    FFilename: String;
-    FStatus: TDownloadStatus;
-    FError: String;
+    FWeb: TIndyHttpTransport;
+    FToken: String;
+    procedure SetToken(const Value: String);
   public
     constructor Create;
     destructor Destroy; override;
-    function Name: String;
-    property URL: String read FURL write FURL;
-    property Filename: String read FFilename write FFilename;
-    property Status: TDownloadStatus read FStatus write FStatus;
-    property Error: String read FError write FError;
-  end;
-
-  TDownloadThreadProgressEvent = procedure(Sender: TObject; const Cur: Integer;
-    const Max: Integer; const CurFile: TDownloadFile) of object;
-
-  TDownloadExceptionEvent = procedure(Sender: TObject;
-    const CurFile: TDownloadFile) of object;
-
-  TThreadCancelEvent = procedure of object;
-
-  TDownloadThread = class(TThread)
-  private
-    FFiles: TObjectList<TDownloadFile>;
-    FWeb: TIndyHttpTransport;
-    FWorking: Boolean;
-    FCancel: Boolean;
-    FOnDownloadBegin: TNotifyEvent;
-    FOnDownloadDone: TNotifyEvent;
-    FOnProgress: TDownloadThreadProgressEvent;
-    FOnException: TDownloadExceptionEvent;
-    FSYNC_Cur: Integer;
-    FSYNC_Max: Integer;
-    FSYNC_CurFile: TDownloadFile;
-    FToken: String;
-    procedure SetToken(const Value: String);
-    procedure DoDownload(AFile: TDownloadFile);
-    procedure WebWork(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCount: Int64);
-  protected
-    procedure Execute; override;
-    procedure SYNC_OnDownloadBegin;
-    procedure SYNC_OnDownloadDone;
-    procedure SYNC_OnProgress;
-    procedure SYNC_OnException;
-  public
-    constructor Create; reintroduce;
-    destructor Destroy; override;
-
-    function AddFile(const URL: String; const Filename: String): TDownloadFile;
-
-    procedure Cancel;
-
     property Token: String read FToken write SetToken;
-
-    property OnDownloadBegin: TNotifyEvent read FOnDownloadBegin write FOnDownloadBegin;
-    property OnDownloadDone: TNotifyEvent read FOnDownloadDone write FOnDownloadDone;
-    property OnProgress: TDownloadThreadProgressEvent read FOnProgress write FOnProgress;
-    property OnException: TDownloadExceptionEvent read FOnException write FOnException;
+    function GetJSON(const URL: String): ISuperObject;
+    function GetMyRepos(const PageNum: Integer): ISuperArray;
+    function GetUserRepos(const User: String; const PageNum: Integer): ISuperArray;
+    function GetOrgRepos(const Org: String; const PageNum: Integer): ISuperArray;
+    function GetBranches(const Owner, Repo: String; const PageNum: Integer = 1): ISuperArray;
+    function GetCommits(const Owner, Repo, Branch: String; const PageNum: Integer = 1): ISuperArray;
+    function GetTree(const Owner, Repo, Sha: String; const PageNum: Integer = 1;
+      const Recursive: Boolean = False): ISuperArray;
   end;
 
+  TGitHub = class(TComponent)
+  private
+    FApi: TGitHubAPI;
+    function GetToken: String;
+    procedure SetToken(const Value: String);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    property Token: String read GetToken write SetToken;
+    function GetUserRepos(const User: String; const PageNum: Integer = 0): TGitHubRepos;
+    function GetOrgRepos(const Org: String; const PageNum: Integer = 0): TGitHubRepos;
+  end;
 
+  TGitHubRepo = class(TObject)
+  private
+    FObj: ISuperObject;
+    function GetB(const N: String): Boolean;
+    function GetF(const N: String): Double;
+    function GetI(const N: String): Int64;
+    function GetS(const N: String): String;
+    function GetO(const N: String): ISuperObject;
+    function GetCreated: TDateTime;
+    function GetDefaultBranch: String;
+    function GetDescription: String;
+    function GetFullName: String;
+    function GetIsPrivate: Boolean;
+    function GetLanguage: String;
+    function GetName: String;
+    function GetPushed: TDateTime;
+    function GetSize: Int64;
+    function GetUpdated: TDateTime;
+  public
+    constructor Create(AObj: ISuperObject);
+    destructor Destroy; override;
+  public
+    property S[const N: String]: String read GetS;
+    property I[const N: String]: Int64 read GetI;
+    property B[const N: String]: Boolean read GetB;
+    property F[const N: String]: Double read GetF;
+    property O[const N: String]: ISuperObject read GetO;
+  public
+    property Name: String read GetName;
+    property FullName: String read GetFullName;
+    property Created: TDateTime read GetCreated;
+    property Updated: TDateTime read GetUpdated;
+    property Pushed: TDateTime read GetPushed;
+    property Language: String read GetLanguage;
+    property DefaultBranch: String read GetDefaultBranch;
+    property IsPrivate: Boolean read GetIsPrivate;
+    property Size: Int64 read GetSize;
+    property Description: String read GetDescription;
+  end;
 
-function MakeFilenameValid(const Path: String): String;
-function ConvertBytes(Bytes: Int64): string;
+  TGitHubRepos = class(TObjectList<TGitHubRepo>)
+  private
+
+  public
+
+  end;
+
+procedure ListRepoFields(AStrings: TStrings);
 
 implementation
 
 uses
-  System.IOUtils, System.Math;
+  System.IOUtils, System.Math, System.StrUtils, Soap.XSBuiltIns;
 
-function MakeFilenameValid(const Path: String): String;
+procedure ListRepoFields(AStrings: TStrings);
 begin
-  Result:= Path;
-  Result:= StringReplace(Result, '\', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '/', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '?', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '%', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '*', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, ':', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '|', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '"', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '<', '_', [rfReplaceAll]);
-  Result:= StringReplace(Result, '>', '_', [rfReplaceAll]);
+  AStrings.Add('Name');
+  AStrings.Add('Full Name');
+  AStrings.Add('Created');
+  AStrings.Add('Updated');
+  AStrings.Add('Pushed');
+  AStrings.Add('Language');
+  AStrings.Add('Default Branch');
+  AStrings.Add('Size');
+  AStrings.Add('Description');
 end;
 
-function ConvertBytes(Bytes: Int64): string;
-const
-  Description: Array [0 .. 8] of string = ('Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-var
-  i: Integer;
+{ TGitHubAPI }
+
+constructor TGitHubAPI.Create;
 begin
-  i := 0;
-  while Bytes > Power(1024, i + 1) do
-    Inc(i);
-  Result := FormatFloat('###0.##', Bytes / IntPower(1024, i)) + ' ' + Description[i];
+  FWeb:= TIndyHttpTransport.Create;
 end;
 
-{ TDownloadFile }
-
-constructor TDownloadFile.Create;
+destructor TGitHubAPI.Destroy;
 begin
-
-end;
-
-destructor TDownloadFile.Destroy;
-begin
-
+  FreeAndNil(FWeb);
   inherited;
 end;
 
-function TDownloadFile.Name: String;
-begin
-  Result:= ExtractFileName(FFilename);
-end;
-
-{ TDownloadThread }
-
-procedure TDownloadThread.Cancel;
-begin
-  FCancel:= True;
-
-end;
-
-constructor TDownloadThread.Create;
-begin
-  inherited Create(True);
-  FWorking:= False;
-  FCancel:= False;
-  FFiles:= TObjectList<TDownloadFile>.Create(True);
-end;
-
-destructor TDownloadThread.Destroy;
-begin
-  FreeAndNil(FFiles);
-  inherited;
-end;
-
-function TDownloadThread.AddFile(const URL, Filename: String): TDownloadFile;
-begin
-  if FWorking then
-    raise Exception.Create('Cannot add file - thread is already working!');
-  Result:= TDownloadFile.Create;
-  Result.FURL:= URL;
-  Result.FFilename:= Filename;
-  Result.FStatus:= dsPending;
-  Result.FError:= '';
-  FFiles.Add(Result);
-end;
-
-procedure TDownloadThread.WebWork(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Int64);
-begin
-  if FCancel or Terminated then
-    FWeb.Disconnect;
-end;
-
-procedure TDownloadThread.Execute;
-var
-  X: Integer;
-begin
-  FWorking:= True;
-  Synchronize(SYNC_OnDownloadBegin);
-  try
-    FSYNC_Max:= FFiles.Count;
-    FWeb:= TIndyHttpTransport.Create;
-    try
-      FWeb.OnWork:= WebWork;
-      FWeb.Request.Username:= FToken;
-
-      for X := 0 to FFiles.Count-1 do begin
-        if FCancel or Terminated then
-          Break;
-
-        FSYNC_Cur:= X+1;
-        FSYNC_CurFile:= FFiles[X];
-        try
-          Synchronize(SYNC_OnProgress);
-
-          DoDownload(FSYNC_CurFile);
-
-        except
-          on E: Exception do begin
-            //FSYNC_CurFile.FException:= E;
-            //Synchronize(SYNC_OnException);
-          end;
-        end;
-      end;
-
-    finally
-      FWeb.Free;
-    end;
-  finally
-    Synchronize(SYNC_OnDownloadDone);
-  end;
-  Terminate;
-end;
-
-procedure TDownloadThread.DoDownload(AFile: TDownloadFile);
-var
-  //Exists: Boolean;
-  S: TFileStream;
-  EM: String;
-begin
-  AFile.FStatus:= dsProgress;
-  EM:= '';
-  //Exists:= FileExists(AFile.Filename);
-  S:= TFileStream.Create(AFile.Filename, fmCreate);
-  try
-    try
-
-      // -------- ACTUAL DOWNLOAD --------
-      FWeb.Get(AFile.URL, S);
-
-      AFile.FStatus:= dsComplete;
-    except
-      on E: Exception do begin
-        EM:= E.Message;
-      end;
-    end;
-    if FCancel or Terminated then begin
-      EM:= 'Download was cancelled by user!';
-    end;
-  finally
-    S.Free;
-  end;
-  if (EM <> '') then begin
-    AFile.FError:= EM;
-    AFile.FStatus:= dsException;
-    //Only delete the created file if it didn't already exist...
-    //  TODO: Actually, if it already existed, then by this point
-    //  it's already been overwritten...
-    //if not Exists then
-      DeleteFile(AFile.Filename);
-    Synchronize(SYNC_OnException);
-  end;
-end;
-
-procedure TDownloadThread.SetToken(const Value: String);
+procedure TGitHubAPI.SetToken(const Value: String);
 begin
   FToken := Value;
 end;
 
-procedure TDownloadThread.SYNC_OnDownloadBegin;
+function TGitHubAPI.GetJSON(const URL: String): ISuperObject;
+var
+  R: String;
 begin
-  if Assigned(FOnDownloadBegin) then
-    FOnDownloadBegin(Self);
+  //Root function for all interaction with GitHub API
+  //Returns JSON objects via Super Object
+  Result:= nil;
+
+  //Clear authentication and provide new credentials
+  if Assigned(FWeb.Request.Authentication) then begin
+    FWeb.Request.Authentication.Free;
+    FWeb.Request.Authentication:=nil;
+  end;
+  FWeb.Request.Username:= FToken;
+
+  R:= FWeb.Get('https://api.github.com'+URL); //ACTUAL HTTP GET
+
+  Result:= SO(R);
 end;
 
-procedure TDownloadThread.SYNC_OnDownloadDone;
+function TGitHubAPI.GetMyRepos(const PageNum: Integer): ISuperArray;
 begin
-  if Assigned(FOnDownloadDone) then
-    FOnDownloadDone(Self);
+  Result:= GetJSON('/user/repos?page='+IntToStr(PageNum)).AsArray;
 end;
 
-procedure TDownloadThread.SYNC_OnProgress;
+function TGitHubAPI.GetOrgRepos(const Org: String; const PageNum: Integer): ISuperArray;
 begin
-  if Assigned(FOnProgress) then
-    FOnProgress(Self, FSYNC_Cur, FSYNC_Max, FSYNC_CurFile);
+  Result:= GetJSON('/orgs/'+Org+'/repos?page='+IntToStr(PageNum)).AsArray;
 end;
 
-procedure TDownloadThread.SYNC_OnException;
+function TGitHubAPI.GetUserRepos(const User: String; const PageNum: Integer): ISuperArray;
 begin
-  if Assigned(FOnException) then
-    FOnException(Self, FSYNC_CurFile);
+  Result:= GetJSON('/users/'+User+'/repos?page='+IntToStr(PageNum)).AsArray;
+end;
+
+function TGitHubAPI.GetBranches(const Owner, Repo: String; const PageNum: Integer = 1): ISuperArray;
+begin
+  Result:= GetJSON('/repos/'+Owner+'/'+Repo+'/branches?page='+IntToStr(PageNum)).AsArray;
+end;
+
+function TGitHubAPI.GetCommits(const Owner, Repo, Branch: String; const PageNum: Integer = 1): ISuperArray;
+begin
+  Result:= GetJSON('/repos/'+Owner+'/'+Repo+'/commits?sha='+Branch+'&page='+IntToStr(PageNum)).AsArray;
+end;
+
+function TGitHubAPI.GetTree(const Owner, Repo, Sha: String;
+  const PageNum: Integer; const Recursive: Boolean): ISuperArray;
+begin
+  Result:= GetJSON('/repos/'+Owner+'/'+Repo+'/git/trees/'+Sha+
+    '?page='+IntToStr(PageNum)+'&recursive='+IfThen(Recursive, 'true', 'false')).AsArray;
+end;
+
+{ TGitHub }
+
+constructor TGitHub.Create(AOwner: TComponent);
+begin
+  inherited;
+  FApi:= TGitHubAPI.Create;
+end;
+
+destructor TGitHub.Destroy;
+begin
+  FreeAndNil(FApi);
+  inherited;
+end;
+
+function TGitHub.GetToken: String;
+begin
+  Result:= FApi.Token;
+end;
+
+function TGitHub.GetUserRepos(const User: String;
+  const PageNum: Integer): TGitHubRepos;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  R: TGitHubRepo;
+begin
+  Result:= TGitHubRepos.Create(False);
+  try
+    Res:= FApi.GetUserRepos(User, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        R:= TGitHubRepo.Create(O);
+        Result.Add(R);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      Result.Free;
+      raise E;
+    end;
+  end;
+end;
+
+function TGitHub.GetOrgRepos(const Org: String;
+  const PageNum: Integer): TGitHubRepos;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  R: TGitHubRepo;
+begin
+  Result:= TGitHubRepos.Create(False);
+  try
+    Res:= FApi.GetOrgRepos(Org, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        R:= TGitHubRepo.Create(O);
+        Result.Add(R);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      Result.Free;
+      raise E;
+    end;
+  end;
+end;
+
+procedure TGitHub.SetToken(const Value: String);
+begin
+  FApi.Token:= Value;
+end;
+
+{ TGitHubRepo }
+
+constructor TGitHubRepo.Create(AObj: ISuperObject);
+begin
+  FObj:= AObj;
+  FObj._AddRef;
+end;
+
+destructor TGitHubRepo.Destroy;
+begin
+  FObj._Release;
+  FObj:= nil;
+  inherited;
+end;
+
+function TGitHubRepo.GetO(const N: String): ISuperObject;
+begin
+  Result:= FObj.O[N];
+end;
+
+function TGitHubRepo.GetS(const N: String): String;
+begin
+  Result:= FObj.S[N];
+end;
+
+function TGitHubRepo.GetB(const N: String): Boolean;
+begin
+  Result:= FObj.B[N];
+end;
+
+function TGitHubRepo.GetF(const N: String): Double;
+begin
+  Result:= FObj.F[N];
+end;
+
+function TGitHubRepo.GetI(const N: String): Int64;
+begin
+  Result:= FObj.I[N];
+end;
+
+function TGitHubRepo.GetCreated: TDateTime;
+begin
+  with TXSDateTime.Create do
+    try
+      XSToNative(S['created_at']);
+      Result:= AsDateTime;
+    finally
+      Free;
+    end;
+end;
+
+function TGitHubRepo.GetDefaultBranch: String;
+begin
+  Result:= S['default_branch'];
+end;
+
+function TGitHubRepo.GetDescription: String;
+begin
+  Result:= S['description'];
+end;
+
+function TGitHubRepo.GetFullName: String;
+begin
+  Result:= S['full_name'];
+end;
+
+function TGitHubRepo.GetIsPrivate: Boolean;
+begin
+  Result:= B['private'];
+end;
+
+function TGitHubRepo.GetLanguage: String;
+begin
+  Result:= S['language'];
+end;
+
+function TGitHubRepo.GetName: String;
+begin
+  Result:= S['name'];
+end;
+
+function TGitHubRepo.GetPushed: TDateTime;
+begin
+  with TXSDateTime.Create do
+    try
+      XSToNative(S['pushed_at']);
+      Result:= AsDateTime;
+    finally
+      Free;
+    end;
+end;
+
+function TGitHubRepo.GetSize: Int64;
+begin
+  Result:= I['size'];
+end;
+
+function TGitHubRepo.GetUpdated: TDateTime;
+begin
+  with TXSDateTime.Create do
+    try
+      XSToNative(S['updated_at']);
+      Result:= AsDateTime;
+    finally
+      Free;
+    end;
 end;
 
 end.
