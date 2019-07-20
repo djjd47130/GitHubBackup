@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>GitHubBackup.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -61,7 +61,7 @@
         <DCC_Define>USE_VCL_STYLE_UTILS;$(DCC_Define)</DCC_Define>
         <VerInfo_Keys>CompanyName=RM Innovation;FileVersion=1.0.0.0;InternalName=GitHub Backup;LegalCopyright=;LegalTrademarks=;OriginalFilename=GitHubBackup.exe;ProductVersion=1.0.0.0;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Custom_Styles>Glossy|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Glossy.vsf</Custom_Styles>
+        <Custom_Styles>&quot;Windows10 Dark|VCLSTYLE|$(BDSCOMMONDIR)\Styles\Windows10Dark.vsf&quot;</Custom_Styles>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>GitHubBackup</SanitizedProjectName>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
@@ -75,7 +75,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <VerInfo_Build>4</VerInfo_Build>
-        <VerInfo_Release>2</VerInfo_Release>
+        <VerInfo_Release>4</VerInfo_Release>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
@@ -87,7 +87,7 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DataSnapServerMidas;DBXDb2Driver;DBXInterBaseDriver;vclactnband;frxe23;vclFireDAC;emsclientfiredac;DataSnapFireDAC;svnui;tethering;FireDACADSDriver;DBXMSSQLDriver;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;vcltouch;vcldb;bindcompfmx;svn;Intraweb;DBXOracleDriver;inetdb;RaizeComponentsVcl;FmxTeeUI;RaizeComponentsVclDb;EdoniaCompPackage;FireDACIBDriver;fmx;fmxdae;vclib;FireDACDBXDriver;dbexpress;IndyCore;vclx;dsnap;DataSnapCommon;emsclient;FireDACCommon;RMProDemoComps;RESTBackendComponents;DataSnapConnectors;QR506RunDXE10;VCLRESTComponents;soapserver;frxTee23;RDBComp_DXE8;vclie;bindengine;DBXMySQLDriver;FireDACOracleDriver;CloudService;FireDACMySQLDriver;DBXFirebirdDriver;FireDACCommonDriver;hclcore_xe10;DataSnapClient;FloatBarComponents;LockBoxDR;inet;bindcompdbx;IndyIPCommon;vcl;DBXSybaseASEDriver;IndyIPServer;IndySystem;htmleditfm_xe10;FireDACDb2Driver;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;TeeDB;FireDAC;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FireDACASADriver;htmlcompfm_xe10;DBXOdbcDriver;FireDACTDataDriver;FMXTee;soaprtl;DbxCommonDriver;ibxpress;Tee;htmlcomp_xe10;DataSnapServer;xmlrtl;soapmidas;DataSnapNativeClient;fmxobj;vclwinx;ibxbindings;rtl;FireDACDSDriver;DbxClientDriver;DBXSybaseASADriver;CustomIPTransport;vcldsnap;bindcomp;appanalytics;DBXInformixDriver;IndyIPClient;bindcompvcl;frxDB23;TeeUI;vclribbon;dbxcds;VclSmp;adortl;FireDACODBCDriver;htmledit_xe10;DataSnapIndy10ServerTransport;htmleditcore_xe10;RDBSorters_DXE8;dsnapxml;DataSnapProviderClient;dbrtl;inetdbxpress;FireDACMongoDBDriver;IndyProtocols;frx23;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.2.2.4;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.2.2;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.2.4.4;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.2.4;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
@@ -115,10 +115,10 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_Release>2</VerInfo_Release>
+        <VerInfo_Release>4</VerInfo_Release>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.2.2.17;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.2.2;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
-        <VerInfo_Build>17</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.2.4.19;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.2.4;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Build>19</VerInfo_Build>
         <Icon_MainIcon>Icons\media (1).ico</Icon_MainIcon>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -142,13 +142,13 @@
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_Release>2</VerInfo_Release>
-        <VerInfo_Build>6</VerInfo_Build>
+        <VerInfo_Release>4</VerInfo_Release>
+        <VerInfo_Build>11</VerInfo_Build>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>2</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.2.2.6;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.2.2;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.2.4.11;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.2.4;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
         <BT_BuildType>Debug</BT_BuildType>
         <Icon_MainIcon>Icons\media (1).ico</Icon_MainIcon>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>

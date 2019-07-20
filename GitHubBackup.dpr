@@ -22,7 +22,7 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'JD GitHub Backup';
-  TStyleManager.TrySetStyle('Glossy');
+  TStyleManager.TrySetStyle('Windows10 Dark');
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmSetup, frmSetup);

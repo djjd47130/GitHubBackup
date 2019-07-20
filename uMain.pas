@@ -111,6 +111,9 @@ type
     About1: TMenuItem;
     actHelpContents: TAction;
     AppEvents: TApplicationEvents;
+    Img16New: TImageList;
+    Img32New: TImageList;
+    Img24New: TImageList;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -187,8 +190,10 @@ uses
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+{$IFDEF DEBUG}
 var
   T: String;
+{$ENDIF}
 begin
   {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown:= True;
@@ -349,13 +354,13 @@ begin
           Result:= CompareText(L.FullName, R.FullName) * Dir;
         end;
         REPO_FLD_CREATED: begin
-          Result:= CompareDate(L.Created, R.Created) * Dir;
+          Result:= CompareDateTime(L.Created, R.Created) * Dir;
         end;
         REPO_FLD_UPDATED: begin
-          Result:= CompareDate(L.Updated, R.Updated) * Dir;
+          Result:= CompareDateTime(L.Updated, R.Updated) * Dir;
         end;
         REPO_FLD_PUSHED: begin
-          Result:= CompareDate(L.Pushed, R.Pushed) * Dir;
+          Result:= CompareDateTime(L.Pushed, R.Pushed) * Dir;
         end;
         REPO_FLD_LANGUAGE: begin
           Result:= CompareText(L.Language, R.Language) * Dir;

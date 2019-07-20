@@ -4,7 +4,7 @@ object frmSetup: TfrmSetup
   HelpContext = 1001
   BorderStyle = bsDialog
   Caption = 'Setup'
-  ClientHeight = 357
+  ClientHeight = 350
   ClientWidth = 531
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -27,10 +27,11 @@ object frmSetup: TfrmSetup
     HelpContext = 1001
     ActivePage = tabRepositories
     Align = alTop
+    TabHeight = 24
     TabOrder = 0
     object tabAccount: TTabSheet
       HelpContext = 1002
-      Caption = 'Account'
+      Caption = '   Account   '
       object gbAccountAccess: TGroupBox
         Left = 0
         Top = 0
@@ -92,8 +93,9 @@ object frmSetup: TfrmSetup
     end
     object tabRepositories: TTabSheet
       HelpContext = 1003
-      Caption = 'Repositories'
+      Caption = '   Repositories   '
       ImageIndex = 1
+      ExplicitTop = 34
       object gbBackupDir: TGroupBox
         Left = 0
         Top = 0
@@ -141,6 +143,7 @@ object frmSetup: TfrmSetup
         Align = alTop
         Caption = 'Pagination'
         TabOrder = 1
+        Visible = False
         object Label1: TLabel
           AlignWithMargins = True
           Left = 5
@@ -190,7 +193,6 @@ object frmSetup: TfrmSetup
           Margins.Bottom = 8
           Align = alClient
           TabOrder = 0
-          ExplicitTop = 20
         end
         object cboUserType: TComboBox
           AlignWithMargins = True
@@ -213,18 +215,20 @@ object frmSetup: TfrmSetup
       end
     end
     object tabView: TTabSheet
-      Caption = 'View'
+      Caption = '   View   '
       ImageIndex = 2
+      TabVisible = False
     end
   end
   object pBottom: TPanel
     Left = 0
-    Top = 322
+    Top = 315
     Width = 531
     Height = 35
     HelpContext = 1001
     Align = alBottom
     TabOrder = 1
+    ExplicitTop = 322
     object btnSave: TBitBtn
       AlignWithMargins = True
       Left = 452
