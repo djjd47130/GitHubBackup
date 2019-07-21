@@ -100,7 +100,7 @@ object frmRepoDetail: TfrmRepoDetail
       AlignWithMargins = True
       Left = 46
       Top = 3
-      Width = 145
+      Width = 251
       Height = 21
       Align = alLeft
       Style = csDropDownList

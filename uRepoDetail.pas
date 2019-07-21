@@ -21,6 +21,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
     FRepo: TGitHubRepo;
+    FBranches: TGitHubBranches;
   public
     procedure Clear;
     procedure LoadRepo(const ARepo: TGitHubRepo);
@@ -43,11 +44,19 @@ end;
 
 procedure TfrmRepoDetail.Clear;
 begin
+  cboBranch.Items.Clear;
+  if Assigned(FBranches) then begin
+    while FBranches.Count > 0 do
+      FBranches.Delete(0);
+    FreeAndNil(FBranches);
+  end;
+  FRepo:= nil;
 
 end;
 
 procedure TfrmRepoDetail.LoadRepo(const ARepo: TGitHubRepo);
 begin
+  Clear;
   FRepo:= ARepo;
   lblRepoName.Caption:= FRepo.Name;
   lblRepoOwner.Caption:= FRepo.O['owner'].S['login'];
@@ -56,9 +65,14 @@ begin
 end;
 
 procedure TfrmRepoDetail.LoadBranches;
+var
+  X: Integer;
 begin
-  //cboBranch.Items.Clear;
-
+  FBranches:= DM.GitHub.GetBranches(FRepo.Owner, FRepo.Name, 1);
+  for X := 0 to FBranches.Count-1 do begin
+    cboBranch.Items.AddObject(FBranches[X].Name, FBranches[X]);
+  end;
+  cboBranch.ItemIndex:= 0;
 end;
 
 end.

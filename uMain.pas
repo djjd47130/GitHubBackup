@@ -36,6 +36,8 @@ uses
   Vcl.Styles.Utils.ScreenTips,
   Vcl.Styles.Utils.SysControls,
   Vcl.Styles.Utils.SysStyleHook,
+  Vcl.Styles.Hooks,
+  Vcl.Styles.NC,
 {$ENDIF}
   JD.GitHub,
   JD.IndyUtils,
@@ -71,7 +73,6 @@ type
     DownloadCheckedRepos1: TMenuItem;
     N5: TMenuItem;
     Exit1: TMenuItem;
-    Img16: TImageList;
     actSetup: TAction;
     actRefresh: TAction;
     actConfigCols: TAction;
@@ -111,9 +112,28 @@ type
     About1: TMenuItem;
     actHelpContents: TAction;
     AppEvents: TApplicationEvents;
-    Img16New: TImageList;
-    Img32New: TImageList;
-    Img24New: TImageList;
+    Img16: TImageList;
+    Img32: TImageList;
+    Img24: TImageList;
+    popMenu: TPopupMenu;
+    Repositories1: TMenuItem;
+    Options1: TMenuItem;
+    View1: TMenuItem;
+    Help1: TMenuItem;
+    Download1: TMenuItem;
+    CheckAll2: TMenuItem;
+    CheckNone2: TMenuItem;
+    CheckSelected2: TMenuItem;
+    N8: TMenuItem;
+    Cancel2: TMenuItem;
+    N9: TMenuItem;
+    Exit2: TMenuItem;
+    N10: TMenuItem;
+    Setup1: TMenuItem;
+    ConfigureColumns2: TMenuItem;
+    Refresh1: TMenuItem;
+    Contents1: TMenuItem;
+    About2: TMenuItem;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -149,6 +169,9 @@ type
     FCurPos: Integer; //Download progress current value
     FCurMax: Integer; //Download progress max value
     FThreadCancel: TThreadCancelEvent; //Pointer to thread procedure to cancel
+    {$IFDEF USE_VCL_STYLE_UTILS}
+    NCControls: TNCControls;
+    {$ENDIF}
     function GetRepos(const PageNum: Integer): TGitHubRepos;
     procedure GetRepoPage(const PageNum: Integer);
     function CheckedCount: Integer;
@@ -172,6 +195,10 @@ type
     procedure SaveConfig;
     procedure CloseHelpWnd;
     function OpenHelp(const AContextID: Integer): Boolean;
+    {$IFDEF USE_VCL_STYLE_UTILS}
+    procedure SetupNC;
+    procedure MenuClick(Sender: TObject);
+    {$ENDIF}
   public
     function DestDir: String;
   end;
@@ -216,6 +243,9 @@ begin
   txtErrorLog.Align:= alClient;
   SetEnabledState(True);
   ShowErrorLog(False);
+  {$IFDEF USE_VCL_STYLE_UTILS}
+  SetupNC;
+  {$ENDIF}
 
   //Populate list of columns that can be sorted
   cboSort.Items.Clear;
@@ -249,6 +279,29 @@ begin
     CanClose:= False;
     MessageDlg('Cannot close while download is in progress.', mtError, [mbOK], 0);
   end;
+end;
+
+{$IFDEF USE_VCL_STYLE_UTILS}
+procedure TfrmMain.SetupNC;
+begin
+ NCControls := TNCControls.Create(Self);
+ NCControls.Images := Img16;
+
+ NCControls.Controls.AddEx<TNCButton>;
+ NCControls[0].GetAs<TNCButton>.Style := nsSplitButton;
+ NCControls[0].GetAs<TNCButton>.ImageStyle := isGrayHot;
+ NCControls[0].GetAs<TNCButton>.ImageIndex := 71;
+ NCControls[0].BoundsRect := Rect(30,5,100,25);
+ NCControls[0].Caption := 'Menu';
+ NCControls[0].GetAs<TNCButton>.DropDownMenu:= popMenu;
+ NCControls[0].GetAs<TNCButton>.OnClick := MenuClick;
+ Self.Menu:= nil;
+end;
+{$ENDIF}
+
+procedure TfrmMain.MenuClick(Sender: TObject);
+begin
+  //NCControls[0].GetAs<TNCButton>.
 end;
 
 procedure TfrmMain.LoadConfig;
@@ -916,5 +969,5 @@ initialization
   UseLatestCommonDialogs:= True;
 {$IFDEF USE_VCL_STYLE_UTILS}
   TStyleManager.Engine.RegisterStyleHook(TButton, TButtonStyleHookFix);
-{$endif}
+{$ENDIF}
 end.

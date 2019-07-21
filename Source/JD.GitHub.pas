@@ -42,6 +42,8 @@ type
   TGitHub = class;
   TGitHubRepo = class;
   TGitHubRepos = class;
+  TGitHubBranch = class;
+  TGitHubBranches = class;
 
   TGitHubAccountType = (gaUser, gaOrganization);
 
@@ -75,9 +77,10 @@ type
     property Token: String read GetToken write SetToken;
     function GetUserRepos(const User: String; const PageNum: Integer = 0): TGitHubRepos;
     function GetOrgRepos(const Org: String; const PageNum: Integer = 0): TGitHubRepos;
+    function GetBranches(const Owner, Repo: String; const PageNum: Integer = 0): TGitHubBranches;
   end;
 
-  TGitHubRepo = class(TObject)
+  TGitHubObject = class(TObject)
   private
     FObj: ISuperObject;
     function GetB(const N: String): Boolean;
@@ -85,6 +88,18 @@ type
     function GetI(const N: String): Int64;
     function GetS(const N: String): String;
     function GetO(const N: String): ISuperObject;
+  public
+    constructor Create(AObj: ISuperObject);
+    destructor Destroy; override;
+    property S[const N: String]: String read GetS;
+    property I[const N: String]: Int64 read GetI;
+    property B[const N: String]: Boolean read GetB;
+    property F[const N: String]: Double read GetF;
+    property O[const N: String]: ISuperObject read GetO;
+  end;
+
+  TGitHubRepo = class(TGitHubObject)
+  private
     function GetCreated: TDateTime;
     function GetDefaultBranch: String;
     function GetDescription: String;
@@ -95,17 +110,10 @@ type
     function GetPushed: TDateTime;
     function GetSize: Int64;
     function GetUpdated: TDateTime;
-  public
-    constructor Create(AObj: ISuperObject);
-    destructor Destroy; override;
-  public
-    property S[const N: String]: String read GetS;
-    property I[const N: String]: Int64 read GetI;
-    property B[const N: String]: Boolean read GetB;
-    property F[const N: String]: Double read GetF;
-    property O[const N: String]: ISuperObject read GetO;
+    function GetOwner: String;
   public
     property Name: String read GetName;
+    property Owner: String read GetOwner;
     property FullName: String read GetFullName;
     property Created: TDateTime read GetCreated;
     property Updated: TDateTime read GetUpdated;
@@ -118,6 +126,26 @@ type
   end;
 
   TGitHubRepos = class(TObjectList<TGitHubRepo>)
+  private
+
+  public
+
+  end;
+
+  TGitHubBranch = class(TGitHubObject)
+  private
+    function GetName: String;
+    function GetProtected: Boolean;
+    function GetSha: String;
+    function GetUrl: String;
+  public
+    property Name: String read GetName;
+    property Sha: String read GetSha;
+    property Protected: Boolean read GetProtected;
+    property Url: String read GetUrl;
+  end;
+
+  TGitHubBranches = class(TObjectList<TGitHubBranch>)
   private
 
   public
@@ -285,50 +313,78 @@ begin
   end;
 end;
 
+function TGitHub.GetBranches(const Owner, Repo: String;
+  const PageNum: Integer): TGitHubBranches;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  B: TGitHubBranch;
+begin
+  Result:= TGitHubBranches.Create(False);
+  try
+    Res:= FApi.GetBranches(Owner, Repo, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        B:= TGitHubBranch.Create(O);
+        Result.Add(B);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      Result.Free;
+      raise E;
+    end;
+  end;
+end;
+
 procedure TGitHub.SetToken(const Value: String);
 begin
   FApi.Token:= Value;
 end;
 
-{ TGitHubRepo }
+{ TGitHubObject }
 
-constructor TGitHubRepo.Create(AObj: ISuperObject);
+constructor TGitHubObject.Create(AObj: ISuperObject);
 begin
   FObj:= AObj;
   FObj._AddRef;
 end;
 
-destructor TGitHubRepo.Destroy;
+destructor TGitHubObject.Destroy;
 begin
   FObj._Release;
   FObj:= nil;
   inherited;
 end;
 
-function TGitHubRepo.GetO(const N: String): ISuperObject;
+function TGitHubObject.GetO(const N: String): ISuperObject;
 begin
   Result:= FObj.O[N];
 end;
 
-function TGitHubRepo.GetS(const N: String): String;
+function TGitHubObject.GetS(const N: String): String;
 begin
   Result:= FObj.S[N];
 end;
 
-function TGitHubRepo.GetB(const N: String): Boolean;
+function TGitHubObject.GetB(const N: String): Boolean;
 begin
   Result:= FObj.B[N];
 end;
 
-function TGitHubRepo.GetF(const N: String): Double;
+function TGitHubObject.GetF(const N: String): Double;
 begin
   Result:= FObj.F[N];
 end;
 
-function TGitHubRepo.GetI(const N: String): Int64;
+function TGitHubObject.GetI(const N: String): Int64;
 begin
   Result:= FObj.I[N];
 end;
+
+{ TGitHubRepo }
 
 function TGitHubRepo.GetCreated: TDateTime;
 begin
@@ -371,6 +427,11 @@ begin
   Result:= S['name'];
 end;
 
+function TGitHubRepo.GetOwner: String;
+begin
+  Result:= O['owner'].S['login'];
+end;
+
 function TGitHubRepo.GetPushed: TDateTime;
 begin
   with TXSDateTime.Create do
@@ -396,6 +457,28 @@ begin
     finally
       Free;
     end;
+end;
+
+{ TGitHubBranch }
+
+function TGitHubBranch.GetName: String;
+begin
+  Result:= S['name'];
+end;
+
+function TGitHubBranch.GetProtected: Boolean;
+begin
+  Result:= B['protected'];
+end;
+
+function TGitHubBranch.GetSha: String;
+begin
+  Result:= O['commit'].S['sha'];
+end;
+
+function TGitHubBranch.GetUrl: String;
+begin
+  Result:= O['commit'].S['url'];
 end;
 
 end.
