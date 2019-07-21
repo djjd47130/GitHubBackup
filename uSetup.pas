@@ -88,6 +88,8 @@ begin
     Exit;
   end;
 
+  {
+  #29 - Remove requirement of personal access token
   if Trim(txtAccessToken.Text) = '' then begin
     Pages.ActivePageIndex:= 0;
     MessageDlg('Invalid access token!', mtError, [mbOK], 0);
@@ -95,6 +97,7 @@ begin
     txtAccessToken.SelectAll;
     Exit;
   end;
+  }
 
   ModalResult:= mrOK;
 end;

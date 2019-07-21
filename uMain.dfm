@@ -82,7 +82,6 @@ object frmMain: TfrmMain
     OnClick = lstReposClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
-    ExplicitTop = 58
   end
   object Stat: TStatusBar
     Left = 0
@@ -101,7 +100,6 @@ object frmMain: TfrmMain
       item
         Width = 50
       end>
-    ExplicitTop = 397
   end
   object pRepoTop: TPanel
     Left = 0
@@ -145,7 +143,6 @@ object frmMain: TfrmMain
       ParentFont = False
       TabOrder = 0
       StyleElements = [seClient, seBorder]
-      ExplicitLeft = 212
     end
     object btnDownload: TButton
       AlignWithMargins = True
@@ -166,7 +163,6 @@ object frmMain: TfrmMain
       ParentFont = False
       TabOrder = 1
       StyleElements = [seClient, seBorder]
-      ExplicitLeft = 294
     end
     object btnCancel: TButton
       AlignWithMargins = True
@@ -187,7 +183,6 @@ object frmMain: TfrmMain
       ParentFont = False
       TabOrder = 2
       StyleElements = [seClient, seBorder]
-      ExplicitLeft = 459
     end
     object btnSortDir: TButton
       AlignWithMargins = True
@@ -237,7 +232,6 @@ object frmMain: TfrmMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitTop = 259
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
@@ -319,9 +313,6 @@ object frmMain: TfrmMain
     Align = alTop
     TabOrder = 5
     Visible = False
-    ExplicitLeft = 3
-    ExplicitTop = 32
-    ExplicitWidth = 970
   end
   object tmrDisplay: TTimer
     Interval = 200
@@ -531,7 +522,7 @@ object frmMain: TfrmMain
     Left = 200
     Top = 216
     Bitmap = {
-      494C01018700A80040001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700A80044001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002002000001002000000000000020
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5035,7 +5026,7 @@ object frmMain: TfrmMain
     Left = 264
     Top = 216
     Bitmap = {
-      494C01018700D80050002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700D80054002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004004000001002000000000000080
       0800000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -23003,7 +22994,7 @@ object frmMain: TfrmMain
     Left = 328
     Top = 216
     Bitmap = {
-      494C01018700C8006C001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700C80070001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000006000000030030000010020000000000000C8
       0400000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -33115,6 +33106,7 @@ object frmMain: TfrmMain
     Top = 160
     object Repositories1: TMenuItem
       Caption = 'Repositories'
+      ImageIndex = 5
       object CheckAll2: TMenuItem
         Action = actCheckAll
       end
@@ -33139,6 +33131,7 @@ object frmMain: TfrmMain
     end
     object Options1: TMenuItem
       Caption = 'Options'
+      ImageIndex = 33
       object Setup1: TMenuItem
         Action = actSetup
       end
@@ -33148,12 +33141,14 @@ object frmMain: TfrmMain
     end
     object View1: TMenuItem
       Caption = 'View'
+      ImageIndex = 55
       object Refresh1: TMenuItem
         Action = actRefresh
       end
     end
     object Help1: TMenuItem
       Caption = 'Help'
+      ImageIndex = 94
       object Contents1: TMenuItem
         Action = actHelpContents
       end
@@ -33166,6 +33161,7 @@ object frmMain: TfrmMain
     end
     object Exit2: TMenuItem
       Action = actExit
+      ImageIndex = 40
     end
   end
 end

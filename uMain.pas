@@ -509,7 +509,10 @@ end;
 
 function TfrmMain.AppIsConfigured: Boolean;
 begin
-  Result:= frmSetup.Token <> '';
+  //#29 - Remove requirement of personal access token
+  //Result:= frmSetup.Token <> '';
+  Result:= True;
+
   if Result then
     Result:= frmSetup.User <> '';
   if Result then
