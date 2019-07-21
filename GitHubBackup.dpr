@@ -17,7 +17,9 @@ uses
   JD.GitHub.Update in 'Source\JD.GitHub.Update.pas',
   JD.Config in 'Source\JD.Config.pas',
   JD.DownloadThread in 'Source\JD.DownloadThread.pas',
-  JD.IndyUtils in 'Source\JD.IndyUtils.pas';
+  JD.IndyUtils in 'Source\JD.IndyUtils.pas',
+  XSuperJSON in 'Libraries\X-SuperObject\XSuperJSON.pas',
+  XSuperObject in 'Libraries\X-SuperObject\XSuperObject.pas';
 
 {$R *.res}
 
