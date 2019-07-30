@@ -29,11 +29,9 @@ object frmSetup: TfrmSetup
     Align = alTop
     TabHeight = 24
     TabOrder = 0
-    ExplicitWidth = 531
     object tabAccount: TTabSheet
       HelpContext = 1002
       Caption = '   Account   '
-      ExplicitWidth = 523
       object gbAccountAccess: TGroupBox
         Left = 0
         Top = 0
@@ -43,7 +41,6 @@ object frmSetup: TfrmSetup
         Align = alTop
         Caption = 'Account Access'
         TabOrder = 0
-        ExplicitWidth = 523
         object Label4: TLabel
           AlignWithMargins = True
           Left = 12
@@ -93,8 +90,6 @@ object frmSetup: TfrmSetup
           HelpContext = 1002
           Align = alTop
           TabOrder = 0
-          ExplicitTop = 92
-          ExplicitWidth = 513
         end
       end
     end
@@ -102,7 +97,10 @@ object frmSetup: TfrmSetup
       HelpContext = 1003
       Caption = '   Repositories   '
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
       ExplicitWidth = 523
+      ExplicitHeight = 0
       object gbBackupDir: TGroupBox
         Left = 0
         Top = 0
@@ -224,7 +222,6 @@ object frmSetup: TfrmSetup
           Items.Strings = (
             'User'
             'Organization')
-          ExplicitLeft = 420
         end
       end
     end
@@ -232,7 +229,10 @@ object frmSetup: TfrmSetup
       Caption = '   View   '
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
       ExplicitWidth = 523
+      ExplicitHeight = 0
     end
   end
   object pBottom: TPanel
@@ -243,7 +243,6 @@ object frmSetup: TfrmSetup
     HelpContext = 1001
     Align = alBottom
     TabOrder = 1
-    ExplicitWidth = 531
     object btnSave: TBitBtn
       AlignWithMargins = True
       Left = 469
@@ -257,7 +256,6 @@ object frmSetup: TfrmSetup
       Caption = 'Save'
       TabOrder = 0
       OnClick = btnSaveClick
-      ExplicitLeft = 452
     end
     object btnCancel: TBitBtn
       AlignWithMargins = True
@@ -272,7 +270,6 @@ object frmSetup: TfrmSetup
       Caption = 'Cancel'
       ModalResult = 2
       TabOrder = 1
-      ExplicitLeft = 371
     end
   end
   object dlgBrowseDir: TFileOpenDialog

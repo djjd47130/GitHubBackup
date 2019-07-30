@@ -1,0 +1,54 @@
+package JDGitHubComponents;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'JD GitHub Components Runtime'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  xmlrtl,
+  soaprtl,
+  dbrtl,
+  inet,
+  IndySystem,
+  IndyProtocols,
+  IndyCore;
+
+contains
+  JD.Config in '..\..\Source\JD.Config.pas',
+  JD.DownloadThread in '..\..\Source\JD.DownloadThread.pas',
+  JD.GitHub.Common in '..\..\Source\JD.GitHub.Common.pas',
+  JD.GitHub.Impl in '..\..\Source\JD.GitHub.Impl.pas',
+  JD.GitHub.Intf in '..\..\Source\JD.GitHub.Intf.pas',
+  JD.GitHub in '..\..\Source\JD.GitHub.pas',
+  JD.GitHub.Update in '..\..\Source\JD.GitHub.Update.pas',
+  JD.IndyUtils in '..\..\Source\JD.IndyUtils.pas',
+  XSuperJSON in '..\..\Libraries\X-SuperObject\XSuperJSON.pas',
+  XSuperObject in '..\..\Libraries\X-SuperObject\XSuperObject.pas';
+
+end.

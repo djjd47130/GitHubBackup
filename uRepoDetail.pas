@@ -18,10 +18,13 @@ type
     cboBranch: TComboBox;
     Label1: TLabel;
     Label2: TLabel;
+    Panel2: TPanel;
+    Label3: TLabel;
+    cboCommit: TComboBox;
     procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     FRepo: TGitHubRepo;
-    FBranches: TGitHubBranches;
   public
     procedure Clear;
     procedure LoadRepo(const ARepo: TGitHubRepo);
@@ -37,19 +40,24 @@ implementation
 
 { TfrmRepoDetail }
 
+procedure TfrmRepoDetail.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Clear;
+end;
+
 procedure TfrmRepoDetail.FormCreate(Sender: TObject);
 begin
   //
 end;
 
 procedure TfrmRepoDetail.Clear;
+var
+  X: Integer;
 begin
-  cboBranch.Items.Clear;
-  if Assigned(FBranches) then begin
-    while FBranches.Count > 0 do
-      FBranches.Delete(0);
-    FreeAndNil(FBranches);
+  for X := 0 to cboBranch.Items.Count-1 do begin
+    cboBranch.Items.Objects[X].Free;
   end;
+  cboBranch.Clear;
   FRepo:= nil;
 
 end;
@@ -62,17 +70,27 @@ begin
   lblRepoOwner.Caption:= FRepo.O['owner'].S['login'];
 
   LoadBranches;
+
+  cboBranch.ItemIndex:= cboBranch.Items.IndexOf(FRepo.DefaultBranch);
+  if cboBranch.ItemIndex < 0 then
+    cboBranch.ItemIndex:= 0;
+
 end;
 
 procedure TfrmRepoDetail.LoadBranches;
 var
   X: Integer;
+  BL: TGitHubBranches;
 begin
-  FBranches:= DM.GitHub.GetBranches(FRepo.Owner, FRepo.Name, 1);
-  for X := 0 to FBranches.Count-1 do begin
-    cboBranch.Items.AddObject(FBranches[X].Name, FBranches[X]);
+  BL:= DM.GitHub.GetBranches(FRepo.Owner, FRepo.Name, 1);
+  try
+    for X := 0 to BL.Count-1 do begin
+      cboBranch.Items.AddObject(BL[X].Name, BL[X]);
+    end;
+    cboBranch.ItemIndex:= 0;
+  finally
+    BL.Free;
   end;
-  cboBranch.ItemIndex:= 0;
 end;
 
 end.

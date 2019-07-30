@@ -4,8 +4,8 @@ object frmMain: TfrmMain
   HelpContext = 1000
   BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   Caption = 'JD GitHub Repository Backup'
-  ClientHeight = 476
-  ClientWidth = 976
+  ClientHeight = 551
+  ClientWidth = 1060
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -13,7 +13,6 @@ object frmMain: TfrmMain
   Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
-  Menu = MM
   OldCreateOrder = False
   ShowHint = True
   OnClose = FormClose
@@ -25,8 +24,8 @@ object frmMain: TfrmMain
   TextHeight = 14
   object spErrorLog: TSplitter
     Left = 0
-    Top = 319
-    Width = 976
+    Top = 383
+    Width = 1060
     Height = 5
     Cursor = crVSplit
     Align = alBottom
@@ -34,12 +33,13 @@ object frmMain: TfrmMain
     ResizeStyle = rsUpdate
     ExplicitLeft = -8
     ExplicitTop = 284
+    ExplicitWidth = 976
   end
   object lstRepos: TListView
     Left = 0
     Top = 52
-    Width = 976
-    Height = 55
+    Width = 1060
+    Height = 77
     HelpContext = 1006
     Align = alTop
     BorderStyle = bsNone
@@ -71,7 +71,7 @@ object frmMain: TfrmMain
       end
       item
         Caption = 'Description'
-        Width = 300
+        Width = 386
       end>
     HideSelection = False
     HotTrackStyles = [htHandPoint, htUnderlineHot]
@@ -85,9 +85,9 @@ object frmMain: TfrmMain
   end
   object Stat: TStatusBar
     Left = 0
-    Top = 457
-    Width = 976
-    Height = 19
+    Top = 529
+    Width = 1060
+    Height = 22
     Panels = <
       item
         Text = '0 Repositories'
@@ -100,18 +100,19 @@ object frmMain: TfrmMain
       item
         Width = 50
       end>
+    StyleElements = [seClient, seBorder]
   end
   object pRepoTop: TPanel
     Left = 0
     Top = 0
-    Width = 976
+    Width = 1060
     Height = 29
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     object Label4: TLabel
       AlignWithMargins = True
-      Left = 780
+      Left = 864
       Top = 3
       Width = 31
       Height = 26
@@ -186,7 +187,7 @@ object frmMain: TfrmMain
     end
     object btnSortDir: TButton
       AlignWithMargins = True
-      Left = 941
+      Left = 1025
       Top = 2
       Width = 32
       Height = 23
@@ -203,7 +204,7 @@ object frmMain: TfrmMain
     end
     object cboSort: TComboBox
       AlignWithMargins = True
-      Left = 817
+      Left = 901
       Top = 3
       Width = 121
       Height = 22
@@ -225,9 +226,9 @@ object frmMain: TfrmMain
   end
   object pErrorLog: TPanel
     Left = 0
-    Top = 324
-    Width = 976
-    Height = 133
+    Top = 388
+    Width = 1060
+    Height = 141
     HelpContext = 1008
     Align = alBottom
     BevelOuter = bvNone
@@ -235,7 +236,7 @@ object frmMain: TfrmMain
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
-      Width = 976
+      Width = 1060
       Height = 24
       HelpContext = 1008
       Align = alTop
@@ -264,7 +265,7 @@ object frmMain: TfrmMain
       end
       object btnCloseErrorLog: TButton
         AlignWithMargins = True
-        Left = 951
+        Left = 1035
         Top = 2
         Width = 23
         Height = 20
@@ -283,11 +284,12 @@ object frmMain: TfrmMain
     end
     object txtErrorLog: TMemo
       Left = 0
-      Top = 56
-      Width = 976
-      Height = 77
+      Top = 42
+      Width = 1060
+      Height = 99
       HelpContext = 1008
       Align = alBottom
+      Anchors = [akLeft, akTop, akRight, akBottom]
       BorderStyle = bsNone
       ReadOnly = True
       ScrollBars = ssBoth
@@ -307,7 +309,7 @@ object frmMain: TfrmMain
   object Prog: TProgressBar
     Left = 0
     Top = 29
-    Width = 976
+    Width = 1060
     Height = 23
     HelpContext = 1008
     Align = alTop
@@ -317,116 +319,22 @@ object frmMain: TfrmMain
   object tmrDisplay: TTimer
     Interval = 200
     OnTimer = tmrDisplayTimer
-    Left = 20
-    Top = 158
+    Left = 12
+    Top = 134
   end
   object Taskbar: TTaskbar
     TaskBarButtons = <>
     TabProperties = []
     ToolTip = 'GitHub Backup'
-    Left = 68
-    Top = 158
-  end
-  object MM: TMainMenu
-    Images = Img24
-    Left = 112
-    Top = 158
-    object mRepositories: TMenuItem
-      Caption = 'Repositories'
-      object CheckAll1: TMenuItem
-        Action = actCheckAll
-      end
-      object CheckNone1: TMenuItem
-        Action = actCheckNone
-      end
-      object CheckSelected1: TMenuItem
-        Action = actCheckSelected
-      end
-      object N4: TMenuItem
-        Caption = '-'
-      end
-      object DownloadCheckedRepos1: TMenuItem
-        Action = actDownloadRepos
-      end
-      object Cancel1: TMenuItem
-        Action = actCancelDownload
-      end
-      object N5: TMenuItem
-        Caption = '-'
-      end
-      object Exit1: TMenuItem
-        Action = actExit
-      end
-    end
-    object mOptions: TMenuItem
-      Caption = 'Options'
-      object mSetup: TMenuItem
-        Action = actSetup
-      end
-      object N6: TMenuItem
-        Caption = '-'
-      end
-      object ConfigureColumns1: TMenuItem
-        Action = actConfigCols
-      end
-    end
-    object mView: TMenuItem
-      Caption = 'View'
-      object mRefresh: TMenuItem
-        Action = actRefresh
-      end
-      object N1: TMenuItem
-        Caption = '-'
-      end
-      object mSort: TMenuItem
-        Caption = 'Sort'
-        object mSortAsc: TMenuItem
-          AutoCheck = True
-          Caption = 'Sort Ascending'
-          Checked = True
-          RadioItem = True
-          OnClick = mSortAscOrDescClick
-        end
-        object mSortDesc: TMenuItem
-          AutoCheck = True
-          Caption = 'Sort Descending'
-          RadioItem = True
-          OnClick = mSortAscOrDescClick
-        end
-        object N7: TMenuItem
-          Caption = '-'
-        end
-      end
-      object mColumns: TMenuItem
-        Caption = 'Columns'
-        Enabled = False
-        object mColumnsConfig: TMenuItem
-          Action = actConfigCols
-        end
-        object N2: TMenuItem
-          Caption = '-'
-        end
-      end
-    end
-    object mHelp: TMenuItem
-      Caption = 'Help'
-      object OpenHelp1: TMenuItem
-        Action = actHelpContents
-      end
-      object N3: TMenuItem
-        Caption = '-'
-      end
-      object About1: TMenuItem
-        Action = actAbout
-      end
-    end
+    Left = 60
+    Top = 134
   end
   object Acts: TActionManager
     LargeImages = Img32
     Images = Img24
     OnUpdate = ActsUpdate
-    Left = 152
-    Top = 158
+    Left = 168
+    Top = 134
     StyleName = 'Platform Default'
     object actSetup: TAction
       Category = 'Options'
@@ -509,20 +417,44 @@ object frmMain: TfrmMain
       ImageIndex = 94
       OnExecute = actHelpContentsExecute
     end
+    object actMenuRepos: TAction
+      Category = 'Menus'
+      Caption = 'Repositories'
+      ShortCut = 32850
+      OnExecute = MenuReposClick
+    end
+    object actMenuOptions: TAction
+      Category = 'Menus'
+      Caption = 'Options'
+      ShortCut = 32847
+      OnExecute = MenuOptionsClick
+    end
+    object actMenuView: TAction
+      Category = 'Menus'
+      Caption = 'View'
+      ShortCut = 32854
+      OnExecute = MenuViewClick
+    end
+    object actMenuHelp: TAction
+      Category = 'Menus'
+      Caption = 'Help'
+      ShortCut = 32840
+      OnExecute = MenuHelpClick
+    end
   end
   object AppEvents: TApplicationEvents
     OnHelp = AppEventsHelp
-    Left = 264
-    Top = 160
+    Left = 112
+    Top = 134
   end
   object Img16: TImageList
     BlendColor = clBlack
     BkColor = clBlack
     Masked = False
-    Left = 200
-    Top = 216
+    Left = 16
+    Top = 192
     Bitmap = {
-      494C01018700A80044001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700A80054001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002002000001002000000000000020
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5023,10 +4955,10 @@ object frmMain: TfrmMain
     Height = 32
     Masked = False
     Width = 32
-    Left = 264
-    Top = 216
+    Left = 64
+    Top = 192
     Bitmap = {
-      494C01018700D80054002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700D80064002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004004000001002000000000000080
       0800000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -22988,13 +22920,14 @@ object frmMain: TfrmMain
   object Img24: TImageList
     BlendColor = clBlack
     BkColor = clBlack
+    DrawingStyle = dsTransparent
     Height = 24
     Masked = False
     Width = 24
-    Left = 328
-    Top = 216
+    Left = 112
+    Top = 192
     Bitmap = {
-      494C01018700C80070001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700C80080001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000006000000030030000010020000000000000C8
       0400000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -33099,69 +33032,86 @@ object frmMain: TfrmMain
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000}
   end
-  object popMenu: TPopupMenu
+  object mRepos: TPopupMenu
+    Images = Img24
+    MenuAnimation = [maTopToBottom]
+    Left = 232
+    Top = 136
+    object CheckAll3: TMenuItem
+      Action = actCheckAll
+    end
+    object CheckNone3: TMenuItem
+      Action = actCheckNone
+    end
+    object CheckSelected3: TMenuItem
+      Action = actCheckSelected
+    end
+    object MenuItem17: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem18: TMenuItem
+      Action = actDownloadRepos
+    end
+    object Cancel3: TMenuItem
+      Action = actCancelDownload
+    end
+    object N11: TMenuItem
+      Caption = '-'
+    end
+    object Exit3: TMenuItem
+      Action = actExit
+    end
+  end
+  object mOptions: TPopupMenu
+    Images = Img24
+    MenuAnimation = [maTopToBottom]
+    Left = 280
+    Top = 136
+    object MenuItem20: TMenuItem
+      Action = actSetup
+    end
+    object ConfigureColumns1: TMenuItem
+      Action = actConfigCols
+    end
+  end
+  object mView: TPopupMenu
     Images = Img24
     MenuAnimation = [maTopToBottom]
     Left = 328
-    Top = 160
-    object Repositories1: TMenuItem
-      Caption = 'Repositories'
-      ImageIndex = 5
-      object CheckAll2: TMenuItem
-        Action = actCheckAll
+    Top = 136
+    object MenuItem38: TMenuItem
+      Action = actRefresh
+    end
+    object mSort: TMenuItem
+      Caption = 'Sort'
+      object mSortAsc: TMenuItem
+        AutoCheck = True
+        Caption = 'Ascending'
+        Checked = True
+        RadioItem = True
+        OnClick = mSortAscOrDescClick
       end
-      object CheckNone2: TMenuItem
-        Action = actCheckNone
+      object mSortDesc: TMenuItem
+        AutoCheck = True
+        Caption = 'Descending'
+        RadioItem = True
+        OnClick = mSortAscOrDescClick
       end
-      object CheckSelected2: TMenuItem
-        Action = actCheckSelected
-      end
-      object N8: TMenuItem
-        Caption = '-'
-      end
-      object Download1: TMenuItem
-        Action = actDownloadRepos
-      end
-      object Cancel2: TMenuItem
-        Action = actCancelDownload
-      end
-      object N9: TMenuItem
+      object N1: TMenuItem
         Caption = '-'
       end
     end
-    object Options1: TMenuItem
-      Caption = 'Options'
-      ImageIndex = 33
-      object Setup1: TMenuItem
-        Action = actSetup
-      end
-      object ConfigureColumns2: TMenuItem
-        Action = actConfigCols
-      end
+  end
+  object mHelp: TPopupMenu
+    Images = Img24
+    MenuAnimation = [maTopToBottom]
+    Left = 376
+    Top = 136
+    object MenuItem56: TMenuItem
+      Action = actHelpContents
     end
-    object View1: TMenuItem
-      Caption = 'View'
-      ImageIndex = 55
-      object Refresh1: TMenuItem
-        Action = actRefresh
-      end
-    end
-    object Help1: TMenuItem
-      Caption = 'Help'
-      ImageIndex = 94
-      object Contents1: TMenuItem
-        Action = actHelpContents
-      end
-      object About2: TMenuItem
-        Action = actAbout
-      end
-    end
-    object N10: TMenuItem
-      Caption = '-'
-    end
-    object Exit2: TMenuItem
-      Action = actExit
-      ImageIndex = 40
+    object About1: TMenuItem
+      Action = actAbout
     end
   end
 end

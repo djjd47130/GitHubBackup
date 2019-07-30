@@ -11,6 +11,7 @@ object frmRepoDetail: TfrmRepoDetail
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -53,7 +54,7 @@ object frmRepoDetail: TfrmRepoDetail
   object Label2: TLabel
     AlignWithMargins = True
     Left = 50
-    Top = 137
+    Top = 166
     Width = 480
     Height = 105
     Margins.Left = 50
@@ -73,8 +74,8 @@ object frmRepoDetail: TfrmRepoDetail
     Font.Style = []
     ParentFont = False
     WordWrap = True
-    ExplicitLeft = 74
-    ExplicitTop = 314
+    ExplicitLeft = 45
+    ExplicitTop = 190
   end
   object Panel1: TPanel
     Left = 0
@@ -88,17 +89,52 @@ object frmRepoDetail: TfrmRepoDetail
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 37
+      Width = 46
       Height = 26
       Align = alLeft
       Alignment = taRightJustify
+      AutoSize = False
       Caption = 'Branch:'
       Layout = tlCenter
-      ExplicitHeight = 13
     end
     object cboBranch: TComboBox
       AlignWithMargins = True
-      Left = 46
+      Left = 55
+      Top = 3
+      Width = 251
+      Height = 21
+      Align = alLeft
+      Style = csDropDownList
+      ItemIndex = 0
+      TabOrder = 0
+      Text = 'default'
+      Items.Strings = (
+        'default')
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 87
+    Width = 580
+    Height = 29
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 1
+    object Label3: TLabel
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 46
+      Height = 26
+      Align = alLeft
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Commit:'
+      Layout = tlCenter
+    end
+    object cboCommit: TComboBox
+      AlignWithMargins = True
+      Left = 55
       Top = 3
       Width = 251
       Height = 21

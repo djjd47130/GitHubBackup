@@ -24,7 +24,8 @@ interface
 uses
   System.Classes, System.SysUtils, System.Generics.Collections,
   XSuperObject,
-  JD.IndyUtils;
+  JD.IndyUtils,
+  JD.GitHub.Common;
 
 const
   REPO_FLD_NAME = 0;
@@ -44,6 +45,8 @@ type
   TGitHubRepos = class;
   TGitHubBranch = class;
   TGitHubBranches = class;
+  TGitHubCommit = class;
+  TGitHubCommits = class;
 
   TGitHubAccountType = (gaUser, gaOrganization);
 
@@ -74,12 +77,14 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property Token: String read GetToken write SetToken;
     function GetUserRepos(const User: String; const PageNum: Integer = 0): TGitHubRepos;
     function GetOrgRepos(const Org: String; const PageNum: Integer = 0): TGitHubRepos;
     function GetBranches(const Owner, Repo: String; const PageNum: Integer = 0): TGitHubBranches;
+  published
+    property Token: String read GetToken write SetToken;
   end;
 
+  //Encapsulates simple JSON object via Super Object
   TGitHubObject = class(TObject)
   private
     FObj: ISuperObject;
@@ -100,6 +105,7 @@ type
 
   TGitHubRepo = class(TGitHubObject)
   private
+    FChecked: Boolean;
     function GetCreated: TDateTime;
     function GetDefaultBranch: String;
     function GetDescription: String;
@@ -111,6 +117,7 @@ type
     function GetSize: Int64;
     function GetUpdated: TDateTime;
     function GetOwner: String;
+    procedure SetChecked(const Value: Boolean);
   public
     property Name: String read GetName;
     property Owner: String read GetOwner;
@@ -123,6 +130,8 @@ type
     property IsPrivate: Boolean read GetIsPrivate;
     property Size: Int64 read GetSize;
     property Description: String read GetDescription;
+
+    property Checked: Boolean read FChecked write SetChecked;
   end;
 
   TGitHubRepos = class(TObjectList<TGitHubRepo>)
@@ -152,12 +161,50 @@ type
 
   end;
 
+  TGitHubCommit = class(TGitHubObject)
+  private
+    function GetCommitter: String;
+    function GetMessage: String;
+    function GetTimestamp: TDateTime;
+    function GetTreeSha: String;
+  public
+    property Timestamp: TDateTime read GetTimestamp;
+    property Message: String read GetMessage;
+    property Committer: String read GetCommitter;
+    property TreeSha: String read GetTreeSha;
+  end;
+
+  TGitHubCommits = class(TObjectList<TGitHubCommits>)
+  private
+
+  public
+
+  end;
+
+  TGitHubAccount = class(TCollectionItem)
+  private
+    FToken: String;
+    function GetName: String;
+    procedure SetToken(const Value: String);
+  public
+    constructor Create(AOwner: TCollection); override;
+    destructor Destroy; override;
+  published
+    property Name: String read GetName;
+    property Token: String read FToken write SetToken;
+  end;
+
+  TGitHubAccounts = class(TOwnedCollection)
+
+  end;
+
+
 procedure ListRepoFields(AStrings: TStrings);
 
 implementation
 
 uses
-  System.IOUtils, System.Math, System.StrUtils, Soap.XSBuiltIns;
+  System.IOUtils, System.Math, System.StrUtils;
 
 procedure ListRepoFields(AStrings: TStrings);
 begin
@@ -388,13 +435,7 @@ end;
 
 function TGitHubRepo.GetCreated: TDateTime;
 begin
-  with TXSDateTime.Create do
-    try
-      XSToNative(S['created_at']);
-      Result:= AsDateTime;
-    finally
-      Free;
-    end;
+  Result:= ISOToDateTime(S['created_at']);
 end;
 
 function TGitHubRepo.GetDefaultBranch: String;
@@ -434,13 +475,7 @@ end;
 
 function TGitHubRepo.GetPushed: TDateTime;
 begin
-  with TXSDateTime.Create do
-    try
-      XSToNative(S['pushed_at']);
-      Result:= AsDateTime;
-    finally
-      Free;
-    end;
+  Result:= ISOToDateTime(S['pushed_at']);
 end;
 
 function TGitHubRepo.GetSize: Int64;
@@ -450,13 +485,12 @@ end;
 
 function TGitHubRepo.GetUpdated: TDateTime;
 begin
-  with TXSDateTime.Create do
-    try
-      XSToNative(S['updated_at']);
-      Result:= AsDateTime;
-    finally
-      Free;
-    end;
+  Result:= ISOToDateTime(S['updated_at']);
+end;
+
+procedure TGitHubRepo.SetChecked(const Value: Boolean);
+begin
+  FChecked := Value;
 end;
 
 { TGitHubBranch }
@@ -479,6 +513,52 @@ end;
 function TGitHubBranch.GetUrl: String;
 begin
   Result:= O['commit'].S['url'];
+end;
+
+{ TGitHubCommit }
+
+function TGitHubCommit.GetCommitter: String;
+begin
+  Result:= O['commit'].O['committer'].S['name'];
+end;
+
+function TGitHubCommit.GetMessage: String;
+begin
+  Result:= O['commit'].S['message'];
+end;
+
+function TGitHubCommit.GetTimestamp: TDateTime;
+begin
+  Result:= ISOToDateTime(O['commit'].O['committer'].S['date']);
+end;
+
+function TGitHubCommit.GetTreeSha: String;
+begin
+  Result:= O['commit'].O['tree'].S['sha'];
+end;
+
+{ TGitHubAccount }
+
+constructor TGitHubAccount.Create(AOwner: TCollection);
+begin
+  inherited Create(AOwner);
+
+end;
+
+destructor TGitHubAccount.Destroy;
+begin
+
+  inherited;
+end;
+
+function TGitHubAccount.GetName: String;
+begin
+
+end;
+
+procedure TGitHubAccount.SetToken(const Value: String);
+begin
+  FToken := Value;
 end;
 
 end.

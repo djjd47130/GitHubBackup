@@ -7,7 +7,8 @@ uses
   System.SysUtils, System.Variants, System.Classes, System.UITypes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Vcl.ExtCtrls, Vcl.ComCtrls,
-  uDM;
+  uDM,
+  JD.GitHub.Common;
 
 type
   {$WARN SYMBOL_PLATFORM OFF}
@@ -45,6 +46,8 @@ type
   public
     procedure LoadFromConfig;
     procedure SaveToConfig;
+    function AdjustTime(const AValue: TDateTime): TDateTime;
+    function FormatTime(const AValue: TDateTime): String;
   public
     property Token: String read GetToken;
     property User: String read GetUser;
@@ -158,6 +161,21 @@ begin
   DM.Config.I['userType']:= cboUserType.ItemIndex;
   DM.Config.S['dir']:= txtBackupDir.Text;
 
+end;
+
+function TfrmSetup.AdjustTime(const AValue: TDateTime): TDateTime;
+begin
+  //TODO: Make user option whether to use local time...
+  //Result:= LocalDateTimeFromUTCDateTime(AValue);
+  //Result:= UnivDateTime2LocalDateTime(AValue);
+  //Result:= DateTime2UnivDateTime(AValue);
+  Result:= AValue;
+end;
+
+function TfrmSetup.FormatTime(const AValue: TDateTime): String;
+begin
+  //TODO: Make user option how to format date/time...
+  Result:= FormatDateTime('yyyy-mm-dd hh:nn ampm', AdjustTime(AValue));
 end;
 
 procedure TfrmSetup.btnBrowseDirClick(Sender: TObject);

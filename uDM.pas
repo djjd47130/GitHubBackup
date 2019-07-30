@@ -17,14 +17,13 @@ uses
 
 type
   TDM = class(TDataModule)
+    GitHub: TGitHub;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private
     FConfig: TJDConfig;
-    FGitHub: TGitHub;
   public
     property Config: TJDConfig read FConfig;
-    property GitHub: TGitHub read FGitHub;
   end;
 
 var
@@ -41,12 +40,10 @@ begin
   FConfig:= TJDConfig.Create;
   FConfig.Path:= 'JD Software Inc\GitHub Backup';
   FConfig.Load;
-  FGitHub:= TGitHub.Create(nil);
 end;
 
 procedure TDM.DataModuleDestroy(Sender: TObject);
 begin
-  FreeAndNil(FGitHub);
   FConfig.Save;
   FreeAndNil(FConfig);
 end;

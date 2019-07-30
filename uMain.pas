@@ -17,15 +17,12 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   System.Generics.Collections, System.Generics.Defaults,
   System.UITypes, System.Win.TaskbarCore, System.Actions,
+  System.Types,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Taskbar, Vcl.CheckLst,
   Vcl.Menus, Vcl.PlatformDefaultStyleActnCtrls,
   Vcl.ActnList, Vcl.ActnMan, System.ImageList, Vcl.ImgList,
   Vcl.AppEvnts, Vcl.ToolWin, Vcl.HtmlHelpViewer,
-{$IFDEF USE_VCL_STYLE_UTILS}
-  //Recommended to use vcl-styles-utils to fix issues in Windows dialogs
-  //  If you don't have this, remove the conditional from the project's
-  //  main compiler settings. NOTE: USE_VCL_STYLE_UTILS is also used elsewhere
   Vcl.Styles, Vcl.Themes,
   Vcl.Styles.FontAwesome,
   Vcl.Styles.Fixes,
@@ -38,7 +35,6 @@ uses
   Vcl.Styles.Utils.SysStyleHook,
   Vcl.Styles.Hooks,
   Vcl.Styles.NC,
-{$ENDIF}
   JD.GitHub,
   JD.IndyUtils,
   JD.GitHub.Common,
@@ -46,7 +42,11 @@ uses
   uSetup,
   uRepoDetail,
   uDM,
-  uAbout;
+  uAbout
+  {$IFDEF V1}
+  , VirtualTrees
+  {$ENDIF}
+  ;
 
 type
   {$WARN SYMBOL_PLATFORM OFF}
@@ -54,25 +54,7 @@ type
     Stat: TStatusBar;
     tmrDisplay: TTimer;
     Taskbar: TTaskbar;
-    MM: TMainMenu;
-    mRepositories: TMenuItem;
-    mOptions: TMenuItem;
-    mView: TMenuItem;
-    mHelp: TMenuItem;
-    mSetup: TMenuItem;
-    mRefresh: TMenuItem;
-    N1: TMenuItem;
-    mColumns: TMenuItem;
-    mColumnsConfig: TMenuItem;
-    N2: TMenuItem;
     Acts: TActionManager;
-    CheckAll1: TMenuItem;
-    CheckNone1: TMenuItem;
-    CheckSelected1: TMenuItem;
-    N4: TMenuItem;
-    DownloadCheckedRepos1: TMenuItem;
-    N5: TMenuItem;
-    Exit1: TMenuItem;
     actSetup: TAction;
     actRefresh: TAction;
     actConfigCols: TAction;
@@ -82,14 +64,7 @@ type
     actDownloadRepos: TAction;
     actExit: TAction;
     actCancelDownload: TAction;
-    N6: TMenuItem;
-    ConfigureColumns1: TMenuItem;
     actSortAZ: TAction;
-    mSort: TMenuItem;
-    mSortAsc: TMenuItem;
-    mSortDesc: TMenuItem;
-    N7: TMenuItem;
-    Cancel1: TMenuItem;
     pRepoTop: TPanel;
     btnListRepos: TButton;
     btnDownload: TButton;
@@ -107,33 +82,36 @@ type
     cboSort: TComboBox;
     Label4: TLabel;
     actAbout: TAction;
-    OpenHelp1: TMenuItem;
-    N3: TMenuItem;
-    About1: TMenuItem;
     actHelpContents: TAction;
     AppEvents: TApplicationEvents;
     Img16: TImageList;
     Img32: TImageList;
     Img24: TImageList;
-    popMenu: TPopupMenu;
-    Repositories1: TMenuItem;
-    Options1: TMenuItem;
-    View1: TMenuItem;
-    Help1: TMenuItem;
-    Download1: TMenuItem;
-    CheckAll2: TMenuItem;
-    CheckNone2: TMenuItem;
-    CheckSelected2: TMenuItem;
-    N8: TMenuItem;
-    Cancel2: TMenuItem;
-    N9: TMenuItem;
-    Exit2: TMenuItem;
-    N10: TMenuItem;
-    Setup1: TMenuItem;
-    ConfigureColumns2: TMenuItem;
-    Refresh1: TMenuItem;
-    Contents1: TMenuItem;
-    About2: TMenuItem;
+    mRepos: TPopupMenu;
+    MenuItem17: TMenuItem;
+    MenuItem18: TMenuItem;
+    CheckAll3: TMenuItem;
+    CheckNone3: TMenuItem;
+    CheckSelected3: TMenuItem;
+    Cancel3: TMenuItem;
+    N11: TMenuItem;
+    Exit3: TMenuItem;
+    mOptions: TPopupMenu;
+    MenuItem20: TMenuItem;
+    mView: TPopupMenu;
+    MenuItem38: TMenuItem;
+    mHelp: TPopupMenu;
+    MenuItem56: TMenuItem;
+    ConfigureColumns1: TMenuItem;
+    About1: TMenuItem;
+    actMenuRepos: TAction;
+    actMenuOptions: TAction;
+    actMenuView: TAction;
+    actMenuHelp: TAction;
+    mSort: TMenuItem;
+    mSortAsc: TMenuItem;
+    mSortDesc: TMenuItem;
+    N1: TMenuItem;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -162,15 +140,29 @@ type
     procedure actHelpContentsExecute(Sender: TObject);
     function AppEventsHelp(Command: Word; Data: NativeInt;
       var CallHelp: Boolean): Boolean;
-  private                    
+    procedure MenuReposClick(Sender: TObject);
+    procedure MenuOptionsClick(Sender: TObject);
+    procedure MenuViewClick(Sender: TObject);
+    procedure MenuHelpClick(Sender: TObject);
+  private
     FEnabled: Boolean; //Whether UI controls should be enabled, used for busy state
     FRepos: TGitHubRepos; //Master list of repositories
     FCurFile: TDownloadFile; //Current file being downloaded, nil if none
     FCurPos: Integer; //Download progress current value
     FCurMax: Integer; //Download progress max value
     FThreadCancel: TThreadCancelEvent; //Pointer to thread procedure to cancel
-    {$IFDEF USE_VCL_STYLE_UTILS}
-    NCControls: TNCControls;
+    FNCControls: TNCControls; //Non-client menu buttons
+    {$IFDEF V1}
+    FRepoList: TVirtualStringTree; //Virtual String Tree for future UI
+    procedure lstRepos2GetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure lstRepos2InitNode(Sender: TBaseVirtualTree; ParentNode,
+      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+    procedure lstRepos2Checked(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure lstRepos2Checking(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      var NewState: TCheckState; var Allowed: Boolean);
+    procedure CreateColumns;
+    procedure SetupVST;
     {$ENDIF}
     function GetRepos(const PageNum: Integer): TGitHubRepos;
     procedure GetRepoPage(const PageNum: Integer);
@@ -195,12 +187,9 @@ type
     procedure SaveConfig;
     procedure CloseHelpWnd;
     function OpenHelp(const AContextID: Integer): Boolean;
-    {$IFDEF USE_VCL_STYLE_UTILS}
     procedure SetupNC;
-    procedure MenuClick(Sender: TObject);
-    {$ENDIF}
   public
-    function DestDir: String;
+
   end;
   {$WARN SYMBOL_PLATFORM ON}
 
@@ -212,7 +201,14 @@ implementation
 {$R *.dfm}
 
 uses
-  System.IOUtils, System.DateUtils, Soap.XSBuiltIns, System.Math;
+  System.IOUtils, System.DateUtils, System.Math, System.StrUtils;
+
+type
+  PRepoRec = ^TRepoRec;
+
+  TRepoRec = packed record
+    Repo: TGitHubRepo;
+  end;
 
 { TfrmMain }
 
@@ -243,8 +239,9 @@ begin
   txtErrorLog.Align:= alClient;
   SetEnabledState(True);
   ShowErrorLog(False);
-  {$IFDEF USE_VCL_STYLE_UTILS}
   SetupNC;
+  {$IFDEF V1}
+  SetupVST;
   {$ENDIF}
 
   //Populate list of columns that can be sorted
@@ -254,6 +251,34 @@ begin
   PopulateMainMenuSort;
 
 end;
+
+{$IFDEF V1}
+procedure TfrmMain.SetupVST;
+begin
+  lstRepos.Visible:= False;
+  chkCheckAll.Visible:= False;
+
+  FRepoList:= TVirtualStringTree.Create(Self);
+  FRepoList.Parent:= Self;
+  FRepoList.Align:= alClient;
+  FRepoList.BorderStyle:= bsNone;
+  FRepoList.DrawSelectionMode:= smBlendedRectangle;
+  FRepoList.EmptyListMessage:= ' No Repositories';
+  FRepoList.Header.AutoSizeIndex:= 0;
+  FRepoList.Header.Options:= [hoColumnResize, hoDrag, hoShowImages, hoShowSortGlyphs, hoVisible];
+  FRepoList.Images:= Img16;
+  FRepoList.TreeOptions.MiscOptions:= [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick];
+  FRepoList.TreeOptions.PaintOptions:= [toHideFocusRect, toHotTrack, toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages];
+  FRepoList.TreeOptions.SelectionOptions:= [toExtendedFocus, toFullRowSelect, toRightClickSelect];
+  FRepoList.OnChecked:= lstRepos2Checked;
+  FRepoList.OnChecking:= lstRepos2Checking;
+  FRepoList.OnGetText:= lstRepos2GetText;
+  FRepoList.OnInitNode:= lstRepos2InitNode;
+
+  CreateColumns;
+
+end;
+{$ENDIF}
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
@@ -281,27 +306,90 @@ begin
   end;
 end;
 
-{$IFDEF USE_VCL_STYLE_UTILS}
 procedure TfrmMain.SetupNC;
 begin
- NCControls := TNCControls.Create(Self);
- NCControls.Images := Img16;
+ FNCControls := TNCControls.Create(Self);
+ //NCControls.Images := Img24;
+ FNCControls.ShowSystemMenu:= False;
 
- NCControls.Controls.AddEx<TNCButton>;
- NCControls[0].GetAs<TNCButton>.Style := nsSplitButton;
- NCControls[0].GetAs<TNCButton>.ImageStyle := isGrayHot;
- NCControls[0].GetAs<TNCButton>.ImageIndex := 71;
- NCControls[0].BoundsRect := Rect(30,5,100,25);
- NCControls[0].Caption := 'Menu';
- NCControls[0].GetAs<TNCButton>.DropDownMenu:= popMenu;
- NCControls[0].GetAs<TNCButton>.OnClick := MenuClick;
- Self.Menu:= nil;
+
+ FNCControls.Controls.AddEx<TNCButton>;
+ FNCControls[0].GetAs<TNCButton>.Style := nsSplitButton;
+ FNCControls[0].GetAs<TNCButton>.ImageStyle := isGrayHot;
+ FNCControls[0].GetAs<TNCButton>.ImageIndex := 71;
+ FNCControls[0].BoundsRect := Rect(1,1,140,32);
+ FNCControls[0].Caption := '&Repositories';
+ FNCControls[0].GetAs<TNCButton>.DropDownMenu:= mRepos;
+ FNCControls[0].GetAs<TNCButton>.OnClick := MenuReposClick;
+
+ FNCControls.Controls.AddEx<TNCButton>;
+ FNCControls[1].GetAs<TNCButton>.Style := nsSplitButton;
+ FNCControls[1].GetAs<TNCButton>.ImageStyle := isGrayHot;
+ FNCControls[1].GetAs<TNCButton>.ImageIndex := 33;
+ FNCControls[1].BoundsRect := Rect(141,1,260,32);
+ FNCControls[1].Caption := '&Options';
+ FNCControls[1].GetAs<TNCButton>.DropDownMenu:= mOptions;
+ FNCControls[1].GetAs<TNCButton>.OnClick := MenuOptionsClick;
+
+ FNCControls.Controls.AddEx<TNCButton>;
+ FNCControls[2].GetAs<TNCButton>.Style := nsSplitButton;
+ FNCControls[2].GetAs<TNCButton>.ImageStyle := isGrayHot;
+ FNCControls[2].GetAs<TNCButton>.ImageIndex := 55;
+ FNCControls[2].BoundsRect := Rect(261,1,360,32);
+ FNCControls[2].Caption := '&View';
+ FNCControls[2].GetAs<TNCButton>.DropDownMenu:= mView;
+ FNCControls[2].GetAs<TNCButton>.OnClick := MenuViewClick;
+
+ FNCControls.Controls.AddEx<TNCButton>;
+ FNCControls[3].GetAs<TNCButton>.Style := nsSplitButton;
+ FNCControls[3].GetAs<TNCButton>.ImageStyle := isGrayHot;
+ FNCControls[3].GetAs<TNCButton>.ImageIndex := 94;
+ FNCControls[3].BoundsRect := Rect(361,1,460,32);
+ FNCControls[3].Caption := '&Help';
+ FNCControls[3].GetAs<TNCButton>.DropDownMenu:= mHelp;
+ FNCControls[3].GetAs<TNCButton>.OnClick := MenuHelpClick;
+
+
 end;
-{$ENDIF}
 
-procedure TfrmMain.MenuClick(Sender: TObject);
+procedure TfrmMain.MenuReposClick(Sender: TObject);
+var
+  P: TPoint;
 begin
-  //NCControls[0].GetAs<TNCButton>.
+  P.X:= FNCControls[0].Left - 6;
+  P.Y:= 0;
+  P:= ClientToScreen(P);
+  mRepos.Popup(P.X, P.Y);
+end;
+
+procedure TfrmMain.MenuOptionsClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  P.X:= FNCControls[1].Left - 6;
+  P.Y:= 0;
+  P:= ClientToScreen(P);
+  mOptions.Popup(P.X, P.Y);
+end;
+
+procedure TfrmMain.MenuViewClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  P.X:= FNCControls[2].Left - 6;
+  P.Y:= 0;
+  P:= ClientToScreen(P);
+  mView.Popup(P.X, P.Y);
+end;
+
+procedure TfrmMain.MenuHelpClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  P.X:= FNCControls[3].Left - 6;
+  P.Y:= 0;
+  P:= ClientToScreen(P);
+  mHelp.Popup(P.X, P.Y);
 end;
 
 procedure TfrmMain.LoadConfig;
@@ -444,6 +532,7 @@ var
 begin
   //Populates list view with repository items
   //TODO: Change entire mechanism to use Add/Edit/Delete events
+  {$IFNDEF V1}
   lstRepos.Items.BeginUpdate;
   try
     lstRepos.Items.Clear;
@@ -465,6 +554,20 @@ begin
   finally
     lstRepos.Items.EndUpdate;
   end;
+  {$ELSE}
+  FRepoList.BeginUpdate;
+  try
+    FRepoList.RootNodeCount:= FRepos.Count;
+    for X := 0 to FRepos.Count-1 do begin
+      //HOW THE FUCK DO I ASSIGN THE REPO OBJECTS AND CHECKED STATE???
+
+
+    end;
+    //TODO...
+  finally
+    FRepoList.EndUpdate;
+  end;
+  {$ENDIF}
 end;
 
 procedure TfrmMain.CloseHelpWnd;
@@ -509,12 +612,8 @@ end;
 
 function TfrmMain.AppIsConfigured: Boolean;
 begin
-  //#29 - Remove requirement of personal access token
-  //Result:= frmSetup.Token <> '';
-  Result:= True;
-
-  if Result then
-    Result:= frmSetup.User <> '';
+  //TODO: Implement auth and repo accounts...
+  Result:= frmSetup.User <> '';
   if Result then
     Result:= frmSetup.BackupDir <> '';
   if Result then
@@ -609,10 +708,100 @@ begin
     end else begin
       chkCheckAll.State:= TCheckBoxState.cbGrayed;
     end;
+    {$IFDEF V1}
+    case chkCheckAll.State of
+      TCheckBoxState.cbUnchecked: FRepoList.Header.Columns[0].CheckState:= TCheckState.csUncheckedNormal;
+      TCheckBoxState.cbChecked: FRepoList.Header.Columns[0].CheckState:= TCheckState.csCheckedNormal;
+      TCheckBoxState.cbGrayed: FRepoList.Header.Columns[0].CheckState:= TCheckState.csMixedNormal;
+    end;
+    {$ENDIF}
+
   finally
     chkCheckAll.Tag:= 0;
   end;
 end;
+
+{$IFDEF V1}
+procedure TfrmMain.lstRepos2Checked(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+begin
+  FRepoList.Refresh;
+end;
+
+procedure TfrmMain.lstRepos2Checking(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; var NewState: TCheckState; var Allowed: Boolean);
+var
+  R: TGitHubRepo;
+begin
+  R:= TGitHubRepo(Node.GetData);
+  if lstRepos.Tag <> 0 then begin
+    //Revert back to prior state
+    Allowed:= False;
+  end else begin
+    if FEnabled then begin
+      R.Checked:= NewState = TCheckState.csCheckedNormal;
+      UpdateDownloadAction;
+      UpdateCheckAll;
+    end else begin
+      Allowed:= False;
+    end;
+  end;
+
+  FRepoList.Refresh;
+end;
+
+procedure TfrmMain.lstRepos2GetText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
+  var CellText: string);
+var
+  //Rec: PRepoRec;
+  R: TGitHubRepo;
+begin
+  //Rec:= Sender.GetNodeData(Node);
+  R:= FRepos[Node.Index];
+  //CellText:= Rec.Arr[Column];
+  //TODO: Draw data relevant to column index...
+  if Assigned(R) then begin
+    case Column of
+      0: begin
+        CellText:= R.Name;
+      end;
+      1: begin
+        CellText:= R.DefaultBranch;
+      end;
+      2: begin
+        CellText:= IfThen(R.IsPrivate, 'Private', 'Public');
+      end;
+      3: begin
+        CellText:= R.Language;
+      end;
+      4: begin
+        CellText:= DataSizeStr(R.Size * 1024); //TODO: NOT RELIABLE!!!
+      end;
+      5: begin
+        CellText:= frmSetup.FormatTime(R.Pushed);
+      end;
+      6: begin
+        CellText:= R.Description;
+      end;
+    end;
+  end;
+end;
+
+procedure TfrmMain.lstRepos2InitNode(Sender: TBaseVirtualTree; ParentNode,
+  Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+var
+  Level: Integer;
+  R: TGitHubRepo;
+begin
+  Node.SetData(FRepos[Node.Index]);
+
+  Level := FRepoList.GetNodeLevel(Node);
+  if Level = 0 then
+    Node.CheckType := ctCheckBox;
+
+end;
+{$ENDIF}
 
 procedure TfrmMain.lstReposClick(Sender: TObject);
 begin
@@ -669,6 +858,7 @@ begin
   //TODO: Populate menu items in the main menu for column sorting...
   //IMPORTANT: This shall be a one-time thing, due to the nature
   //of how this particular submenu is formatted.
+
   L:= TStringList.Create;
   try
     ListRepoFields(L);
@@ -688,6 +878,7 @@ begin
   finally
     L.Free;
   end;
+
 end;
 
 procedure TfrmMain.MenuSortClick(Sender: TObject);
@@ -710,11 +901,6 @@ begin
     Self.btnSortDir.Tag:= 1;
   end;
   Self.SortRepos;
-end;
-
-function TfrmMain.DestDir: String;
-begin
-  Result:= frmSetup.BackupDir;
 end;
 
 procedure TfrmMain.actCheckAllExecute(Sender: TObject);
@@ -770,9 +956,16 @@ var
 begin
   //Returns number of checked repos
   Result:= 0;
-  for X := 0 to lstRepos.Items.Count-1 do begin
-    if lstRepos.Items[X].Checked then
-      Inc(Result);
+  if lstRepos.Visible then begin
+    for X := 0 to lstRepos.Items.Count-1 do begin
+      if lstRepos.Items[X].Checked then
+        Inc(Result);
+    end;
+  end else begin
+    for X := 0 to FRepos.Count-1 do begin
+      if FRepos[X].Checked then
+        Inc(Result);
+    end;
   end;
 end;
 
@@ -795,10 +988,8 @@ end;
 
 procedure TfrmMain.ActsUpdate(Action: TBasicAction; var Handled: Boolean);
 begin
-  //TODO: Adjust actions based on current state of application...
-
-  SetEnabledState(FEnabled); //TODO: This is just temporary!
-
+  //Adjust actions based on current state of application...
+  SetEnabledState(FEnabled);
 end;
 
 procedure TfrmMain.SetEnabledState(const Enabled: Boolean);
@@ -884,6 +1075,30 @@ begin
   txtErrorLog.Lines.Append('EXCEPTION on file '+CurFile.Name+': '+CurFile.Error);
 end;
 
+{$IFDEF V1}
+procedure TfrmMain.CreateColumns;
+var
+  C: TVirtualTreeColumn;
+  function AC(const Text: String; const Width: Integer): TVirtualTreeColumn;
+  begin
+    Result:= FRepoList.Header.Columns.Add;
+    Result.Text:= Text;
+    Result.Width:= Width;
+  end;
+begin
+  C:= AC('Repository Name', 180);
+  C.CheckBox:= True;
+
+  AC('Default Branch', 100);
+  AC('Visibility', 65);
+  AC('Language', 80);
+  AC('Size', 80);
+  AC('Last Pushed', 150);
+  AC('Description', 386);
+
+end;
+{$ENDIF}
+
 function TfrmMain.CreateDownloadThread: TDownloadThread;
 begin
   //Create a new instance of download thread
@@ -938,10 +1153,10 @@ begin
   //Actual downloading of checked repos
   try
     //Attempt to create destination directory, if not already...
-    ForceDirectories(DestDir);
+    ForceDirectories(frmSetup.BackupDir);
   except
     on E: Exception do begin
-      if not DirectoryExists(DestDir) then begin
+      if not DirectoryExists(frmSetup.BackupDir) then begin
         MessageDlg('Invalid destination directory!', mtError, [mbOK], 0);
         Application.ProcessMessages;
         actSetup.Execute;
@@ -957,7 +1172,7 @@ begin
       if lstRepos.Items[X].Checked then begin
         O:= FRepos[X];
         T.AddFile(O.S['html_url']+'/archive/'+O.S['default_branch']+'.zip',
-          TPath.Combine(DestDir, MakeFilenameValid(O.S['name']+'-'+O.S['default_branch']+'.zip')));
+          TPath.Combine(frmSetup.BackupDir, MakeFilenameValid(O.S['name']+'-'+O.S['default_branch']+'.zip')));
       end;
     end;
     T.Start;
@@ -970,7 +1185,5 @@ end;
 
 initialization
   UseLatestCommonDialogs:= True;
-{$IFDEF USE_VCL_STYLE_UTILS}
   TStyleManager.Engine.RegisterStyleHook(TButton, TButtonStyleHookFix);
-{$ENDIF}
 end.
