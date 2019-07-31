@@ -80,6 +80,7 @@ type
     function GetUserRepos(const User: String; const PageNum: Integer = 0): TGitHubRepos;
     function GetOrgRepos(const Org: String; const PageNum: Integer = 0): TGitHubRepos;
     function GetBranches(const Owner, Repo: String; const PageNum: Integer = 0): TGitHubBranches;
+    function GetCommits(const Owner, Repo, Branch: String; const PageNum: Integer = 0): TGitHubCommits;
   published
     property Token: String read GetToken write SetToken;
   end;
@@ -131,6 +132,8 @@ type
     property Size: Int64 read GetSize;
     property Description: String read GetDescription;
 
+    //TODO: This should not be on this level, and should consider
+    //  changing to a "Data: Pointer" property instead.
     property Checked: Boolean read FChecked write SetChecked;
   end;
 
@@ -174,13 +177,14 @@ type
     property TreeSha: String read GetTreeSha;
   end;
 
-  TGitHubCommits = class(TObjectList<TGitHubCommits>)
+  TGitHubCommits = class(TObjectList<TGitHubCommit>)
   private
 
   public
 
   end;
 
+  //TODO: What was I doing here exactly?
   TGitHubAccount = class(TCollectionItem)
   private
     FToken: String;
@@ -376,6 +380,32 @@ begin
         O:= Res.O[X];
         B:= TGitHubBranch.Create(O);
         Result.Add(B);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      Result.Free;
+      raise E;
+    end;
+  end;
+end;
+
+function TGitHub.GetCommits(const Owner, Repo, Branch: String;
+  const PageNum: Integer): TGitHubCommits;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  C: TGitHubCommit;
+begin
+  Result:= TGitHubCommits.Create(False);
+  try
+    Res:= FApi.GetCommits(Owner, Repo, Branch, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        C:= TGitHubCommit.Create(O);
+        Result.Add(C);
       end;
     end;
   except

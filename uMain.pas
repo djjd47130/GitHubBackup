@@ -448,7 +448,7 @@ begin
       end;
       Cont:= Lst.Count > 0;
     finally
-      Lst.Free;
+      FreeAndNil(Lst);
     end;
     if Cont then
       GetRepoPage(PageNum+1); //RECURSIVE - Get next page
@@ -536,20 +536,26 @@ begin
   lstRepos.Items.BeginUpdate;
   try
     lstRepos.Items.Clear;
-    for X := 0 to FRepos.Count-1 do begin
-      O:= FRepos[X];
-      I:= lstRepos.Items.Add;
-      I.Data:= O;
-      I.Caption:= O.Name;
-      I.SubItems.Add(O.DefaultBranch);
-      if O.IsPrivate = True then
-        I.SubItems.Add('Private')
-      else
-        I.SubItems.Add('Public');
-      I.SubItems.Add(O.Language);
-      I.SubItems.Add(DataSizeStr(O.Size * 1024)); //TODO: NOT RELIABLE!!!
-      I.SubItems.Add(FormatDateTime('yyyy-mm-dd h:nn ampm', O.Pushed));
-      I.SubItems.Add(O.Description);
+    lstRepos.OnItemChecked:= nil;
+    try
+      for X := 0 to FRepos.Count-1 do begin
+        O:= FRepos[X];
+        I:= lstRepos.Items.Add;
+        I.Data:= O;
+        I.Caption:= O.Name;
+        I.SubItems.Add(O.DefaultBranch);
+        if O.IsPrivate = True then
+          I.SubItems.Add('Private')
+        else
+          I.SubItems.Add('Public');
+        I.SubItems.Add(O.Language);
+        I.SubItems.Add(DataSizeStr(O.Size * 1024)); //TODO: NOT RELIABLE!!!
+        I.SubItems.Add(FormatDateTime('yyyy-mm-dd h:nn ampm', O.Pushed));
+        I.SubItems.Add(O.Description);
+        I.Checked:= O.Checked;
+      end;
+    finally
+      lstRepos.OnItemChecked:= lstReposItemChecked;
     end;
   finally
     lstRepos.Items.EndUpdate;
@@ -832,6 +838,8 @@ begin
 end;
 
 procedure TfrmMain.lstReposItemChecked(Sender: TObject; Item: TListItem);
+var
+  R: TGitHubRepo;
 begin
   if lstRepos.Tag <> 0 then begin
     //Revert back to prior state
@@ -843,6 +851,8 @@ begin
     end;
   end else begin
     if FEnabled then begin
+      R:= TGitHubRepo(Item.Data);
+      R.Checked:= Item.Checked;
       UpdateDownloadAction;
       UpdateCheckAll;
     end;
@@ -956,29 +966,33 @@ var
 begin
   //Returns number of checked repos
   Result:= 0;
-  if lstRepos.Visible then begin
-    for X := 0 to lstRepos.Items.Count-1 do begin
-      if lstRepos.Items[X].Checked then
-        Inc(Result);
-    end;
-  end else begin
-    for X := 0 to FRepos.Count-1 do begin
-      if FRepos[X].Checked then
-        Inc(Result);
-    end;
+  for X := 0 to FRepos.Count-1 do begin
+    if FRepos[X].Checked then
+      Inc(Result);
   end;
 end;
 
 procedure TfrmMain.chkCheckAllClick(Sender: TObject);
 var
   X: Integer;
+  R: TGitHubRepo;
 begin
   //User clicked on check all checkbox at top of list
+  //TODO: Why has this become very slow? List of 60 some repos
+  //  now takes 2-3 seconds to check all...
   if chkCheckAll.Tag = 0 then begin
     lstRepos.OnItemChecked:= nil;
     try
-      for X := 0 to lstRepos.Items.Count-1 do
-        lstRepos.Items[X].Checked:= chkCheckAll.Checked;
+      lstRepos.Items.BeginUpdate;
+      try
+        for X := 0 to lstRepos.Items.Count-1 do begin
+          lstRepos.Items[X].Checked:= chkCheckAll.Checked;
+          R:= TGitHubRepo(lstRepos.Items[X].Data);
+          R.Checked:= chkCheckAll.Checked;
+        end;
+      finally
+        lstRepos.Items.EndUpdate;
+      end;
       UpdateDownloadAction;
     finally
       lstRepos.OnItemChecked:= lstReposItemChecked;
@@ -1169,7 +1183,7 @@ begin
     //Download all checked repos...
     T:= CreateDownloadThread;
     for X := 0 to FRepos.Count-1 do begin
-      if lstRepos.Items[X].Checked then begin
+      if FRepos[X].Checked then begin
         O:= FRepos[X];
         T.AddFile(O.S['html_url']+'/archive/'+O.S['default_branch']+'.zip',
           TPath.Combine(frmSetup.BackupDir, MakeFilenameValid(O.S['name']+'-'+O.S['default_branch']+'.zip')));

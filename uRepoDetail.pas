@@ -23,12 +23,16 @@ type
     cboCommit: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure cboBranchClick(Sender: TObject);
   private
     FRepo: TGitHubRepo;
+    procedure ClearCommits;
+    procedure ClearBranches;
   public
     procedure Clear;
     procedure LoadRepo(const ARepo: TGitHubRepo);
     procedure LoadBranches;
+    procedure LoadCommits;
   end;
 
 var
@@ -40,17 +44,25 @@ implementation
 
 { TfrmRepoDetail }
 
-procedure TfrmRepoDetail.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Clear;
-end;
-
 procedure TfrmRepoDetail.FormCreate(Sender: TObject);
 begin
   //
 end;
 
+procedure TfrmRepoDetail.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Clear;
+end;
+
 procedure TfrmRepoDetail.Clear;
+begin
+  FRepo:= nil;
+  ClearBranches;
+  ClearCommits;
+  //TODO: UI...
+end;
+
+procedure TfrmRepoDetail.ClearBranches;
 var
   X: Integer;
 begin
@@ -58,8 +70,16 @@ begin
     cboBranch.Items.Objects[X].Free;
   end;
   cboBranch.Clear;
-  FRepo:= nil;
+end;
 
+procedure TfrmRepoDetail.ClearCommits;
+var
+  X: Integer;
+begin
+  for X := 0 to cboCommit.Items.Count-1 do begin
+    cboCommit.Items.Objects[X].Free;
+  end;
+  cboCommit.Clear;
 end;
 
 procedure TfrmRepoDetail.LoadRepo(const ARepo: TGitHubRepo);
@@ -75,6 +95,8 @@ begin
   if cboBranch.ItemIndex < 0 then
     cboBranch.ItemIndex:= 0;
 
+  LoadCommits;
+
 end;
 
 procedure TfrmRepoDetail.LoadBranches;
@@ -82,6 +104,7 @@ var
   X: Integer;
   BL: TGitHubBranches;
 begin
+  ClearBranches;
   BL:= DM.GitHub.GetBranches(FRepo.Owner, FRepo.Name, 1);
   try
     for X := 0 to BL.Count-1 do begin
@@ -91,6 +114,28 @@ begin
   finally
     BL.Free;
   end;
+end;
+
+procedure TfrmRepoDetail.LoadCommits;
+var
+  X: Integer;
+  CL: TGitHubCommits;
+begin
+  ClearCommits;
+  CL:= DM.GitHub.GetCommits(FRepo.Owner, FRepo.Name, cboBranch.Text, 1);
+  try
+    for X := 0 to CL.Count-1 do begin
+      cboCommit.Items.AddObject(CL[X].Message, CL[X]);
+    end;
+    cboCommit.ItemIndex:= 0;
+  finally
+    CL.Free;
+  end;
+end;
+
+procedure TfrmRepoDetail.cboBranchClick(Sender: TObject);
+begin
+  LoadCommits;
 end;
 
 end.

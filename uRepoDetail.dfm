@@ -108,6 +108,7 @@ object frmRepoDetail: TfrmRepoDetail
       ItemIndex = 0
       TabOrder = 0
       Text = 'default'
+      OnClick = cboBranchClick
       Items.Strings = (
         'default')
     end
@@ -140,11 +141,7 @@ object frmRepoDetail: TfrmRepoDetail
       Height = 21
       Align = alLeft
       Style = csDropDownList
-      ItemIndex = 0
       TabOrder = 0
-      Text = 'default'
-      Items.Strings = (
-        'default')
     end
   end
 end

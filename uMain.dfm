@@ -35,9 +35,20 @@ object frmMain: TfrmMain
     ExplicitTop = 284
     ExplicitWidth = 976
   end
+  object Prog: TProgressBar
+    Left = 0
+    Top = 360
+    Width = 1060
+    Height = 23
+    HelpContext = 1008
+    Align = alBottom
+    TabOrder = 5
+    Visible = False
+    ExplicitTop = 29
+  end
   object lstRepos: TListView
     Left = 0
-    Top = 52
+    Top = 29
     Width = 1060
     Height = 77
     HelpContext = 1006
@@ -82,6 +93,7 @@ object frmMain: TfrmMain
     OnClick = lstReposClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
+    ExplicitTop = 52
   end
   object Stat: TStatusBar
     Left = 0
@@ -305,16 +317,6 @@ object frmMain: TfrmMain
     Cursor = crHandPoint
     TabOrder = 4
     OnClick = chkCheckAllClick
-  end
-  object Prog: TProgressBar
-    Left = 0
-    Top = 29
-    Width = 1060
-    Height = 23
-    HelpContext = 1008
-    Align = alTop
-    TabOrder = 5
-    Visible = False
   end
   object tmrDisplay: TTimer
     Interval = 200
