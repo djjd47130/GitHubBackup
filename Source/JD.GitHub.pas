@@ -7,7 +7,7 @@ unit JD.GitHub;
   NOTE: This unit is temporary, and will be re-written as a part of
   a much larger GitHub API wrapper library.
 
-  Main Object: TGitHubAPI
+  Main Component: TGitHub
 
   Usage:
   - Create an instance of TGitHubAPI
@@ -28,6 +28,7 @@ uses
   JD.GitHub.Common;
 
 const
+  //TODO: These are temporary and related to UI - migrate to better location
   REPO_FLD_NAME = 0;
   REPO_FLD_FULLNAME = 1;
   REPO_FLD_CREATED = 2;

@@ -3,7 +3,7 @@
         <ProjectGuid>{001777F1-82C1-4E07-BD50-4C201E3F5F1A}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="GitHubBackup.dproj">
+        <Projects Include="JDGitHubBackup.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="UpdateServer\JDGitHubBackupSvrSvc.dproj">
@@ -23,14 +23,14 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="GitHubBackup">
-        <MSBuild Projects="GitHubBackup.dproj"/>
+    <Target Name="JDGitHubBackup">
+        <MSBuild Projects="JDGitHubBackup.dproj"/>
     </Target>
-    <Target Name="GitHubBackup:Clean">
-        <MSBuild Projects="GitHubBackup.dproj" Targets="Clean"/>
+    <Target Name="JDGitHubBackup:Clean">
+        <MSBuild Projects="JDGitHubBackup.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GitHubBackup:Make">
-        <MSBuild Projects="GitHubBackup.dproj" Targets="Make"/>
+    <Target Name="JDGitHubBackup:Make">
+        <MSBuild Projects="JDGitHubBackup.dproj" Targets="Make"/>
     </Target>
     <Target Name="JDGitHubBackupSvrSvc">
         <MSBuild Projects="UpdateServer\JDGitHubBackupSvrSvc.dproj"/>
@@ -60,13 +60,13 @@
         <MSBuild Projects="GitHubLib\Packages\dclJDGitHubComponents.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="GitHubBackup;JDGitHubBackupSvrSvc;JDGitHubComponents;dclJDGitHubComponents"/>
+        <CallTarget Targets="JDGitHubBackup;JDGitHubBackupSvrSvc;JDGitHubComponents;dclJDGitHubComponents"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GitHubBackup:Clean;JDGitHubBackupSvrSvc:Clean;JDGitHubComponents:Clean;dclJDGitHubComponents:Clean"/>
+        <CallTarget Targets="JDGitHubBackup:Clean;JDGitHubBackupSvrSvc:Clean;JDGitHubComponents:Clean;dclJDGitHubComponents:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GitHubBackup:Make;JDGitHubBackupSvrSvc:Make;JDGitHubComponents:Make;dclJDGitHubComponents:Make"/>
+        <CallTarget Targets="JDGitHubBackup:Make;JDGitHubBackupSvrSvc:Make;JDGitHubComponents:Make;dclJDGitHubComponents:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

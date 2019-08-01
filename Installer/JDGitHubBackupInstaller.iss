@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "JD GitHub Backup"
-#define MyAppVersion "0.2.6"
+#define MyAppVersion "0.2.8"
 #define MyAppPublisher "JD Software Inc"
 #define MyAppURL "http://www.jerrydodge.com/GitHubBackup"
-#define MyAppExeName "GitHubBackup.exe"
+#define MyAppExeName "JDGitHubBackup.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -21,9 +21,9 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=D:\Development\GitHub\GitHubBackup\Installer\Output
-OutputBaseFilename=GitHubBackupSetup
-SetupIconFile=D:\Development\GitHub\GitHubBackup\Icons\media (1).ico
+OutputDir=Output\
+OutputBaseFilename=JDGitHubBackupSetup
+SetupIconFile=..\Icons\media (1).ico 
 Compression=lzma
 SolidCompression=yes
 
@@ -35,10 +35,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\GitHubBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion     
-Source: "D:\Development\GitHub\GitHubBackup\Win32\Release\JDGitHubBackupHelp.chm"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Win32\Release\JDGitHubBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Win32\Release\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Win32\Release\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion     
+Source: "..\Win32\Release\JDGitHubBackupHelp.chm"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

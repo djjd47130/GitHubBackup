@@ -9,7 +9,7 @@ Simple UI for bulk downloading GitHub repositories
 
 This project allows for a very simple download of multiple repositories at once from any given user or organization. Simply fetch a list of all repositories, place a check by the ones you want, and click "Download" to get them all at once.
 
-![GitHub backup User Interface](GitHubBackupUI.png "GitHub backup User Interface")
+![GitHub backup User Interface](JDGitHubBackupUI.png "JD GitHub backup User Interface")
 
 ## Background
 

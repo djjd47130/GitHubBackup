@@ -1,4 +1,4 @@
-program GitHubBackup;
+program JDGitHubBackup;
 
 uses
   Vcl.Forms,
