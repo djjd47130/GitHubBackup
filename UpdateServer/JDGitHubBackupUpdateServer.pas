@@ -3,7 +3,10 @@ unit JDGitHubBackupUpdateServer;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.SvcMgr, Vcl.Dialogs;
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes,
+  Vcl.SvcMgr,
+  Registry;
 
 type
   TJDGitHubBackupUpdateSvr = class(TService)
@@ -33,9 +36,19 @@ begin
 end;
 
 procedure TJDGitHubBackupUpdateSvr.ServiceAfterInstall(Sender: TService);
+var
+  R: TRegistry;
 begin
-  //TODO: Write description to registry...
+  R:= TRegistry.Create(KEY_READ or KEY_WRITE);
+  try
+    R.RootKey:= HKEY_LOCAL_MACHINE;
+    //TODO: Write description to registry...
 
+
+
+  finally
+    FreeAndNil(R);
+  end;
 end;
 
 end.
