@@ -275,6 +275,8 @@ type
     FApi: TGitHubAPI;
     function GetToken: String;
     procedure SetToken(const Value: String);
+    procedure GetBranchesPage(const Owner, Repo: String; PageNum: Integer;
+      AList: TGitHubBranches; const ARecursive: Boolean = False);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -684,28 +686,41 @@ end;
 
 function TGitHub.GetBranches(const Owner, Repo: String;
   const PageNum: Integer): TGitHubBranches;
-var
-  Res: ISuperArray;
-  O: ISuperObject;
-  X: Integer;
-  B: TGitHubBranch;
 begin
+  //PageNum = 0 = All Pages
+  //PageNum > 0 = Specific Page
   Result:= TGitHubBranches.Create(False);
   try
-    Res:= FApi.GetBranches(Owner, Repo, PageNum);
-    if Assigned(Res) then begin
-      for X := 0 to Res.Length-1 do begin
-        O:= Res.O[X];
-        B:= TGitHubBranch.Create(O);
-        Result.Add(B);
-      end;
-    end;
+    GetBranchesPage(Owner, Repo, PageNum, Result, PageNum = 0);
   except
     on E: Exception do begin
       FreeAndNil(Result);
       raise E;
     end;
   end;
+end;
+
+procedure TGitHub.GetBranchesPage(const Owner, Repo: String;
+  PageNum: Integer; AList: TGitHubBranches; const ARecursive: Boolean = False);
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  B: TGitHubBranch;
+begin
+  if PageNum = 0 then
+    PageNum:= 1;
+  Res:= FApi.GetBranches(Owner, Repo, PageNum);
+  if Assigned(Res) then begin
+    for X := 0 to Res.Length-1 do begin
+      O:= Res.O[X];
+      B:= TGitHubBranch.Create(O);
+      AList.Add(B);
+    end;
+  end;
+  //Get next page
+  if ARecursive and (Res.Length > 0) then
+    GetBranchesPage(Owner, Repo, PageNum+1, AList, True);
 end;
 
 function TGitHub.GetCommits(const Owner, Repo, Branch: String;

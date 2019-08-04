@@ -105,7 +105,7 @@ var
   BL: TGitHubBranches;
 begin
   ClearBranches;
-  BL:= DM.GitHub.GetBranches(FRepo.Owner, FRepo.Name, 1);
+  BL:= DM.GitHub.GetBranches(FRepo.Owner, FRepo.Name, 0);
   try
     for X := 0 to BL.Count-1 do begin
       cboBranch.Items.AddObject(BL[X].Name, BL[X]);

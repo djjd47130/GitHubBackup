@@ -181,6 +181,7 @@ procedure TDownloadThread.DoDownload(AFile: TDownloadFile);
 var
   S: TFileStream;
   EM: String;
+  EC: DWORD;
   TmpFile: String;
 begin
   AFile.FStatus:= dsProgress;
@@ -189,24 +190,30 @@ begin
   //TODO: Don't immediately overwrite the file - download to temp file
   //  first and then overwrite original when finished
   TmpFile:= AFile.Filename + '.JDTMP';
-  S:= TFileStream.Create(TmpFile, fmCreate);
   try
+    S:= TFileStream.Create(TmpFile, fmCreate);
     try
+      try
 
-      // -------- ACTUAL DOWNLOAD --------
-      FWeb.Get(AFile.URL, S);
+        // -------- ACTUAL DOWNLOAD --------
+        FWeb.Get(AFile.URL, S);
 
-      AFile.FStatus:= dsComplete;
-    except
-      on E: Exception do begin
-        EM:= E.Message;
+        AFile.FStatus:= dsComplete;
+      except
+        on E: Exception do begin
+          EM:= E.Message;
+        end;
       end;
+      if FCancel or Terminated then begin
+        EM:= 'Download was cancelled by user!';
+      end;
+    finally
+      FreeAndNil(S);
     end;
-    if FCancel or Terminated then begin
-      EM:= 'Download was cancelled by user!';
+  except
+    on E: Exception do begin
+      EM:= 'Exception creating file stream: ' + E.Message;;
     end;
-  finally
-    FreeAndNil(S);
   end;
 
   //If new file exists and no error...
@@ -214,18 +221,30 @@ begin
     //Copy file to final location, replace if needed...
     if CopyFile(PChar(TmpFile), PChar(AFile.Filename), False) then begin
       //Delete temp file...
-      DeleteFile(TmpFile);
+      if not DeleteFile(TmpFile) then begin
+        EC:= GetLastError;
+        EM:= 'Failed to delete temporary file: Error code '+IntToStr(EC);
+      end;
     end else begin
       //Error replacing original file with new download...
-      EM:= 'Failed to replace old file with new file!';
+      EC:= GetLastError;
+      EM:= 'Failed to replace old file with new file: Error code '+IntToStr(EC);
     end;
+  end else
+  if EM = '' then begin
+    //New temp file does not exist?!
+    EM:= 'Downloaded temp file does not exist!';
   end;
 
 
   if (EM <> '') then begin
     AFile.FError:= EM;
     AFile.FStatus:= dsException;
-    DeleteFile(TmpFile); //TODO: Why won't this work?
+    if not DeleteFile(TmpFile) then begin
+      //TODO: Why won't this work?
+      EC:= GetLastError;
+      EM:= 'Failed to delete temporary file: Error code '+IntToStr(EC);
+    end;
     Synchronize(SYNC_OnException);
   end;
 end;

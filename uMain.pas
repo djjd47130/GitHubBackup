@@ -200,6 +200,7 @@ type
     procedure CloseHelpWnd;
     function OpenHelp(const AContextID: Integer): Boolean;
     procedure SetupNC;
+    procedure SetTitle;
   public
 
   end;
@@ -416,6 +417,7 @@ begin
     1: btnSortDir.Caption:= 'Z..A';
   end;
   SortRepos;
+  SetTitle;
 end;
 
 procedure TfrmMain.SaveConfig;
@@ -423,6 +425,7 @@ begin
   DM.Config.I['sortCol']:= cboSort.ItemIndex;
   DM.Config.I['sortDir']:= btnSortDir.Tag;
   frmSetup.SaveToConfig; //TODO: Is this the best place for this?
+  SetTitle;
 end;
 
 function TfrmMain.RepoSort: Integer;
@@ -1019,7 +1022,7 @@ begin
   frmSetup.LoadFromConfig;
   if frmSetup.ShowModal = mrOK then begin
     frmSetup.SaveToConfig;
-
+    SetTitle;
   end;
 end;
 
@@ -1105,6 +1108,16 @@ begin
   txtFilter.Enabled:= Enabled;
   btnClearFilter.Enabled:= Enabled;
   UpdateDownloadAction;
+end;
+
+procedure TfrmMain.SetTitle;
+var
+  S: String;
+begin
+  Caption:= 'JD GitHub Backup';
+  S:= frmSetup.User;
+  if S <> '' then
+    Caption:= Caption + ' - ' + S;
 end;
 
 procedure TfrmMain.ThreadBegin(Sender: TObject);

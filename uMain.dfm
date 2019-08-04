@@ -44,8 +44,6 @@ object frmMain: TfrmMain
     Align = alBottom
     TabOrder = 5
     Visible = False
-    ExplicitTop = 309
-    ExplicitWidth = 1039
   end
   object lstRepos: TListView
     Left = 0
@@ -95,7 +93,6 @@ object frmMain: TfrmMain
     OnColumnClick = lstReposColumnClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
-    ExplicitWidth = 1039
   end
   object Stat: TStatusBar
     Left = 0
@@ -115,8 +112,6 @@ object frmMain: TfrmMain
         Width = 50
       end>
     StyleElements = [seClient, seBorder]
-    ExplicitTop = 478
-    ExplicitWidth = 1039
   end
   object pRepoTop: TPanel
     Left = 0
@@ -126,7 +121,6 @@ object frmMain: TfrmMain
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 1039
     object Label4: TLabel
       AlignWithMargins = True
       Left = 833
@@ -230,7 +224,6 @@ object frmMain: TfrmMain
       Caption = 'A..Z'
       TabOrder = 4
       OnClick = btnSortDirClick
-      ExplicitLeft = 1004
     end
     object cboSort: TComboBox
       AlignWithMargins = True
@@ -252,7 +245,6 @@ object frmMain: TfrmMain
         'Sort Created'
         'Sort Updated'
         'Sort Pushed')
-      ExplicitLeft = 880
     end
     object txtFilter: TEdit
       AlignWithMargins = True
@@ -290,8 +282,6 @@ object frmMain: TfrmMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 337
-    ExplicitWidth = 1039
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
@@ -301,7 +291,6 @@ object frmMain: TfrmMain
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitWidth = 1039
       object lblErrorLogTitle: TLabel
         AlignWithMargins = True
         Left = 3
@@ -340,7 +329,6 @@ object frmMain: TfrmMain
         Caption = 'X'
         TabOrder = 0
         OnClick = btnCloseErrorLogClick
-        ExplicitLeft = 1014
       end
     end
     object txtErrorLog: TMemo
@@ -356,7 +344,6 @@ object frmMain: TfrmMain
       ScrollBars = ssBoth
       TabOrder = 0
       WordWrap = False
-      ExplicitWidth = 1039
     end
   end
   object chkCheckAll: TCheckBox
@@ -506,7 +493,7 @@ object frmMain: TfrmMain
     Left = 16
     Top = 192
     Bitmap = {
-      494C01018700A80064001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700A8006C001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002002000001002000000000000020
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5010,7 +4997,7 @@ object frmMain: TfrmMain
     Left = 64
     Top = 192
     Bitmap = {
-      494C01018700D80074002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700D8007C002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004004000001002000000000000080
       0800000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -22979,7 +22966,7 @@ object frmMain: TfrmMain
     Left = 112
     Top = 192
     Bitmap = {
-      494C01018700C80090001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700C80098001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000006000000030030000010020000000000000C8
       0400000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -33174,9 +33161,10 @@ object frmMain: TfrmMain
     Top = 192
   end
   object Repos: TGitHubRepoList
+    AccountType = gaUser
+    AutoPages = False
     GitHub = GitHub1
     PageSize = 100
-    AccountType = gaUser
     Left = 544
     Top = 144
   end
