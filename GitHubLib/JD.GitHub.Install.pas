@@ -12,7 +12,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('GitHub', [TGitHub]);
+  RegisterComponents('GitHub', [TGitHub, TGitHubRepoList]);
 end;
 
 end.

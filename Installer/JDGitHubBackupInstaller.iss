@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "JD GitHub Backup"
-#define MyAppVersion "0.2.8"
+#define MyAppVersion "0.2.9"
 #define MyAppPublisher "JD Software Inc"
 #define MyAppURL "http://www.jerrydodge.com/GitHubBackup"
 #define MyAppExeName "JDGitHubBackup.exe"
@@ -40,6 +40,9 @@ Source: "..\Win32\Release\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Win32\Release\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion     
 Source: "..\Win32\Release\JDGitHubBackupHelp.chm"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+[InstallDelete]
+Type: files; Name: "{app}\GitHubBackup.exe"
 
 [Icons]
 Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

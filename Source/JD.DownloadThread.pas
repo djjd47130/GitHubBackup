@@ -3,6 +3,7 @@ unit JD.DownloadThread;
 interface
 
 uses
+  Winapi.Windows,
   System.Classes, System.SysUtils, System.Generics.Collections,
   JD.IndyUtils;
 
@@ -168,7 +169,7 @@ begin
         end;
       end;
     finally
-      FWeb.Free;
+      FreeAndNil(FWeb);
     end;
   finally
     Synchronize(SYNC_OnDownloadDone);
@@ -178,14 +179,17 @@ end;
 
 procedure TDownloadThread.DoDownload(AFile: TDownloadFile);
 var
-  //Exists: Boolean;
   S: TFileStream;
   EM: String;
+  TmpFile: String;
 begin
   AFile.FStatus:= dsProgress;
   EM:= '';
-  //Exists:= FileExists(AFile.Filename);
-  S:= TFileStream.Create(AFile.Filename, fmCreate);
+
+  //TODO: Don't immediately overwrite the file - download to temp file
+  //  first and then overwrite original when finished
+  TmpFile:= AFile.Filename + '.JDTMP';
+  S:= TFileStream.Create(TmpFile, fmCreate);
   try
     try
 
@@ -202,16 +206,26 @@ begin
       EM:= 'Download was cancelled by user!';
     end;
   finally
-    S.Free;
+    FreeAndNil(S);
   end;
+
+  //If new file exists and no error...
+  if (EM = '') and (FileExists(TmpFile)) then begin
+    //Copy file to final location, replace if needed...
+    if CopyFile(PChar(TmpFile), PChar(AFile.Filename), False) then begin
+      //Delete temp file...
+      DeleteFile(TmpFile);
+    end else begin
+      //Error replacing original file with new download...
+      EM:= 'Failed to replace old file with new file!';
+    end;
+  end;
+
+
   if (EM <> '') then begin
     AFile.FError:= EM;
     AFile.FStatus:= dsException;
-    //Only delete the created file if it didn't already exist...
-    //  TODO: Actually, if it already existed, then by this point
-    //  it's already been overwritten...
-    //if not Exists then
-      DeleteFile(AFile.Filename);
+    DeleteFile(TmpFile); //TODO: Why won't this work?
     Synchronize(SYNC_OnException);
   end;
 end;

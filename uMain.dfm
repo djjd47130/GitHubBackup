@@ -4,8 +4,8 @@ object frmMain: TfrmMain
   HelpContext = 1000
   BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   Caption = 'JD GitHub Repository Backup'
-  ClientHeight = 551
-  ClientWidth = 1060
+  ClientHeight = 464
+  ClientWidth = 1029
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -24,8 +24,8 @@ object frmMain: TfrmMain
   TextHeight = 14
   object spErrorLog: TSplitter
     Left = 0
-    Top = 383
-    Width = 1060
+    Top = 296
+    Width = 1029
     Height = 5
     Cursor = crVSplit
     Align = alBottom
@@ -37,18 +37,20 @@ object frmMain: TfrmMain
   end
   object Prog: TProgressBar
     Left = 0
-    Top = 360
-    Width = 1060
+    Top = 273
+    Width = 1029
     Height = 23
     HelpContext = 1008
     Align = alBottom
     TabOrder = 5
     Visible = False
+    ExplicitTop = 309
+    ExplicitWidth = 1039
   end
   object lstRepos: TListView
     Left = 0
     Top = 29
-    Width = 1060
+    Width = 1029
     Height = 77
     HelpContext = 1006
     Align = alTop
@@ -81,7 +83,7 @@ object frmMain: TfrmMain
       end
       item
         Caption = 'Description'
-        Width = 386
+        Width = 360
       end>
     HideSelection = False
     HotTrackStyles = [htHandPoint, htUnderlineHot]
@@ -90,18 +92,20 @@ object frmMain: TfrmMain
     TabOrder = 0
     ViewStyle = vsReport
     OnClick = lstReposClick
+    OnColumnClick = lstReposColumnClick
     OnDblClick = lstReposDblClick
     OnItemChecked = lstReposItemChecked
+    ExplicitWidth = 1039
   end
   object Stat: TStatusBar
     Left = 0
-    Top = 529
-    Width = 1060
+    Top = 442
+    Width = 1029
     Height = 22
     Panels = <
       item
         Text = '0 Repositories'
-        Width = 120
+        Width = 140
       end
       item
         Text = 'Ready'
@@ -111,18 +115,21 @@ object frmMain: TfrmMain
         Width = 50
       end>
     StyleElements = [seClient, seBorder]
+    ExplicitTop = 478
+    ExplicitWidth = 1039
   end
   object pRepoTop: TPanel
     Left = 0
     Top = 0
-    Width = 1060
+    Width = 1029
     Height = 29
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 1039
     object Label4: TLabel
       AlignWithMargins = True
-      Left = 864
+      Left = 833
       Top = 3
       Width = 31
       Height = 26
@@ -134,6 +141,18 @@ object frmMain: TfrmMain
       ExplicitLeft = 11
       ExplicitTop = 6
       ExplicitHeight = 23
+    end
+    object Label1: TLabel
+      AlignWithMargins = True
+      Left = 331
+      Top = 3
+      Width = 46
+      Height = 26
+      Align = alLeft
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'Filter:'
+      Layout = tlCenter
     end
     object btnListRepos: TButton
       AlignWithMargins = True
@@ -197,7 +216,7 @@ object frmMain: TfrmMain
     end
     object btnSortDir: TButton
       AlignWithMargins = True
-      Left = 1025
+      Left = 994
       Top = 2
       Width = 32
       Height = 23
@@ -211,10 +230,11 @@ object frmMain: TfrmMain
       Caption = 'A..Z'
       TabOrder = 4
       OnClick = btnSortDirClick
+      ExplicitLeft = 1004
     end
     object cboSort: TComboBox
       AlignWithMargins = True
-      Left = 901
+      Left = 870
       Top = 3
       Width = 121
       Height = 22
@@ -232,26 +252,56 @@ object frmMain: TfrmMain
         'Sort Created'
         'Sort Updated'
         'Sort Pushed')
+      ExplicitLeft = 880
+    end
+    object txtFilter: TEdit
+      AlignWithMargins = True
+      Left = 383
+      Top = 3
+      Width = 146
+      Height = 23
+      Align = alLeft
+      TabOrder = 5
+      OnChange = txtFilterChange
+      ExplicitHeight = 22
+    end
+    object btnClearFilter: TButton
+      AlignWithMargins = True
+      Left = 532
+      Top = 3
+      Width = 29
+      Height = 23
+      Cursor = crHandPoint
+      Hint = 'Toggle sort between ascending / descending'
+      HelpContext = 1006
+      Margins.Left = 0
+      Align = alLeft
+      Caption = 'x'
+      TabOrder = 6
+      OnClick = btnClearFilterClick
     end
   end
   object pErrorLog: TPanel
     Left = 0
-    Top = 388
-    Width = 1060
+    Top = 301
+    Width = 1029
     Height = 141
     HelpContext = 1008
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
+    ExplicitTop = 337
+    ExplicitWidth = 1039
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
-      Width = 1060
+      Width = 1029
       Height = 24
       HelpContext = 1008
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitWidth = 1039
       object lblErrorLogTitle: TLabel
         AlignWithMargins = True
         Left = 3
@@ -275,7 +325,7 @@ object frmMain: TfrmMain
       end
       object btnCloseErrorLog: TButton
         AlignWithMargins = True
-        Left = 1035
+        Left = 1004
         Top = 2
         Width = 23
         Height = 20
@@ -290,12 +340,13 @@ object frmMain: TfrmMain
         Caption = 'X'
         TabOrder = 0
         OnClick = btnCloseErrorLogClick
+        ExplicitLeft = 1014
       end
     end
     object txtErrorLog: TMemo
       Left = 0
       Top = 42
-      Width = 1060
+      Width = 1029
       Height = 99
       HelpContext = 1008
       Align = alBottom
@@ -305,6 +356,7 @@ object frmMain: TfrmMain
       ScrollBars = ssBoth
       TabOrder = 0
       WordWrap = False
+      ExplicitWidth = 1039
     end
   end
   object chkCheckAll: TCheckBox
@@ -454,7 +506,7 @@ object frmMain: TfrmMain
     Left = 16
     Top = 192
     Bitmap = {
-      494C01018700A80058001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700A80064001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002002000001002000000000000020
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4958,7 +5010,7 @@ object frmMain: TfrmMain
     Left = 64
     Top = 192
     Bitmap = {
-      494C01018700D80068002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700D80074002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004004000001002000000000000080
       0800000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -22927,7 +22979,7 @@ object frmMain: TfrmMain
     Left = 112
     Top = 192
     Bitmap = {
-      494C01018700C80084001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700C80090001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000006000000030030000010020000000000000C8
       0400000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -33113,5 +33165,23 @@ object frmMain: TfrmMain
     object About1: TMenuItem
       Action = actAbout
     end
+  end
+  object tmrFilter: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = tmrFilterTimer
+    Left = 232
+    Top = 192
+  end
+  object Repos: TGitHubRepoList
+    GitHub = GitHub1
+    PageSize = 100
+    AccountType = gaUser
+    Left = 544
+    Top = 144
+  end
+  object GitHub1: TGitHub
+    Left = 496
+    Top = 144
   end
 end

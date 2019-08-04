@@ -17,6 +17,66 @@ unit JD.GitHub;
 
 
 
+  Repository Fields
+
+  id
+  node_id
+  name
+  full_name
+  owner
+    login
+    id
+    node_id
+    avatar_url
+    gravatar_id
+    url
+    [urls]
+    type
+    site_admin
+  private
+  html_url
+  description
+  fork
+  url
+  [urls]
+  language
+  forks_count
+  stargazers_count
+  watchers_count
+  size
+  default_branch
+  open_issues_count
+  is_template
+  topics[]
+  has_issues
+  has_projects
+  has_wiki
+  has_pages
+  has_downloads
+  archived
+  disabled
+  pushed_at
+  created_at
+  updated_at
+  permissions
+    admin
+    push
+    pull
+  template_repository
+  subscribers_count
+  network_count
+  license
+    key
+    name
+    spdx_id
+    url
+    node_id
+
+
+
+
+
+
 *)
 
 interface
@@ -48,6 +108,10 @@ type
   TGitHubBranches = class;
   TGitHubCommit = class;
   TGitHubCommits = class;
+  TGitHubAccount = class;
+  TGitHubAccounts = class;
+
+  TGitHubRepoList = class;
 
   TGitHubAccountType = (gaUser, gaOrganization);
 
@@ -70,24 +134,8 @@ type
       const Recursive: Boolean = False): ISuperArray;
   end;
 
-  TGitHub = class(TComponent)
-  private
-    FApi: TGitHubAPI;
-    function GetToken: String;
-    procedure SetToken(const Value: String);
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    function GetUserRepos(const User: String; const PageNum: Integer = 0): TGitHubRepos;
-    function GetOrgRepos(const Org: String; const PageNum: Integer = 0): TGitHubRepos;
-    function GetBranches(const Owner, Repo: String; const PageNum: Integer = 0): TGitHubBranches;
-    function GetCommits(const Owner, Repo, Branch: String; const PageNum: Integer = 0): TGitHubCommits;
-  published
-    property Token: String read GetToken write SetToken;
-  end;
-
   //Encapsulates simple JSON object via Super Object
-  TGitHubObject = class(TObject)
+  TGitHubJsonObject = class(TObject)
   private
     FObj: ISuperObject;
     function GetB(const N: String): Boolean;
@@ -105,9 +153,10 @@ type
     property O[const N: String]: ISuperObject read GetO;
   end;
 
-  TGitHubRepo = class(TGitHubObject)
+  TGitHubRepo = class(TGitHubJsonObject)
   private
     FChecked: Boolean;
+    FData: Pointer;
     function GetCreated: TDateTime;
     function GetDefaultBranch: String;
     function GetDescription: String;
@@ -120,6 +169,7 @@ type
     function GetUpdated: TDateTime;
     function GetOwner: String;
     procedure SetChecked(const Value: Boolean);
+    procedure SetData(const Value: Pointer);
   public
     property Name: String read GetName;
     property Owner: String read GetOwner;
@@ -136,6 +186,7 @@ type
     //TODO: This should not be on this level, and should consider
     //  changing to a "Data: Pointer" property instead.
     property Checked: Boolean read FChecked write SetChecked;
+    property Data: Pointer read FData write SetData;
   end;
 
   TGitHubRepos = class(TObjectList<TGitHubRepo>)
@@ -145,7 +196,7 @@ type
 
   end;
 
-  TGitHubBranch = class(TGitHubObject)
+  TGitHubBranch = class(TGitHubJsonObject)
   private
     function GetName: String;
     function GetProtected: Boolean;
@@ -165,7 +216,7 @@ type
 
   end;
 
-  TGitHubCommit = class(TGitHubObject)
+  TGitHubCommit = class(TGitHubJsonObject)
   private
     function GetCommitter: String;
     function GetMessage: String;
@@ -185,21 +236,112 @@ type
 
   end;
 
-  //TODO: What was I doing here exactly?
+
+
+
+
   TGitHubAccount = class(TCollectionItem)
   private
     FToken: String;
-    function GetName: String;
+    FName: String;
     procedure SetToken(const Value: String);
+    procedure SetName(const Value: String);
   public
     constructor Create(AOwner: TCollection); override;
     destructor Destroy; override;
   published
-    property Name: String read GetName;
+    property Name: String read FName write SetName;
     property Token: String read FToken write SetToken;
   end;
 
   TGitHubAccounts = class(TOwnedCollection)
+  private
+
+  public
+
+  end;
+
+
+
+
+
+
+  /// <summary>
+  ///   Encapsulates the entire GitHub API and is the base for providing
+  ///   credentials to further components such as TGitHubRepoList.
+  /// </summary>
+  TGitHub = class(TComponent)
+  private
+    FApi: TGitHubAPI;
+    function GetToken: String;
+    procedure SetToken(const Value: String);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    function GetUserRepos(const User: String; const PageNum: Integer = 0): TGitHubRepos;
+    function GetOrgRepos(const Org: String; const PageNum: Integer = 0): TGitHubRepos;
+    function GetBranches(const Owner, Repo: String; const PageNum: Integer = 0): TGitHubBranches;
+    function GetCommits(const Owner, Repo, Branch: String; const PageNum: Integer = 0): TGitHubCommits;
+  published
+    property Token: String read GetToken write SetToken;
+  end;
+
+
+  TGitHubRepoEvent = procedure(Sender: TObject; Repo: TGitHubRepo) of object;
+
+  /// <summary>
+  ///   Encapsulates a list of repositories which is event triggered
+  ///   to allow for dynamically adding/editing/removing items
+  ///   from any UI list view which is currently in place.
+  /// </summary>
+  TGitHubRepoList = class(TComponent)
+  private
+    FGitHub: TGitHub;
+    FItems: TObjectList<TGitHubRepo>;
+    FPageSize: Integer;
+    FCurPage: Integer;
+    FAccountType: TGitHubAccountType;
+    FAccountName: String;
+    FOnRepoAdd: TGitHubRepoEvent;
+    FOnRepoEdit: TGitHubRepoEvent;
+    FOnRepoDelete: TGitHubRepoEvent;
+    FAutoPages: Boolean;
+    procedure SetPageSize(const Value: Integer);
+    procedure SetGitHub(const Value: TGitHub);
+    procedure SetAccountName(const Value: String);
+    procedure SetAccountType(const Value: TGitHubAccountType);
+    procedure SetAutoPages(const Value: Boolean);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure Clear;
+    procedure GetNextPage;
+  published
+    property AccountType: TGitHubAccountType read FAccountType write SetAccountType;
+    property AccountName: String read FAccountName write SetAccountName;
+    property AutoPages: Boolean read FAutoPages write SetAutoPages;
+    property GitHub: TGitHub read FGitHub write SetGitHub;
+    property PageSize: Integer read FPageSize write SetPageSize;
+
+    property OnRepoAdd: TGitHubRepoEvent read FOnRepoAdd write FOnRepoAdd;
+    property OnRepoEdit: TGitHubRepoEvent read FOnRepoEdit write FOnRepoEdit;
+    property OnRepoDelete: TGitHubRepoEvent read FOnRepoDelete write FOnRepoDelete;
+  end;
+
+  /// <summary>
+  ///   Encapsulates a list of repositories which is event triggered
+  ///   to allow for dynamically adding/editing/removing items
+  ///   from any UI list view which is currently in place.
+  /// </summary>
+  TGitHubRepoSearch = class(TComponent)
+  //TODO: A component to perform arbitrary repository searches...
+  private
+
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
 
   end;
 
@@ -294,170 +436,42 @@ begin
     '?page='+IntToStr(PageNum)+'&recursive='+IfThen(Recursive, 'true', 'false')).AsArray;
 end;
 
-{ TGitHub }
-
-constructor TGitHub.Create(AOwner: TComponent);
-begin
-  inherited;
-  FApi:= TGitHubAPI.Create;
-end;
-
-destructor TGitHub.Destroy;
-begin
-  FreeAndNil(FApi);
-  inherited;
-end;
-
-function TGitHub.GetToken: String;
-begin
-  Result:= FApi.Token;
-end;
-
-function TGitHub.GetUserRepos(const User: String;
-  const PageNum: Integer): TGitHubRepos;
-var
-  Res: ISuperArray;
-  O: ISuperObject;
-  X: Integer;
-  R: TGitHubRepo;
-begin
-  Result:= TGitHubRepos.Create(False);
-  try
-    Res:= FApi.GetUserRepos(User, PageNum);
-    if Assigned(Res) then begin
-      for X := 0 to Res.Length-1 do begin
-        O:= Res.O[X];
-        R:= TGitHubRepo.Create(O);
-        Result.Add(R);
-      end;
-    end;
-  except
-    on E: Exception do begin
-      Result.Free;
-      raise E;
-    end;
-  end;
-end;
-
-function TGitHub.GetOrgRepos(const Org: String;
-  const PageNum: Integer): TGitHubRepos;
-var
-  Res: ISuperArray;
-  O: ISuperObject;
-  X: Integer;
-  R: TGitHubRepo;
-begin
-  Result:= TGitHubRepos.Create(False);
-  try
-    Res:= FApi.GetOrgRepos(Org, PageNum);
-    if Assigned(Res) then begin
-      for X := 0 to Res.Length-1 do begin
-        O:= Res.O[X];
-        R:= TGitHubRepo.Create(O);
-        Result.Add(R);
-      end;
-    end;
-  except
-    on E: Exception do begin
-      Result.Free;
-      raise E;
-    end;
-  end;
-end;
-
-function TGitHub.GetBranches(const Owner, Repo: String;
-  const PageNum: Integer): TGitHubBranches;
-var
-  Res: ISuperArray;
-  O: ISuperObject;
-  X: Integer;
-  B: TGitHubBranch;
-begin
-  Result:= TGitHubBranches.Create(False);
-  try
-    Res:= FApi.GetBranches(Owner, Repo, PageNum);
-    if Assigned(Res) then begin
-      for X := 0 to Res.Length-1 do begin
-        O:= Res.O[X];
-        B:= TGitHubBranch.Create(O);
-        Result.Add(B);
-      end;
-    end;
-  except
-    on E: Exception do begin
-      Result.Free;
-      raise E;
-    end;
-  end;
-end;
-
-function TGitHub.GetCommits(const Owner, Repo, Branch: String;
-  const PageNum: Integer): TGitHubCommits;
-var
-  Res: ISuperArray;
-  O: ISuperObject;
-  X: Integer;
-  C: TGitHubCommit;
-begin
-  Result:= TGitHubCommits.Create(False);
-  try
-    Res:= FApi.GetCommits(Owner, Repo, Branch, PageNum);
-    if Assigned(Res) then begin
-      for X := 0 to Res.Length-1 do begin
-        O:= Res.O[X];
-        C:= TGitHubCommit.Create(O);
-        Result.Add(C);
-      end;
-    end;
-  except
-    on E: Exception do begin
-      Result.Free;
-      raise E;
-    end;
-  end;
-end;
-
-procedure TGitHub.SetToken(const Value: String);
-begin
-  FApi.Token:= Value;
-end;
-
 { TGitHubObject }
 
-constructor TGitHubObject.Create(AObj: ISuperObject);
+constructor TGitHubJsonObject.Create(AObj: ISuperObject);
 begin
   FObj:= AObj;
   FObj._AddRef;
 end;
 
-destructor TGitHubObject.Destroy;
+destructor TGitHubJsonObject.Destroy;
 begin
   FObj._Release;
   FObj:= nil;
   inherited;
 end;
 
-function TGitHubObject.GetO(const N: String): ISuperObject;
+function TGitHubJsonObject.GetO(const N: String): ISuperObject;
 begin
   Result:= FObj.O[N];
 end;
 
-function TGitHubObject.GetS(const N: String): String;
+function TGitHubJsonObject.GetS(const N: String): String;
 begin
   Result:= FObj.S[N];
 end;
 
-function TGitHubObject.GetB(const N: String): Boolean;
+function TGitHubJsonObject.GetB(const N: String): Boolean;
 begin
   Result:= FObj.B[N];
 end;
 
-function TGitHubObject.GetF(const N: String): Double;
+function TGitHubJsonObject.GetF(const N: String): Double;
 begin
   Result:= FObj.F[N];
 end;
 
-function TGitHubObject.GetI(const N: String): Int64;
+function TGitHubJsonObject.GetI(const N: String): Int64;
 begin
   Result:= FObj.I[N];
 end;
@@ -524,6 +538,11 @@ begin
   FChecked := Value;
 end;
 
+procedure TGitHubRepo.SetData(const Value: Pointer);
+begin
+  FData := Value;
+end;
+
 { TGitHubBranch }
 
 function TGitHubBranch.GetName: String;
@@ -582,14 +601,208 @@ begin
   inherited;
 end;
 
-function TGitHubAccount.GetName: String;
+procedure TGitHubAccount.SetName(const Value: String);
 begin
-
+  FName := Value;
 end;
 
 procedure TGitHubAccount.SetToken(const Value: String);
 begin
   FToken := Value;
+end;
+
+{ TGitHub }
+
+constructor TGitHub.Create(AOwner: TComponent);
+begin
+  inherited;
+  FApi:= TGitHubAPI.Create;
+end;
+
+destructor TGitHub.Destroy;
+begin
+  FreeAndNil(FApi);
+  inherited;
+end;
+
+function TGitHub.GetToken: String;
+begin
+  Result:= FApi.Token;
+end;
+
+function TGitHub.GetUserRepos(const User: String;
+  const PageNum: Integer): TGitHubRepos;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  R: TGitHubRepo;
+begin
+  Result:= TGitHubRepos.Create(False);
+  try
+    Res:= FApi.GetUserRepos(User, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        R:= TGitHubRepo.Create(O);
+        Result.Add(R);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      FreeAndNil(Result);
+      raise E;
+    end;
+  end;
+end;
+
+function TGitHub.GetOrgRepos(const Org: String;
+  const PageNum: Integer): TGitHubRepos;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  R: TGitHubRepo;
+begin
+  Result:= TGitHubRepos.Create(False);
+  try
+    Res:= FApi.GetOrgRepos(Org, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        R:= TGitHubRepo.Create(O);
+        Result.Add(R);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      FreeAndNil(Result);
+      raise E;
+    end;
+  end;
+end;
+
+function TGitHub.GetBranches(const Owner, Repo: String;
+  const PageNum: Integer): TGitHubBranches;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  B: TGitHubBranch;
+begin
+  Result:= TGitHubBranches.Create(False);
+  try
+    Res:= FApi.GetBranches(Owner, Repo, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        B:= TGitHubBranch.Create(O);
+        Result.Add(B);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      FreeAndNil(Result);
+      raise E;
+    end;
+  end;
+end;
+
+function TGitHub.GetCommits(const Owner, Repo, Branch: String;
+  const PageNum: Integer): TGitHubCommits;
+var
+  Res: ISuperArray;
+  O: ISuperObject;
+  X: Integer;
+  C: TGitHubCommit;
+begin
+  Result:= TGitHubCommits.Create(False);
+  try
+    Res:= FApi.GetCommits(Owner, Repo, Branch, PageNum);
+    if Assigned(Res) then begin
+      for X := 0 to Res.Length-1 do begin
+        O:= Res.O[X];
+        C:= TGitHubCommit.Create(O);
+        Result.Add(C);
+      end;
+    end;
+  except
+    on E: Exception do begin
+      FreeAndNil(Result);
+      raise E;
+    end;
+  end;
+end;
+
+procedure TGitHub.SetToken(const Value: String);
+begin
+  FApi.Token:= Value;
+end;
+
+{ TGitHubRepoList }
+
+constructor TGitHubRepoList.Create(AOwner: TComponent);
+begin
+  inherited;
+  FItems:= TObjectList<TGitHubRepo>.Create(True);
+
+end;
+
+destructor TGitHubRepoList.Destroy;
+begin
+
+  FreeAndNil(FItems);
+  inherited;
+end;
+
+procedure TGitHubRepoList.Clear;
+begin
+  FItems.Clear;
+  FCurPage:= 0;
+end;
+
+procedure TGitHubRepoList.GetNextPage;
+begin
+
+end;
+
+procedure TGitHubRepoList.SetAccountName(const Value: String);
+begin
+  FAccountName := Value;
+end;
+
+procedure TGitHubRepoList.SetAccountType(const Value: TGitHubAccountType);
+begin
+  FAccountType := Value;
+end;
+
+procedure TGitHubRepoList.SetAutoPages(const Value: Boolean);
+begin
+  FAutoPages := Value;
+end;
+
+procedure TGitHubRepoList.SetGitHub(const Value: TGitHub);
+begin
+  FGitHub := Value;
+end;
+
+procedure TGitHubRepoList.SetPageSize(const Value: Integer);
+begin
+  FPageSize := Value;
+end;
+
+{ TGitHubRepoSearch }
+
+constructor TGitHubRepoSearch.Create(AOwner: TComponent);
+begin
+  inherited;
+
+end;
+
+destructor TGitHubRepoSearch.Destroy;
+begin
+
+  inherited;
 end;
 
 end.

@@ -112,6 +112,12 @@ type
     mSortAsc: TMenuItem;
     mSortDesc: TMenuItem;
     N1: TMenuItem;
+    txtFilter: TEdit;
+    Label1: TLabel;
+    tmrFilter: TTimer;
+    btnClearFilter: TButton;
+    Repos: TGitHubRepoList;
+    GitHub1: TGitHub;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -144,6 +150,10 @@ type
     procedure MenuOptionsClick(Sender: TObject);
     procedure MenuViewClick(Sender: TObject);
     procedure MenuHelpClick(Sender: TObject);
+    procedure tmrFilterTimer(Sender: TObject);
+    procedure txtFilterChange(Sender: TObject);
+    procedure btnClearFilterClick(Sender: TObject);
+    procedure lstReposColumnClick(Sender: TObject; Column: TListColumn);
   private
     FEnabled: Boolean; //Whether UI controls should be enabled, used for busy state
     FRepos: TGitHubRepos; //Master list of repositories
@@ -167,6 +177,8 @@ type
     function GetRepos(const PageNum: Integer): TGitHubRepos;
     procedure GetRepoPage(const PageNum: Integer);
     function CheckedCount: Integer;
+    function VisibleCount: Integer;
+    function VisibleCheckedCount: Integer;
     procedure UpdateDownloadAction;
     procedure SetEnabledState(const Enabled: Boolean);
     procedure ThreadBegin(Sender: TObject);
@@ -540,19 +552,26 @@ begin
     try
       for X := 0 to FRepos.Count-1 do begin
         O:= FRepos[X];
-        I:= lstRepos.Items.Add;
-        I.Data:= O;
-        I.Caption:= O.Name;
-        I.SubItems.Add(O.DefaultBranch);
-        if O.IsPrivate = True then
-          I.SubItems.Add('Private')
-        else
-          I.SubItems.Add('Public');
-        I.SubItems.Add(O.Language);
-        I.SubItems.Add(DataSizeStr(O.Size * 1024)); //TODO: NOT RELIABLE!!!
-        I.SubItems.Add(FormatDateTime('yyyy-mm-dd h:nn ampm', O.Pushed));
-        I.SubItems.Add(O.Description);
-        I.Checked:= O.Checked;
+
+        if (txtFilter.Text = '') or
+          ((txtFilter.Text <> '') and  (ContainsText(O.Name, txtFilter.Text))) then
+        begin
+
+          I:= lstRepos.Items.Add;
+          I.Data:= O;
+          I.Caption:= O.Name;
+          I.SubItems.Add(O.DefaultBranch);
+          if O.IsPrivate = True then
+            I.SubItems.Add('Private')
+          else
+            I.SubItems.Add('Public');
+          I.SubItems.Add(O.Language);
+          I.SubItems.Add(DataSizeStr(O.Size * 1024)); //TODO: NOT RELIABLE!!!
+          I.SubItems.Add(FormatDateTime('yyyy-mm-dd h:nn ampm', O.Pushed));
+          I.SubItems.Add(O.Description);
+          I.Checked:= O.Checked;
+
+        end;
       end;
     finally
       lstRepos.OnItemChecked:= lstReposItemChecked;
@@ -566,6 +585,7 @@ begin
     FRepoList.RootNodeCount:= FRepos.Count;
     for X := 0 to FRepos.Count-1 do begin
       //HOW THE FUCK DO I ASSIGN THE REPO OBJECTS AND CHECKED STATE???
+      //  Need to learn more about VTV/VST...
 
 
     end;
@@ -574,6 +594,15 @@ begin
     FRepoList.EndUpdate;
   end;
   {$ENDIF}
+
+  if txtFilter.Text = '' then begin
+    Stat.Panels[0].Text:= IntToStr(FRepos.Count)+' Repositories';
+  end else begin
+    Stat.Panels[0].Text:= IntToStr(VisibleCount)+' of '+IntToStr(FRepos.Count)+' Repositories';
+  end;
+
+  UpdateCheckAll;
+
 end;
 
 procedure TfrmMain.CloseHelpWnd;
@@ -641,7 +670,6 @@ begin
           //Start with page 1, will automatically traverse to all pages...
           GetRepoPage(1);
 
-          Stat.Panels[0].Text:= IntToStr(FRepos.Count)+' Repositories';
           Application.ProcessMessages;
           SortRepos;
         finally
@@ -698,6 +726,21 @@ begin
   end;
 end;
 
+function TfrmMain.VisibleCheckedCount: Integer;
+var
+  X: Integer;
+begin
+  Result:= 0;
+  for X := 0 to VisibleCount-1 do
+    if lstRepos.Items[X].Checked then
+      Inc(Result);
+end;
+
+function TfrmMain.VisibleCount: Integer;
+begin
+  Result:= lstRepos.Items.Count;
+end;
+
 procedure TfrmMain.UpdateCheckAll;
 var
   C: Integer;
@@ -705,15 +748,16 @@ begin
   //Change check all option depending on selection
   chkCheckAll.Tag:= 1;
   try
-    C:= CheckedCount;
+    C:= VisibleCheckedCount;
     if C = 0 then begin
       chkCheckAll.State:= TCheckBoxState.cbUnchecked;
     end else
-    if C = lstRepos.Items.Count then begin
+    if C = VisibleCount then begin
       chkCheckAll.State:= TCheckBoxState.cbChecked;
     end else begin
       chkCheckAll.State:= TCheckBoxState.cbGrayed;
     end;
+
     {$IFDEF V1}
     case chkCheckAll.State of
       TCheckBoxState.cbUnchecked: FRepoList.Header.Columns[0].CheckState:= TCheckState.csUncheckedNormal;
@@ -817,6 +861,41 @@ begin
   end;
 end;
 
+procedure TfrmMain.lstReposColumnClick(Sender: TObject; Column: TListColumn);
+begin
+  //TODO: Sort by given column...
+  case Column.Index of
+    0: begin
+      //Name
+
+    end;
+    1: begin
+      //Default Branch
+
+    end;
+    2: begin
+      //Visibility
+
+    end;
+    3: begin
+      //Language
+
+    end;
+    4: begin
+      //Size
+
+    end;
+    5: begin
+      //Last Pushed
+
+    end;
+    6: begin
+      //Description
+
+    end;
+  end;
+end;
+
 procedure TfrmMain.lstReposDblClick(Sender: TObject);
 var
   I: TListItem;
@@ -841,6 +920,7 @@ procedure TfrmMain.lstReposItemChecked(Sender: TObject; Item: TListItem);
 var
   R: TGitHubRepo;
 begin
+  //User checked or unchecked a repo...
   if lstRepos.Tag <> 0 then begin
     //Revert back to prior state
     lstRepos.OnItemChecked:= nil;
@@ -865,7 +945,7 @@ var
   X: Integer;
   M: TMenuItem;
 begin
-  //TODO: Populate menu items in the main menu for column sorting...
+  //Populate menu items in the main menu for column sorting...
   //IMPORTANT: This shall be a one-time thing, due to the nature
   //of how this particular submenu is formatted.
 
@@ -951,12 +1031,15 @@ end;
 
 procedure TfrmMain.actExitExecute(Sender: TObject);
 begin
+  //Terminate application
+  //NOTE: Close will initiate a prompt if it's currently busy
+  //which may prevent the user from exiting
   Close;
 end;
 
 procedure TfrmMain.actHelpContentsExecute(Sender: TObject);
 begin
-
+  //Open the help file to its default topic
   Application.HelpContext(0);
 end;
 
@@ -978,14 +1061,14 @@ var
   R: TGitHubRepo;
 begin
   //User clicked on check all checkbox at top of list
-  //TODO: Why has this become very slow? List of 60 some repos
-  //  now takes 2-3 seconds to check all...
+  //NOTE: This is also triggered when "Check All" or "Check None"
+  //  actions are executed.
   if chkCheckAll.Tag = 0 then begin
     lstRepos.OnItemChecked:= nil;
     try
       lstRepos.Items.BeginUpdate;
       try
-        for X := 0 to lstRepos.Items.Count-1 do begin
+        for X := 0 to VisibleCount-1 do begin
           lstRepos.Items[X].Checked:= chkCheckAll.Checked;
           R:= TGitHubRepo(lstRepos.Items[X].Data);
           R.Checked:= chkCheckAll.Checked;
@@ -1019,6 +1102,8 @@ begin
   cboSort.Enabled:= Enabled;
   mSort.Enabled:= Enabled;
   btnSortDir.Enabled:= Enabled;
+  txtFilter.Enabled:= Enabled;
+  btnClearFilter.Enabled:= Enabled;
   UpdateDownloadAction;
 end;
 
@@ -1047,6 +1132,7 @@ begin
   Stat.Panels[1].Text:= 'Ready';
   Prog.Visible:= False;
   Stat.Panels[2].Text:= '';
+
   //If any errors, show...
   if txtErrorLog.Lines.Text <> '' then begin
     ShowErrorLog(True);
@@ -1082,6 +1168,19 @@ begin
   end;
 end;
 
+procedure TfrmMain.tmrFilterTimer(Sender: TObject);
+begin
+  tmrFilter.Enabled:= False;
+  //Apply filter...
+  Self.DisplayRepos;
+end;
+
+procedure TfrmMain.txtFilterChange(Sender: TObject);
+begin
+  tmrFilter.Enabled:= False;
+  tmrFilter.Enabled:= True;
+end;
+
 procedure TfrmMain.ThreadException(Sender: TObject;
   const CurFile: TDownloadFile);
 begin
@@ -1100,6 +1199,7 @@ var
     Result.Width:= Width;
   end;
 begin
+  //Dynamically create all necessary columns...
   C:= AC('Repository Name', 180);
   C.CheckBox:= True;
 
@@ -1142,6 +1242,12 @@ begin
   end;
 end;
 
+procedure TfrmMain.btnClearFilterClick(Sender: TObject);
+begin
+  //Clear the filter text
+  txtFilter.Text:= '';
+end;
+
 procedure TfrmMain.btnCloseErrorLogClick(Sender: TObject);
 begin
   //User is closing error log
@@ -1153,8 +1259,13 @@ begin
   //Either show or hide error log
   pErrorLog.Visible:= AShow;
   spErrorLog.Visible:= AShow;
-  if AShow then
-    spErrorLog.Top:= pErrorLog.Top - 10;
+  if AShow then begin
+    //This should force these controls to align in proper order on bottom
+    pErrorLog.Top:= 0;
+    spErrorLog.Top:= 0; // pErrorLog.Top - 10;
+    if Prog.Visible then
+      Prog.Top:= 0;
+  end;
 end;
 
 procedure TfrmMain.actDownloadReposExecute(Sender: TObject);
