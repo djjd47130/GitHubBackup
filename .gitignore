@@ -85,4 +85,6 @@ Icons/media.ico
 
 *.log
 
+# Bin Folder
+Bin/
 
