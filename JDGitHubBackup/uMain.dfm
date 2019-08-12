@@ -1,11 +1,12 @@
 object frmMain: TfrmMain
+  AlignWithMargins = True
   Left = 0
   Top = 0
   HelpContext = 1000
   BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   Caption = 'JD GitHub Repository Backup'
-  ClientHeight = 464
-  ClientWidth = 1029
+  ClientHeight = 457
+  ClientWidth = 974
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -24,8 +25,8 @@ object frmMain: TfrmMain
   TextHeight = 14
   object spErrorLog: TSplitter
     Left = 0
-    Top = 296
-    Width = 1029
+    Top = 289
+    Width = 974
     Height = 5
     Cursor = crVSplit
     Align = alBottom
@@ -37,8 +38,8 @@ object frmMain: TfrmMain
   end
   object Prog: TProgressBar
     Left = 0
-    Top = 273
-    Width = 1029
+    Top = 266
+    Width = 974
     Height = 23
     HelpContext = 1008
     Align = alBottom
@@ -48,8 +49,8 @@ object frmMain: TfrmMain
   object lstRepos: TListView
     Left = 0
     Top = 29
-    Width = 1029
-    Height = 77
+    Width = 974
+    Height = 100
     HelpContext = 1006
     Align = alTop
     BorderStyle = bsNone
@@ -81,7 +82,7 @@ object frmMain: TfrmMain
       end
       item
         Caption = 'Description'
-        Width = 360
+        Width = 300
       end>
     HideSelection = False
     HotTrackStyles = [htHandPoint, htUnderlineHot]
@@ -96,8 +97,8 @@ object frmMain: TfrmMain
   end
   object Stat: TStatusBar
     Left = 0
-    Top = 442
-    Width = 1029
+    Top = 435
+    Width = 974
     Height = 22
     Panels = <
       item
@@ -116,14 +117,14 @@ object frmMain: TfrmMain
   object pRepoTop: TPanel
     Left = 0
     Top = 0
-    Width = 1029
+    Width = 974
     Height = 29
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     object Label4: TLabel
       AlignWithMargins = True
-      Left = 833
+      Left = 778
       Top = 3
       Width = 31
       Height = 26
@@ -135,18 +136,6 @@ object frmMain: TfrmMain
       ExplicitLeft = 11
       ExplicitTop = 6
       ExplicitHeight = 23
-    end
-    object Label1: TLabel
-      AlignWithMargins = True
-      Left = 331
-      Top = 3
-      Width = 46
-      Height = 26
-      Align = alLeft
-      Alignment = taRightJustify
-      AutoSize = False
-      Caption = 'Filter:'
-      Layout = tlCenter
     end
     object btnListRepos: TButton
       AlignWithMargins = True
@@ -210,7 +199,7 @@ object frmMain: TfrmMain
     end
     object btnSortDir: TButton
       AlignWithMargins = True
-      Left = 994
+      Left = 939
       Top = 2
       Width = 32
       Height = 23
@@ -227,7 +216,7 @@ object frmMain: TfrmMain
     end
     object cboSort: TComboBox
       AlignWithMargins = True
-      Left = 870
+      Left = 815
       Top = 3
       Width = 121
       Height = 22
@@ -246,37 +235,61 @@ object frmMain: TfrmMain
         'Sort Updated'
         'Sort Pushed')
     end
-    object txtFilter: TEdit
-      AlignWithMargins = True
-      Left = 383
-      Top = 3
-      Width = 146
-      Height = 23
+    object Panel1: TPanel
+      Left = 328
+      Top = 0
+      Width = 217
+      Height = 29
       Align = alLeft
+      BevelOuter = bvNone
       TabOrder = 5
-      OnChange = txtFilterChange
-      ExplicitHeight = 22
-    end
-    object btnClearFilter: TButton
-      AlignWithMargins = True
-      Left = 532
-      Top = 3
-      Width = 29
-      Height = 23
-      Cursor = crHandPoint
-      Hint = 'Toggle sort between ascending / descending'
-      HelpContext = 1006
-      Margins.Left = 0
-      Align = alLeft
-      Caption = 'x'
-      TabOrder = 6
-      OnClick = btnClearFilterClick
+      object btnClearFilter: TButton
+        AlignWithMargins = True
+        Left = 189
+        Top = 4
+        Width = 25
+        Height = 21
+        Cursor = crHandPoint
+        Margins.Left = 0
+        Margins.Top = 4
+        Margins.Bottom = 4
+        Action = actClearFilter
+        Align = alRight
+        ImageAlignment = iaCenter
+        Images = Img16
+        TabOrder = 0
+      end
+      object txtFilter: TEdit
+        AlignWithMargins = True
+        Left = 49
+        Top = 4
+        Width = 140
+        Height = 21
+        Margins.Top = 4
+        Margins.Right = 0
+        Margins.Bottom = 4
+        Align = alClient
+        TabOrder = 1
+        OnChange = txtFilterChange
+        ExplicitHeight = 22
+      end
+      object Panel2: TPanel
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 40
+        Height = 23
+        Align = alLeft
+        BevelOuter = bvNone
+        Caption = 'Filter'
+        TabOrder = 2
+      end
     end
   end
   object pErrorLog: TPanel
     Left = 0
-    Top = 301
-    Width = 1029
+    Top = 294
+    Width = 974
     Height = 141
     HelpContext = 1008
     Align = alBottom
@@ -285,7 +298,7 @@ object frmMain: TfrmMain
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
-      Width = 1029
+      Width = 974
       Height = 24
       HelpContext = 1008
       Align = alTop
@@ -314,7 +327,7 @@ object frmMain: TfrmMain
       end
       object btnCloseErrorLog: TButton
         AlignWithMargins = True
-        Left = 1004
+        Left = 949
         Top = 2
         Width = 23
         Height = 20
@@ -334,7 +347,7 @@ object frmMain: TfrmMain
     object txtErrorLog: TMemo
       Left = 0
       Top = 42
-      Width = 1029
+      Width = 974
       Height = 99
       HelpContext = 1008
       Align = alBottom
@@ -358,22 +371,22 @@ object frmMain: TfrmMain
   object tmrDisplay: TTimer
     Interval = 200
     OnTimer = tmrDisplayTimer
-    Left = 12
-    Top = 134
+    Left = 20
+    Top = 142
   end
   object Taskbar: TTaskbar
     TaskBarButtons = <>
     TabProperties = []
     ToolTip = 'GitHub Backup'
-    Left = 60
-    Top = 134
+    Left = 68
+    Top = 142
   end
   object Acts: TActionManager
     LargeImages = Img32
     Images = Img24
     OnUpdate = ActsUpdate
-    Left = 168
-    Top = 134
+    Left = 176
+    Top = 142
     StyleName = 'Platform Default'
     object actSetup: TAction
       Category = 'Options'
@@ -394,7 +407,6 @@ object frmMain: TfrmMain
       Caption = 'Configure Columns'
       Enabled = False
       ImageIndex = 72
-      ShortCut = 16451
       OnExecute = actConfigColsExecute
     end
     object actCheckAll: TAction
@@ -480,20 +492,34 @@ object frmMain: TfrmMain
       ShortCut = 32840
       OnExecute = MenuHelpClick
     end
+    object actFind: TAction
+      Category = 'Repositories'
+      Caption = 'Find'
+      Hint = 'Filter Repositories'
+      ImageIndex = 55
+      ShortCut = 16454
+      OnExecute = actFindExecute
+    end
+    object actClearFilter: TAction
+      Category = 'Repositories'
+      Hint = 'Clear Filter'
+      ImageIndex = 40
+      OnExecute = actClearFilterExecute
+    end
   end
   object AppEvents: TApplicationEvents
     OnHelp = AppEventsHelp
-    Left = 112
-    Top = 134
+    Left = 120
+    Top = 142
   end
   object Img16: TImageList
     BlendColor = clBlack
     BkColor = clBlack
     Masked = False
-    Left = 16
-    Top = 192
+    Left = 24
+    Top = 200
     Bitmap = {
-      494C01018700A8006C001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700A8007C001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002002000001002000000000000020
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -4994,10 +5020,10 @@ object frmMain: TfrmMain
     Height = 32
     Masked = False
     Width = 32
-    Left = 64
-    Top = 192
+    Left = 72
+    Top = 200
     Bitmap = {
-      494C01018700D8007C002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700D8008C002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004004000001002000000000000080
       0800000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -22963,10 +22989,10 @@ object frmMain: TfrmMain
     Height = 24
     Masked = False
     Width = 24
-    Left = 112
-    Top = 192
+    Left = 120
+    Top = 200
     Bitmap = {
-      494C01018700C80098001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700C800A8001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000006000000030030000010020000000000000C8
       0400000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -33074,8 +33100,8 @@ object frmMain: TfrmMain
   object mRepos: TPopupMenu
     Images = Img24
     MenuAnimation = [maTopToBottom]
-    Left = 232
-    Top = 136
+    Left = 240
+    Top = 144
     object CheckAll3: TMenuItem
       Action = actCheckAll
     end
@@ -33104,8 +33130,21 @@ object frmMain: TfrmMain
   object mOptions: TPopupMenu
     Images = Img24
     MenuAnimation = [maTopToBottom]
-    Left = 280
-    Top = 136
+    Left = 288
+    Top = 144
+    object mProfiles: TMenuItem
+      Caption = 'Profiles'
+      object Setup1: TMenuItem
+        Caption = 'Setup Profiles...'
+        OnClick = Setup1Click
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
     object MenuItem20: TMenuItem
       Action = actSetup
     end
@@ -33116,8 +33155,8 @@ object frmMain: TfrmMain
   object mView: TPopupMenu
     Images = Img24
     MenuAnimation = [maTopToBottom]
-    Left = 328
-    Top = 136
+    Left = 336
+    Top = 144
     object MenuItem38: TMenuItem
       Action = actRefresh
     end
@@ -33144,8 +33183,8 @@ object frmMain: TfrmMain
   object mHelp: TPopupMenu
     Images = Img24
     MenuAnimation = [maTopToBottom]
-    Left = 376
-    Top = 136
+    Left = 384
+    Top = 144
     object MenuItem56: TMenuItem
       Action = actHelpContents
     end
@@ -33157,19 +33196,7 @@ object frmMain: TfrmMain
     Enabled = False
     Interval = 500
     OnTimer = tmrFilterTimer
-    Left = 232
-    Top = 192
-  end
-  object Repos: TGitHubRepoList
-    AccountType = gaUser
-    AutoPages = False
-    GitHub = GitHub1
-    PageSize = 100
-    Left = 544
-    Top = 144
-  end
-  object GitHub1: TGitHub
-    Left = 496
-    Top = 144
+    Left = 240
+    Top = 200
   end
 end

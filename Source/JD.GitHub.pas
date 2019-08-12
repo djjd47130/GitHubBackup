@@ -394,6 +394,9 @@ begin
   //Returns JSON objects via Super Object
   Result:= nil;
 
+  //TODO: Figure out why this crashes HARD when OpenSSL DLLs are missing
+  //  It returns empty exceptions!
+
   //Clear authentication and provide new credentials
   if Assigned(FWeb.Request.Authentication) then begin
     FWeb.Request.Authentication.Free;

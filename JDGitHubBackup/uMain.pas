@@ -23,7 +23,9 @@ uses
   Vcl.Menus, Vcl.PlatformDefaultStyleActnCtrls,
   Vcl.ActnList, Vcl.ActnMan, System.ImageList, Vcl.ImgList,
   Vcl.AppEvnts, Vcl.ToolWin, Vcl.HtmlHelpViewer,
+
   Vcl.Styles, Vcl.Themes,
+
   Vcl.Styles.FontAwesome,
   Vcl.Styles.Fixes,
   Vcl.Styles.Utils.Menus,
@@ -35,6 +37,7 @@ uses
   Vcl.Styles.Utils.SysStyleHook,
   Vcl.Styles.Hooks,
   Vcl.Styles.NC,
+
   JD.GitHub,
   JD.IndyUtils,
   JD.GitHub.Common,
@@ -42,7 +45,8 @@ uses
   uSetup,
   uRepoDetail,
   uDM,
-  uAbout
+  uAbout,
+  XSuperObject
   {$IFDEF V1}
   , VirtualTrees
   {$ENDIF}
@@ -112,12 +116,17 @@ type
     mSortAsc: TMenuItem;
     mSortDesc: TMenuItem;
     N1: TMenuItem;
-    txtFilter: TEdit;
-    Label1: TLabel;
     tmrFilter: TTimer;
+    Panel1: TPanel;
     btnClearFilter: TButton;
-    Repos: TGitHubRepoList;
-    GitHub1: TGitHub;
+    txtFilter: TEdit;
+    actFind: TAction;
+    actClearFilter: TAction;
+    Panel2: TPanel;
+    mProfiles: TMenuItem;
+    Setup1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -152,8 +161,10 @@ type
     procedure MenuHelpClick(Sender: TObject);
     procedure tmrFilterTimer(Sender: TObject);
     procedure txtFilterChange(Sender: TObject);
-    procedure btnClearFilterClick(Sender: TObject);
+    procedure actClearFilterExecute(Sender: TObject);
     procedure lstReposColumnClick(Sender: TObject; Column: TListColumn);
+    procedure actFindExecute(Sender: TObject);
+    procedure Setup1Click(Sender: TObject);
   private
     FEnabled: Boolean; //Whether UI controls should be enabled, used for busy state
     FRepos: TGitHubRepos; //Master list of repositories
@@ -201,8 +212,10 @@ type
     function OpenHelp(const AContextID: Integer): Boolean;
     procedure SetupNC;
     procedure SetTitle;
+    procedure PopulateProfiles;
+    procedure ProfileMenuClick(Sender: TObject);
+    procedure SetProfileIndex(const Index: Integer);
   public
-
   end;
   {$WARN SYMBOL_PLATFORM ON}
 
@@ -302,6 +315,7 @@ end;
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
   LoadConfig;
+  PopulateProfiles;
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -319,6 +333,12 @@ begin
   end;
 end;
 
+procedure TfrmMain.Setup1Click(Sender: TObject);
+begin
+  frmSetup.Pages.ActivePageIndex:= 1;
+  actSetup.Execute;
+end;
+
 procedure TfrmMain.SetupNC;
 begin
  FNCControls := TNCControls.Create(Self);
@@ -330,7 +350,7 @@ begin
  FNCControls[0].GetAs<TNCButton>.Style := nsSplitButton;
  FNCControls[0].GetAs<TNCButton>.ImageStyle := isGrayHot;
  FNCControls[0].GetAs<TNCButton>.ImageIndex := 71;
- FNCControls[0].BoundsRect := Rect(1,1,140,32);
+ FNCControls[0].BoundsRect := Rect(1,1,120,32);
  FNCControls[0].Caption := '&Repositories';
  FNCControls[0].GetAs<TNCButton>.DropDownMenu:= mRepos;
  FNCControls[0].GetAs<TNCButton>.OnClick := MenuReposClick;
@@ -339,7 +359,7 @@ begin
  FNCControls[1].GetAs<TNCButton>.Style := nsSplitButton;
  FNCControls[1].GetAs<TNCButton>.ImageStyle := isGrayHot;
  FNCControls[1].GetAs<TNCButton>.ImageIndex := 33;
- FNCControls[1].BoundsRect := Rect(141,1,260,32);
+ FNCControls[1].BoundsRect := Rect(121,1,220,32);
  FNCControls[1].Caption := '&Options';
  FNCControls[1].GetAs<TNCButton>.DropDownMenu:= mOptions;
  FNCControls[1].GetAs<TNCButton>.OnClick := MenuOptionsClick;
@@ -348,7 +368,7 @@ begin
  FNCControls[2].GetAs<TNCButton>.Style := nsSplitButton;
  FNCControls[2].GetAs<TNCButton>.ImageStyle := isGrayHot;
  FNCControls[2].GetAs<TNCButton>.ImageIndex := 55;
- FNCControls[2].BoundsRect := Rect(261,1,360,32);
+ FNCControls[2].BoundsRect := Rect(221,1,300,32);
  FNCControls[2].Caption := '&View';
  FNCControls[2].GetAs<TNCButton>.DropDownMenu:= mView;
  FNCControls[2].GetAs<TNCButton>.OnClick := MenuViewClick;
@@ -357,7 +377,7 @@ begin
  FNCControls[3].GetAs<TNCButton>.Style := nsSplitButton;
  FNCControls[3].GetAs<TNCButton>.ImageStyle := isGrayHot;
  FNCControls[3].GetAs<TNCButton>.ImageIndex := 94;
- FNCControls[3].BoundsRect := Rect(361,1,460,32);
+ FNCControls[3].BoundsRect := Rect(301,1,380,32);
  FNCControls[3].Caption := '&Help';
  FNCControls[3].GetAs<TNCButton>.DropDownMenu:= mHelp;
  FNCControls[3].GetAs<TNCButton>.OnClick := MenuHelpClick;
@@ -440,8 +460,8 @@ begin
   Result:= nil;
   DM.GitHub.Token:= frmSetup.Token; //TODO: Find a better place for this
   case frmSetup.UserType of
-    0: Result:= DM.GitHub.GetUserRepos(frmSetup.User, PageNum);
-    1: Result:= DM.GitHub.GetOrgRepos(frmSetup.User, PageNum);
+    gaUser:         Result:= DM.GitHub.GetUserRepos(frmSetup.User, PageNum);
+    gaOrganization: Result:= DM.GitHub.GetOrgRepos(frmSetup.User, PageNum);
   end;
 end;
 
@@ -469,7 +489,10 @@ begin
       GetRepoPage(PageNum+1); //RECURSIVE - Get next page
   except
     on E: Exception do begin
-      MessageDlg('Error getting repositories: '+E.Message, mtError, [mbOK], 0);
+      if E <> nil then
+        MessageDlg('Error getting repositories: '+E.Message, mtError, [mbOK], 0)
+      else
+        MessageDlg('CRITICAL Error getting repositories!!!', mtError, [mbOK], 0);
     end;
   end;
 end;
@@ -628,7 +651,6 @@ begin
   CloseHelpWnd;
 
   Params:= '';
-  //TODO: Figure out why this fails sometimes...
   if AContextID > 0 then begin
     Params:= Params + ' -mapid ' + IntToStr(AContextID);
   end else begin
@@ -649,13 +671,15 @@ begin
 end;
 
 function TfrmMain.AppIsConfigured: Boolean;
+var
+  P: TGitHubProfile;
 begin
   //TODO: Implement auth and repo accounts...
-  Result:= frmSetup.User <> '';
+
+  P:= frmSetup.CurProfile;
+  Result:= P.AccountName <> '';
   if Result then
-    Result:= frmSetup.BackupDir <> '';
-  if Result then
-    Result:= frmSetup.UserType >= 0;
+    Result:= P.DownloadDir <> '';
 end;
 
 procedure TfrmMain.actRefreshExecute(Sender: TObject);
@@ -812,8 +836,6 @@ var
 begin
   //Rec:= Sender.GetNodeData(Node);
   R:= FRepos[Node.Index];
-  //CellText:= Rec.Arr[Column];
-  //TODO: Draw data relevant to column index...
   if Assigned(R) then begin
     case Column of
       0: begin
@@ -964,7 +986,7 @@ begin
       M.RadioItem:= True;
       M.GroupIndex:= 1;
       M.OnClick:= MenuSortClick;
-      if X = Self.cboSort.ItemIndex then
+      if X = cboSort.ItemIndex then
         M.Checked:= True;
       mSort.Add(M);
     end;
@@ -974,11 +996,64 @@ begin
 
 end;
 
+procedure TfrmMain.PopulateProfiles;
+var
+  M: TMenuItem;
+  X: Integer;
+  P: TGitHubProfile;
+begin
+  //First clear the old ones...
+  for X := mProfiles.Count-1 downto 0 do begin
+    M:= mProfiles.Items[X];
+    if M.GroupIndex = 1 then
+      mProfiles.Delete(X);
+  end;
+
+  for X := 0 to frmSetup.Profiles.Count-1 do begin
+    P:= frmSetup.Profiles[X];
+    M:= TMenuItem.Create(mProfiles);
+    M.Caption:= P.Title;
+    M.Tag:= X;
+    M.AutoCheck:= True;
+    M.RadioItem:= True;
+    M.GroupIndex:= 1;
+    M.OnClick:= ProfileMenuClick;
+    if X = frmSetup.ProfileIndex then begin
+      M.Checked:= True;
+    end;
+    mProfiles.Add(M);
+  end;
+
+  //SetProfileIndex(frmSetup.ProfileIndex);
+
+end;
+
+procedure TfrmMain.SetProfileIndex(const Index: Integer);
+var
+  X: Integer;
+  M: TMenuItem;
+begin
+  frmSetup.ProfileIndex:= Index;
+  DM.Config.I['profileIndex']:= Index;
+  for X := 0 to mProfiles.Count-1 do begin
+    M:= mProfiles.Items[X];
+    if (M.GroupIndex = 1) and (M.Tag = X) then begin
+      M.Checked:= True;
+      Break;
+    end;
+  end;
+  SetTitle;
+end;
+
+procedure TfrmMain.ProfileMenuClick(Sender: TObject);
+begin
+  SetProfileIndex(TMenuItem(Sender).Tag);
+end;
+
 procedure TfrmMain.MenuSortClick(Sender: TObject);
 var
   M: TMenuItem;
 begin
-  //TODO: Apply sorting by selected column...
   M:= TMenuItem(Sender);
   Self.cboSort.ItemIndex:= M.Tag;
   Self.SortRepos;
@@ -1017,12 +1092,47 @@ begin
 end;
 
 procedure TfrmMain.actSetupExecute(Sender: TObject);
+//var
+  //P: TGitHubProfile;
 begin
   //Setup App...
+
   frmSetup.LoadFromConfig;
   if frmSetup.ShowModal = mrOK then begin
     frmSetup.SaveToConfig;
-    SetTitle;
+
+    if frmSetup.lstProfiles.ItemIndex >= 0 then begin
+      SetProfileIndex(frmSetup.lstProfiles.ItemIndex);
+    end;
+
+    //TODO: Clear list if accounts change #45
+
+    //if (not SameText(frmSetup.User, FCurAccount)) or (frmSetup.UserType <> Integer(FCurAccountType)) then begin
+         //{
+      Screen.Cursor:= crHourglass;
+      try
+        SetEnabledState(False);
+        try
+          Stat.Panels[1].Text:= 'Clearing Repos...';
+          try
+            FRepos.Clear;
+            Application.ProcessMessages;
+            SortRepos;
+          finally
+            Stat.Panels[1].Text:= 'Ready';
+          end;
+        finally
+          SetEnabledState(True);
+        end;
+      finally
+        Screen.Cursor:= crDefault;
+      end;
+          // }
+    //end;
+
+
+    PopulateProfiles;
+
   end;
 end;
 
@@ -1038,6 +1148,15 @@ begin
   //NOTE: Close will initiate a prompt if it's currently busy
   //which may prevent the user from exiting
   Close;
+end;
+
+procedure TfrmMain.actFindExecute(Sender: TObject);
+begin
+  try
+    txtFilter.SetFocus;
+    txtFilter.SelectAll;
+  except
+  end;
 end;
 
 procedure TfrmMain.actHelpContentsExecute(Sender: TObject);
@@ -1115,7 +1234,7 @@ var
   S: String;
 begin
   Caption:= 'JD GitHub Backup';
-  S:= frmSetup.User;
+  S:= frmSetup.Title + ' (' + frmSetup.User + ')';
   if S <> '' then
     Caption:= Caption + ' - ' + S;
 end;
@@ -1255,7 +1374,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.btnClearFilterClick(Sender: TObject);
+procedure TfrmMain.actClearFilterExecute(Sender: TObject);
 begin
   //Clear the filter text
   txtFilter.Text:= '';

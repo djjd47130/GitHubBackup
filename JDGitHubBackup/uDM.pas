@@ -18,6 +18,7 @@ uses
 type
   TDM = class(TDataModule)
     GitHub: TGitHub;
+    Repos: TGitHubRepoList;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private
