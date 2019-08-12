@@ -121,16 +121,16 @@
         <DCCReference Include="IndySystem.dcp"/>
         <DCCReference Include="IndyProtocols.dcp"/>
         <DCCReference Include="IndyCore.dcp"/>
-        <DCCReference Include="..\..\Source\JD.Config.pas"/>
-        <DCCReference Include="..\..\Source\JD.DownloadThread.pas"/>
-        <DCCReference Include="..\..\Source\JD.GitHub.Common.pas"/>
-        <DCCReference Include="..\..\Source\JD.GitHub.Impl.pas"/>
-        <DCCReference Include="..\..\Source\JD.GitHub.Intf.pas"/>
-        <DCCReference Include="..\..\Source\JD.GitHub.pas"/>
-        <DCCReference Include="..\..\Source\JD.GitHub.Update.pas"/>
-        <DCCReference Include="..\..\Source\JD.IndyUtils.pas"/>
         <DCCReference Include="..\..\Libraries\X-SuperObject\XSuperJSON.pas"/>
         <DCCReference Include="..\..\Libraries\X-SuperObject\XSuperObject.pas"/>
+        <DCCReference Include="..\Source\JD.Config.pas"/>
+        <DCCReference Include="..\Source\JD.DownloadThread.pas"/>
+        <DCCReference Include="..\Source\JD.GitHub.Common.pas"/>
+        <DCCReference Include="..\Source\JD.GitHub.Impl.pas"/>
+        <DCCReference Include="..\Source\JD.GitHub.Intf.pas"/>
+        <DCCReference Include="..\Source\JD.GitHub.pas"/>
+        <DCCReference Include="..\Source\JD.GitHub.Update.pas"/>
+        <DCCReference Include="..\Source\JD.IndyUtils.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -180,6 +180,12 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\JDGitHubComponents.bpl" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>JDGitHubComponents.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
