@@ -140,12 +140,12 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <DCC_ExeOutput>..\Bin\$(Platform)</DCC_ExeOutput>
         <Icon_MainIcon>..\Images\media (1).ico</Icon_MainIcon>
-        <VerInfo_Build>6</VerInfo_Build>
+        <VerInfo_Build>7</VerInfo_Build>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>3</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.0.6;InternalName=JD GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=JD GitHub Backup;ProductVersion=0.3.0;Comments=JD GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=JD GitHub Backup;ProductName=JD GitHub Backup</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.0.7;InternalName=JD GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=JD GitHub Backup;ProductVersion=0.3.0;Comments=JD GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=JD GitHub Backup;ProductName=JD GitHub Backup</VerInfo_Keys>
         <BT_BuildType>Debug</BT_BuildType>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>

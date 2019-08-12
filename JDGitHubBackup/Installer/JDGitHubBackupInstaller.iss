@@ -15,9 +15,9 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-OutputDir=..\Bin\Win32\
+OutputDir=..\..\Bin\Win32\
 OutputBaseFilename=JDGitHubBackupSetup
-SetupIconFile=..\Images\media (1).ico 
+SetupIconFile=..\..\Images\media (1).ico 
 Compression=lzma
 SolidCompression=yes
 
@@ -29,10 +29,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "..\Bin\Win32\JDGitHubBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Bin\Win32\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Bin\Win32\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion     
-Source: "..\Bin\Win32\JDGitHubBackupHelp.chm"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\Bin\Win32\JDGitHubBackup.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\Bin\Win32\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\Bin\Win32\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion     
+Source: "..\..\Bin\Win32\JDGitHubBackupHelp.chm"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [InstallDelete]
