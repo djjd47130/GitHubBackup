@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>JDGitHubBackup.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -73,7 +73,7 @@
         <DCC_K>false</DCC_K>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Release>2</VerInfo_Release>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>3</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
@@ -85,7 +85,7 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DataSnapServerMidas;DBXDb2Driver;DBXInterBaseDriver;vclactnband;frxe23;vclFireDAC;emsclientfiredac;DataSnapFireDAC;svnui;tethering;FireDACADSDriver;DBXMSSQLDriver;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;vcltouch;vcldb;bindcompfmx;svn;Intraweb;DBXOracleDriver;inetdb;RaizeComponentsVcl;FmxTeeUI;RaizeComponentsVclDb;EdoniaCompPackage;FireDACIBDriver;fmx;fmxdae;vclib;FireDACDBXDriver;dbexpress;IndyCore;vclx;dsnap;DataSnapCommon;emsclient;FireDACCommon;RMProDemoComps;RESTBackendComponents;DataSnapConnectors;QR506RunDXE10;VCLRESTComponents;soapserver;frxTee23;RDBComp_DXE8;vclie;bindengine;DBXMySQLDriver;FireDACOracleDriver;CloudService;FireDACMySQLDriver;DBXFirebirdDriver;FireDACCommonDriver;hclcore_xe10;DataSnapClient;FloatBarComponents;LockBoxDR;inet;bindcompdbx;IndyIPCommon;vcl;DBXSybaseASEDriver;IndyIPServer;IndySystem;htmleditfm_xe10;FireDACDb2Driver;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;TeeDB;FireDAC;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FireDACASADriver;htmlcompfm_xe10;DBXOdbcDriver;FireDACTDataDriver;FMXTee;soaprtl;DbxCommonDriver;ibxpress;Tee;htmlcomp_xe10;DataSnapServer;xmlrtl;soapmidas;DataSnapNativeClient;fmxobj;vclwinx;ibxbindings;rtl;FireDACDSDriver;DbxClientDriver;DBXSybaseASADriver;CustomIPTransport;vcldsnap;bindcomp;appanalytics;DBXInformixDriver;IndyIPClient;bindcompvcl;frxDB23;TeeUI;vclribbon;dbxcds;VclSmp;adortl;FireDACODBCDriver;htmledit_xe10;DataSnapIndy10ServerTransport;htmleditcore_xe10;RDBSorters_DXE8;dsnapxml;DataSnapProviderClient;dbrtl;inetdbxpress;FireDACMongoDBDriver;IndyProtocols;frx23;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.1.0;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.3.1;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.2.0;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.3.2;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
@@ -111,11 +111,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <VerInfo_Build>1</VerInfo_Build>
-        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_Release>2</VerInfo_Release>
         <VerInfo_MinorVer>3</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.1.1;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.3.1;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.2.1;InternalName=GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=GitHub Backup;ProductVersion=0.3.2;Comments=GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=GitHub Backup;ProductName=GitHub Backup</VerInfo_Keys>
         <Icon_MainIcon>..\Images\media (1).ico</Icon_MainIcon>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -139,14 +139,15 @@
         <DCC_DebugInformation>0</DCC_DebugInformation>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <VerInfo_Release>2</VerInfo_Release>
         <DCC_ExeOutput>..\Bin\$(Platform)</DCC_ExeOutput>
         <Icon_MainIcon>..\Images\media (1).ico</Icon_MainIcon>
-        <VerInfo_Build>9</VerInfo_Build>
+        <VerInfo_Build>11</VerInfo_Build>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MinorVer>3</VerInfo_MinorVer>
         <VerInfo_MajorVer>0</VerInfo_MajorVer>
-        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.0.9;InternalName=JD GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=JD GitHub Backup;ProductVersion=0.3.0;Comments=JD GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=JD GitHub Backup;ProductName=JD GitHub Backup</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=JD Software Inc;FileVersion=0.3.2.11;InternalName=JD GitHub Backup;LegalCopyright=Copyright (c) 2019 Jerry Dodge;OriginalFilename=JD GitHub Backup;ProductVersion=0.3.2;Comments=JD GitHub Backup;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=JD GitHub Backup;ProductName=JD GitHub Backup</VerInfo_Keys>
         <BT_BuildType>Debug</BT_BuildType>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>
