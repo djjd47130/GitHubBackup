@@ -1,5 +1,5 @@
 #define MyAppName "JD GitHub Backup"
-#define MyAppVersion "0.3.1"
+#define MyAppVersion "0.3.2"
 #define MyAppPublisher "JD Software Inc"
 #define MyAppURL "http://www.jerrydodge.com/GitHubBackup"
 #define MyAppExeName "JDGitHubBackup.exe"
