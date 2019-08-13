@@ -122,21 +122,6 @@ object frmMain: TfrmMain
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    object Label4: TLabel
-      AlignWithMargins = True
-      Left = 778
-      Top = 3
-      Width = 31
-      Height = 26
-      Align = alRight
-      Alignment = taRightJustify
-      AutoSize = False
-      Caption = 'Sort:'
-      Layout = tlCenter
-      ExplicitLeft = 11
-      ExplicitTop = 6
-      ExplicitHeight = 23
-    end
     object btnListRepos: TButton
       AlignWithMargins = True
       Left = 3
@@ -147,7 +132,6 @@ object frmMain: TfrmMain
       Hint = 'Fetch list of repositories from GitHub'
       HelpContext = 1006
       Action = actRefresh
-      Align = alLeft
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 16762519
       Font.Height = -11
@@ -167,7 +151,6 @@ object frmMain: TfrmMain
       Hint = 'Initiate bulk download'
       HelpContext = 1008
       Action = actDownloadRepos
-      Align = alLeft
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clLime
       Font.Height = -11
@@ -187,7 +170,6 @@ object frmMain: TfrmMain
       Hint = 'Cancel the download'
       HelpContext = 1008
       Action = actCancelDownload
-      Align = alLeft
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clRed
       Font.Height = -11
@@ -197,52 +179,13 @@ object frmMain: TfrmMain
       TabOrder = 2
       StyleElements = [seClient, seBorder]
     end
-    object btnSortDir: TButton
-      AlignWithMargins = True
-      Left = 939
-      Top = 2
-      Width = 32
-      Height = 23
-      Cursor = crHandPoint
-      Hint = 'Toggle sort between ascending / descending'
-      HelpContext = 1006
-      Margins.Left = 0
-      Margins.Top = 2
-      Margins.Bottom = 4
-      Align = alRight
-      Caption = 'A..Z'
-      TabOrder = 4
-      OnClick = btnSortDirClick
-    end
-    object cboSort: TComboBox
-      AlignWithMargins = True
-      Left = 815
-      Top = 3
-      Width = 121
-      Height = 22
-      Cursor = crHandPoint
-      Hint = 'Change which column to sort by'
-      HelpContext = 1006
-      Align = alRight
-      Style = csDropDownList
-      ItemIndex = 0
-      TabOrder = 3
-      Text = 'Sort Name'
-      OnClick = cboSortClick
-      Items.Strings = (
-        'Sort Name'
-        'Sort Created'
-        'Sort Updated'
-        'Sort Pushed')
-    end
     object Panel1: TPanel
       Left = 328
       Top = 0
       Width = 217
       Height = 29
-      Align = alLeft
       BevelOuter = bvNone
-      TabOrder = 5
+      TabOrder = 3
       object btnClearFilter: TButton
         AlignWithMargins = True
         Left = 189
@@ -283,6 +226,74 @@ object frmMain: TfrmMain
         BevelOuter = bvNone
         Caption = 'Filter'
         TabOrder = 2
+      end
+    end
+    object pSort: TPanel
+      Left = 781
+      Top = 0
+      Width = 193
+      Height = 29
+      Align = alRight
+      BevelOuter = bvNone
+      TabOrder = 4
+      ExplicitLeft = 552
+      ExplicitHeight = 33
+      object Label4: TLabel
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 31
+        Height = 26
+        Align = alLeft
+        Alignment = taRightJustify
+        AutoSize = False
+        Caption = 'Sort:'
+        Layout = tlCenter
+        ExplicitLeft = 11
+        ExplicitTop = 6
+        ExplicitHeight = 23
+      end
+      object btnSortDir: TButton
+        AlignWithMargins = True
+        Left = 158
+        Top = 2
+        Width = 32
+        Height = 23
+        Cursor = crHandPoint
+        Hint = 'Toggle sort between ascending / descending'
+        HelpContext = 1006
+        Margins.Left = 0
+        Margins.Top = 2
+        Margins.Bottom = 4
+        Align = alRight
+        Caption = 'A..Z'
+        TabOrder = 0
+        OnClick = btnSortDirClick
+        ExplicitLeft = 174
+        ExplicitHeight = 25
+      end
+      object cboSort: TComboBox
+        AlignWithMargins = True
+        Left = 40
+        Top = 3
+        Width = 115
+        Height = 22
+        Cursor = crHandPoint
+        Hint = 'Change which column to sort by'
+        HelpContext = 1006
+        Align = alClient
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 1
+        Text = 'Sort Name'
+        OnClick = cboSortClick
+        Items.Strings = (
+          'Sort Name'
+          'Sort Created'
+          'Sort Updated'
+          'Sort Pushed')
+        ExplicitLeft = 815
+        ExplicitWidth = 121
       end
     end
   end
@@ -374,18 +385,11 @@ object frmMain: TfrmMain
     Left = 20
     Top = 142
   end
-  object Taskbar: TTaskbar
-    TaskBarButtons = <>
-    TabProperties = []
-    ToolTip = 'GitHub Backup'
-    Left = 68
-    Top = 142
-  end
   object Acts: TActionManager
     LargeImages = Img32
     Images = Img24
     OnUpdate = ActsUpdate
-    Left = 176
+    Left = 72
     Top = 142
     StyleName = 'Platform Default'
     object actSetup: TAction
@@ -519,7 +523,7 @@ object frmMain: TfrmMain
     Left = 24
     Top = 200
     Bitmap = {
-      494C01018700A8007C001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700A80080001000100000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002002000001002000000000000020
       0200000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5023,7 +5027,7 @@ object frmMain: TfrmMain
     Left = 72
     Top = 200
     Bitmap = {
-      494C01018700D8008C002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700D80090002000200000000000FF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004004000001002000000000000080
       0800000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -22992,7 +22996,7 @@ object frmMain: TfrmMain
     Left = 120
     Top = 200
     Bitmap = {
-      494C01018700C800A8001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
+      494C01018700C800AC001800180000000000FF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000006000000030030000010020000000000000C8
       0400000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

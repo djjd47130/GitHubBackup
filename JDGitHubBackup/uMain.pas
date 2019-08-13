@@ -17,7 +17,7 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   System.Generics.Collections, System.Generics.Defaults,
   System.UITypes, System.Win.TaskbarCore, System.Actions,
-  System.Types,
+  System.Types, System.Win.ComObj, Winapi.ShlObj,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.Taskbar, Vcl.CheckLst,
   Vcl.Menus, Vcl.PlatformDefaultStyleActnCtrls,
@@ -57,7 +57,6 @@ type
   TfrmMain = class(TForm)
     Stat: TStatusBar;
     tmrDisplay: TTimer;
-    Taskbar: TTaskbar;
     Acts: TActionManager;
     actSetup: TAction;
     actRefresh: TAction;
@@ -82,9 +81,6 @@ type
     txtErrorLog: TMemo;
     chkCheckAll: TCheckBox;
     Prog: TProgressBar;
-    btnSortDir: TButton;
-    cboSort: TComboBox;
-    Label4: TLabel;
     actAbout: TAction;
     actHelpContents: TAction;
     AppEvents: TApplicationEvents;
@@ -127,6 +123,10 @@ type
     Setup1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
+    pSort: TPanel;
+    btnSortDir: TButton;
+    cboSort: TComboBox;
+    Label4: TLabel;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -173,6 +173,10 @@ type
     FCurMax: Integer; //Download progress max value
     FThreadCancel: TThreadCancelEvent; //Pointer to thread procedure to cancel
     FNCControls: TNCControls; //Non-client menu buttons
+    FTaskbarList: ITaskbarList;
+    FTaskbarList2: ITaskbarList2;
+    FTaskbarList3: ITaskbarList3;
+    FTaskbarList4: ITaskbarList4;
     {$IFDEF V1}
     FRepoList: TVirtualStringTree; //Virtual String Tree for future UI
     procedure lstRepos2GetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -215,6 +219,7 @@ type
     procedure PopulateProfiles;
     procedure ProfileMenuClick(Sender: TObject);
     procedure SetProfileIndex(const Index: Integer);
+    procedure DpiChanged(var Msg: TWMDpi); message WM_DPICHANGED;
   public
   end;
   {$WARN SYMBOL_PLATFORM ON}
@@ -249,6 +254,16 @@ begin
   {$ENDIF}
 
   FRepos:= TGitHubRepos.Create(True);
+
+
+  //Issue #46 - TTaskbar bugs
+  //http://www.drbob42.com/examines/examinC5.htm
+  FTaskbarList:= CreateComObject(CLSID_TaskbarList) as ITaskbarList3;
+  FTaskbarList.HrInit;
+  Supports(FTaskbarList, IID_ITaskbarList2, FTaskbarList2);
+  Supports(FTaskbarList, IID_ITaskbarList3, FTaskbarList3);
+  Supports(FTaskbarList, IID_ITaskbarList4, FTaskbarList4);
+
 
   {$IFDEF DEBUG}
   //If debug build, use CHM from release folder
@@ -628,6 +643,17 @@ begin
   end;
 
   UpdateCheckAll;
+
+end;
+
+procedure TfrmMain.DpiChanged(var Msg: TWMDpi);
+begin
+  //TODO: Fix alignment issue #47 when Windows DPI settings change and
+  //control alignment gets messed up.
+  inherited;
+
+  //Actually, we don't need to do anything here because I changed these controls
+  //to not be aligned in teh first place.
 
 end;
 
@@ -1286,17 +1312,26 @@ end;
 
 procedure TfrmMain.tmrDisplayTimer(Sender: TObject);
 begin
+  //Issue #46 - TTaskbar bugs
+
   //Displays UI status/progress
   if Assigned(FCurFile) then begin
-    Taskbar.ProgressState:= TTaskbarProgressState.Normal;
+    if Assigned(FTaskbarList3) then
+      FTaskbarList3.SetProgressState(Self.Handle, TBPF_NORMAL);
+
+    //FTaskbarList.ProgressState:= TTaskbarProgressState.Normal;
     Prog.Max:= FCurMax;
     Prog.Position:= FCurPos;
-    Taskbar.ProgressMaxValue:= FCurMax;
-    Taskbar.ProgressValue:= FCurPos;
+    if Assigned(FTaskbarList3) then
+      FTaskbarList3.SetProgressValue(Self.Handle, FCurPos, FCurMax);
+    //Taskbar.ProgressMaxValue:= FCurMax;
+    //Taskbar.ProgressValue:= FCurPos;
     Stat.Panels[1].Text:= 'Downloading '+IntToStr(FCurPos)+' of '+IntToStr(FCurMax)+'...';
     Stat.Panels[2].Text:= FCurFile.Name;
   end else begin
-    Taskbar.ProgressState:= TTaskbarProgressState.None;
+    if Assigned(FTaskbarList3) then
+      FTaskbarList3.SetProgressState(Self.Handle, TBPF_NOPROGRESS);
+    //Taskbar.ProgressState:= TTaskbarProgressState.None;
   end;
 end;
 

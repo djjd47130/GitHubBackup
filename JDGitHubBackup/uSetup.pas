@@ -402,7 +402,7 @@ begin
 
   if FProfiles.Count = 0 then begin
     P:= FProfiles.Add;
-    if DM.Config.S['name'] = '' then begin
+    if DM.Config.S['user'] = '' then begin
       P.Title:= 'Jerry Dodge';
       P.AccountName:= 'djjd47130';
       P.AccountType:= gaUser;

@@ -34,6 +34,10 @@ object frmSetup: TfrmSetup
     object tabAccounts: TTabSheet
       HelpContext = 1002
       Caption = '   Accounts   '
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object gbAccountAccess: TGroupBox
         Left = 0
         Top = 0
@@ -346,6 +350,10 @@ object frmSetup: TfrmSetup
       Caption = '   View   '
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object pBottom: TPanel
