@@ -49,6 +49,10 @@ The progress is purely based on number of repositories downloaded versus total n
 
 Either way, the progress is also shown in the taskbar icon for the application.
 
+### Rate Limiting
+
+GitHub [restricts the number of API calls](https://developer.github.com/v3/#rate-limiting) that can be used in a given period of time. At the time of writing this, authenticated users (with token) have a limit of 5,000 requests per hour, while unauthenticated users (anonymous without token) have a limit of 60 requests per hour. Note that due to pagination, a single "refresh" of repositories may end up in multiple API calls, depending on page size and number of repositories being fetched. This also applies to repository detail, such as branches and commits, also using pagination.
+
 ## Technical
 
 ### Delphi
