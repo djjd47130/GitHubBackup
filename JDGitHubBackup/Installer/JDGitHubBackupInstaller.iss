@@ -33,6 +33,8 @@ Source: "..\..\Bin\Win32\JDGitHubBackup.exe"; DestDir: "{app}"; Flags: ignorever
 Source: "..\..\Bin\Win32\libeay32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\Bin\Win32\ssleay32.dll"; DestDir: "{app}"; Flags: ignoreversion     
 Source: "..\..\Bin\Win32\JDGitHubBackupHelp.chm"; DestDir: "{app}"; Flags: ignoreversion
+; Source: "..\..\Bin\Win32\FontAwesome.ttf"; DestDir: "{fonts}"; FontInstall: "FontAwesome"; Flags: onlyifdoesntexist uninsneveruninstall
+
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [InstallDelete]
