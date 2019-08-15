@@ -28,6 +28,9 @@ type
     Glyphs: TRMProFontGlyphs;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
+    procedure ReposRepoAdd(Sender: TObject; Repo: TGitHubRepo);
+    procedure ReposRepoDelete(Sender: TObject; Repo: TGitHubRepo);
+    procedure ReposRepoEdit(Sender: TObject; Repo: TGitHubRepo);
   private
     FConfig: TJDConfig;
   public
@@ -56,6 +59,21 @@ procedure TDM.DataModuleDestroy(Sender: TObject);
 begin
   FConfig.Save;
   FreeAndNil(FConfig);
+end;
+
+procedure TDM.ReposRepoAdd(Sender: TObject; Repo: TGitHubRepo);
+begin
+  //
+end;
+
+procedure TDM.ReposRepoDelete(Sender: TObject; Repo: TGitHubRepo);
+begin
+  //
+end;
+
+procedure TDM.ReposRepoEdit(Sender: TObject; Repo: TGitHubRepo);
+begin
+  //
 end;
 
 end.

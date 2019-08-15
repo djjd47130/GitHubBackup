@@ -43,57 +43,8 @@ object frmMain: TfrmMain
     Height = 23
     HelpContext = 1008
     Align = alBottom
-    TabOrder = 5
+    TabOrder = 3
     Visible = False
-  end
-  object lstRepos: TListView
-    Left = 0
-    Top = 29
-    Width = 974
-    Height = 100
-    HelpContext = 1006
-    Align = alTop
-    BorderStyle = bsNone
-    Checkboxes = True
-    Columns = <
-      item
-        Caption = '    Repository Name'
-        Width = 180
-      end
-      item
-        Caption = 'Default Branch'
-        Width = 100
-      end
-      item
-        Caption = 'Visibility'
-        Width = 66
-      end
-      item
-        Caption = 'Language'
-        Width = 76
-      end
-      item
-        Caption = 'Size'
-        Width = 80
-      end
-      item
-        Caption = 'Last Pushed'
-        Width = 150
-      end
-      item
-        Caption = 'Description'
-        Width = 300
-      end>
-    HideSelection = False
-    HotTrackStyles = [htHandPoint, htUnderlineHot]
-    ReadOnly = True
-    RowSelect = True
-    TabOrder = 0
-    ViewStyle = vsReport
-    OnClick = lstReposClick
-    OnColumnClick = lstReposColumnClick
-    OnDblClick = lstReposDblClick
-    OnItemChecked = lstReposItemChecked
   end
   object Stat: TStatusBar
     Left = 0
@@ -121,7 +72,7 @@ object frmMain: TfrmMain
     Height = 29
     Align = alTop
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
     object btnListRepos: TButton
       AlignWithMargins = True
       Left = 3
@@ -299,7 +250,7 @@ object frmMain: TfrmMain
     HelpContext = 1008
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 2
+    TabOrder = 1
     object pErrorLogTitle: TPanel
       Left = 0
       Top = 0
@@ -364,14 +315,27 @@ object frmMain: TfrmMain
       WordWrap = False
     end
   end
-  object chkCheckAll: TCheckBox
-    Left = 3
-    Top = 33
-    Width = 16
-    Height = 17
-    Cursor = crHandPoint
-    TabOrder = 3
-    OnClick = chkCheckAllClick
+  object Lst: TVirtualStringTree
+    Left = 0
+    Top = 29
+    Width = 974
+    Height = 89
+    Align = alTop
+    BorderStyle = bsNone
+    EmptyListMessage = ' No Repositories'
+    Header.AutoSizeIndex = -1
+    Header.MainColumn = -1
+    Header.Options = [hoColumnResize, hoDrag, hoShowImages, hoShowSortGlyphs, hoVisible]
+    Images = DM.Img16
+    TabOrder = 4
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+    TreeOptions.PaintOptions = [toHideFocusRect, toHotTrack, toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
+    TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect, toRightClickSelect]
+    OnChecked = lstRepos2Checked
+    OnChecking = lstRepos2Checking
+    OnGetText = lstRepos2GetText
+    OnInitNode = lstRepos2InitNode
+    Columns = <>
   end
   object tmrDisplay: TTimer
     Interval = 200
@@ -612,7 +576,7 @@ object frmMain: TfrmMain
     Enabled = False
     Interval = 500
     OnTimer = tmrFilterTimer
-    Left = 240
-    Top = 200
+    Left = 184
+    Top = 144
   end
 end

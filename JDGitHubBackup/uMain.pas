@@ -46,10 +46,8 @@ uses
   uRepoDetail,
   uDM,
   uAbout,
-  XSuperObject
-  {$IFDEF V1}
-  , VirtualTrees
-  {$ENDIF}
+  XSuperObject,
+  VirtualTrees
   ;
 
 type
@@ -72,14 +70,12 @@ type
     btnListRepos: TButton;
     btnDownload: TButton;
     btnCancel: TButton;
-    lstRepos: TListView;
     spErrorLog: TSplitter;
     pErrorLog: TPanel;
     pErrorLogTitle: TPanel;
     lblErrorLogTitle: TLabel;
     btnCloseErrorLog: TButton;
     txtErrorLog: TMemo;
-    chkCheckAll: TCheckBox;
     Prog: TProgressBar;
     actAbout: TAction;
     actHelpContents: TAction;
@@ -125,6 +121,7 @@ type
     cboSort: TComboBox;
     Label4: TLabel;
     actSetupProfiles: TAction;
+    Lst: TVirtualStringTree;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -163,6 +160,13 @@ type
     procedure lstReposColumnClick(Sender: TObject; Column: TListColumn);
     procedure actFindExecute(Sender: TObject);
     procedure actSetupProfilesExecute(Sender: TObject);
+    procedure lstRepos2GetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure lstRepos2InitNode(Sender: TBaseVirtualTree; ParentNode,
+      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
+    procedure lstRepos2Checked(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure lstRepos2Checking(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      var NewState: TCheckState; var Allowed: Boolean);
   private
     FEnabled: Boolean; //Whether UI controls should be enabled, used for busy state
     FRepos: TGitHubRepos; //Master list of repositories
@@ -176,18 +180,6 @@ type
     FTaskbarList3: ITaskbarList3;
     FTaskbarList4: ITaskbarList4;
 
-    {$IFDEF V1}
-    FRepoList: TVirtualStringTree; //Virtual String Tree for future UI
-    procedure lstRepos2GetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure lstRepos2InitNode(Sender: TBaseVirtualTree; ParentNode,
-      Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
-    procedure lstRepos2Checked(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure lstRepos2Checking(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      var NewState: TCheckState; var Allowed: Boolean);
-    procedure CreateColumns;
-    procedure SetupVST;
-    {$ENDIF}
 
     procedure SetupNC;
     procedure SetTitle;
@@ -198,6 +190,7 @@ type
     procedure LoadConfig;
     procedure SaveConfig;
     function AppIsConfigured: Boolean;
+    procedure CreateColumns;
 
     procedure PopulateProfiles;
     procedure ProfileMenuClick(Sender: TObject);
@@ -261,7 +254,8 @@ begin
   {$ENDIF}
 
   FRepos:= TGitHubRepos.Create(True);
-
+  Lst.Align:= alClient;
+  CreateColumns;
 
   //Issue #46 - TTaskbar bugs
   //http://www.drbob42.com/examines/examinC5.htm
@@ -273,7 +267,7 @@ begin
 
 
   {$IFDEF DEBUG}
-  //If debug build, use CHM from release folder
+  //If debug build, use CHM from Bin folder
   T:= IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
   T:= T + '..\..\..\Bin\Win32\';
   T:= TPath.Combine(T, 'JDGitHubBackupHelp.chm');
@@ -283,14 +277,10 @@ begin
   {$ENDIF}
 
   //Prepare UI Controls
-  lstRepos.Align:= alClient;
   txtErrorLog.Align:= alClient;
   SetEnabledState(True);
   ShowErrorLog(False);
   SetupNC;
-  {$IFDEF V1}
-  SetupVST;
-  {$ENDIF}
 
   //Populate list of columns that can be sorted
   cboSort.Items.Clear;
@@ -299,34 +289,6 @@ begin
   PopulateMainMenuSort;
 
 end;
-
-{$IFDEF V1}
-procedure TfrmMain.SetupVST;
-begin
-  lstRepos.Visible:= False;
-  chkCheckAll.Visible:= False;
-
-  FRepoList:= TVirtualStringTree.Create(Self);
-  FRepoList.Parent:= Self;
-  FRepoList.Align:= alClient;
-  FRepoList.BorderStyle:= bsNone;
-  FRepoList.DrawSelectionMode:= smBlendedRectangle;
-  FRepoList.EmptyListMessage:= ' No Repositories';
-  FRepoList.Header.AutoSizeIndex:= 0;
-  FRepoList.Header.Options:= [hoColumnResize, hoDrag, hoShowImages, hoShowSortGlyphs, hoVisible];
-  FRepoList.Images:= Img16;
-  FRepoList.TreeOptions.MiscOptions:= [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick];
-  FRepoList.TreeOptions.PaintOptions:= [toHideFocusRect, toHotTrack, toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages];
-  FRepoList.TreeOptions.SelectionOptions:= [toExtendedFocus, toFullRowSelect, toRightClickSelect];
-  FRepoList.OnChecked:= lstRepos2Checked;
-  FRepoList.OnChecking:= lstRepos2Checking;
-  FRepoList.OnGetText:= lstRepos2GetText;
-  FRepoList.OnInitNode:= lstRepos2InitNode;
-
-  CreateColumns;
-
-end;
-{$ENDIF}
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
@@ -358,9 +320,7 @@ end;
 procedure TfrmMain.SetupNC;
 begin
  FNCControls := TNCControls.Create(Self);
- //NCControls.Images := Img24;
  FNCControls.ShowSystemMenu:= False;
-
 
  FNCControls.Controls.AddEx<TNCButton>;
  FNCControls[0].GetAs<TNCButton>.Style := nsSplitButton;
@@ -397,7 +357,6 @@ begin
  FNCControls[3].Caption := '&Help';
  FNCControls[3].GetAs<TNCButton>.DropDownMenu:= mHelp;
  FNCControls[3].GetAs<TNCButton>.OnClick := MenuHelpClick;
-
 
 end;
 
@@ -586,7 +545,7 @@ var
 begin
   //Populates list view with repository items
   //TODO: Change entire mechanism to use Add/Edit/Delete events
-  {$IFNDEF V1}
+  {
   lstRepos.Items.BeginUpdate;
   try
     lstRepos.Items.Clear;
@@ -621,21 +580,23 @@ begin
   finally
     lstRepos.Items.EndUpdate;
   end;
-  {$ELSE}
-  FRepoList.BeginUpdate;
+  }
+  Lst.BeginUpdate;
   try
-    FRepoList.RootNodeCount:= FRepos.Count;
+    Lst.RootNodeCount:= FRepos.Count;
     for X := 0 to FRepos.Count-1 do begin
       //HOW THE FUCK DO I ASSIGN THE REPO OBJECTS AND CHECKED STATE???
       //  Need to learn more about VTV/VST...
 
 
+      //Fuck that... HOW WILL I IMPLEMENT A FILTER HERE NOW???
+
+
     end;
     //TODO...
   finally
-    FRepoList.EndUpdate;
+    Lst.EndUpdate;
   end;
-  {$ENDIF}
 
   if txtFilter.Text = '' then begin
     Stat.Panels[0].Text:= IntToStr(FRepos.Count)+' Repositories';
@@ -784,52 +745,42 @@ function TfrmMain.VisibleCheckedCount: Integer;
 var
   X: Integer;
 begin
-  Result:= 0;
-  for X := 0 to VisibleCount-1 do
-    if lstRepos.Items[X].Checked then
-      Inc(Result);
+  Result:= Lst.CheckedCount;
 end;
 
 function TfrmMain.VisibleCount: Integer;
 begin
-  Result:= lstRepos.Items.Count;
+  Result:= Lst.RootNodeCount;
 end;
 
 procedure TfrmMain.UpdateCheckAll;
 var
   C: Integer;
+  Col: TVirtualTreeColumn;
 begin
   //Change check all option depending on selection
-  chkCheckAll.Tag:= 1;
+  C:= VisibleCheckedCount;
+  Col:= Lst.Header.Columns[0];
+  Col.Tag:= 1;
   try
-    C:= VisibleCheckedCount;
     if C = 0 then begin
-      chkCheckAll.State:= TCheckBoxState.cbUnchecked;
+      Col.CheckState:= TCheckState.csUncheckedNormal;
     end else
     if C = VisibleCount then begin
-      chkCheckAll.State:= TCheckBoxState.cbChecked;
+      Col.CheckState:= TCheckState.csCheckedNormal;
     end else begin
-      chkCheckAll.State:= TCheckBoxState.cbGrayed;
+      Col.CheckState:= TCheckState.csMixedNormal;
     end;
-
-    {$IFDEF V1}
-    case chkCheckAll.State of
-      TCheckBoxState.cbUnchecked: FRepoList.Header.Columns[0].CheckState:= TCheckState.csUncheckedNormal;
-      TCheckBoxState.cbChecked: FRepoList.Header.Columns[0].CheckState:= TCheckState.csCheckedNormal;
-      TCheckBoxState.cbGrayed: FRepoList.Header.Columns[0].CheckState:= TCheckState.csMixedNormal;
-    end;
-    {$ENDIF}
-
   finally
-    chkCheckAll.Tag:= 0;
+    Col.Tag:= 0;
   end;
 end;
 
-{$IFDEF V1}
 procedure TfrmMain.lstRepos2Checked(Sender: TBaseVirtualTree;
   Node: PVirtualNode);
 begin
-  FRepoList.Refresh;
+  Self.UpdateCheckAll;
+  Lst.Refresh;
 end;
 
 procedure TfrmMain.lstRepos2Checking(Sender: TBaseVirtualTree;
@@ -838,7 +789,7 @@ var
   R: TGitHubRepo;
 begin
   R:= TGitHubRepo(Node.GetData);
-  if lstRepos.Tag <> 0 then begin
+  if Lst.Tag <> 0 then begin
     //Revert back to prior state
     Allowed:= False;
   end else begin
@@ -851,7 +802,8 @@ begin
     end;
   end;
 
-  FRepoList.Refresh;
+  Self.UpdateCheckAll;
+  Lst.Refresh;
 end;
 
 procedure TfrmMain.lstRepos2GetText(Sender: TBaseVirtualTree;
@@ -898,12 +850,11 @@ var
 begin
   Node.SetData(FRepos[Node.Index]);
 
-  Level := FRepoList.GetNodeLevel(Node);
+  Level := Lst.GetNodeLevel(Node);
   if Level = 0 then
     Node.CheckType := ctCheckBox;
 
 end;
-{$ENDIF}
 
 procedure TfrmMain.lstReposClick(Sender: TObject);
 begin
@@ -955,6 +906,7 @@ var
   F: TfrmRepoDetail;
 begin
   //Open details of repository
+  {
   I:= lstRepos.Selected;
   if Assigned(I) then begin
     R:= TGitHubRepo(I.Data);
@@ -966,6 +918,7 @@ begin
       F.Free;
     end;
   end;
+  }
 end;
 
 procedure TfrmMain.lstReposItemChecked(Sender: TObject; Item: TListItem);
@@ -973,6 +926,7 @@ var
   R: TGitHubRepo;
 begin
   //User checked or unchecked a repo...
+  {
   if lstRepos.Tag <> 0 then begin
     //Revert back to prior state
     lstRepos.OnItemChecked:= nil;
@@ -989,6 +943,7 @@ begin
       UpdateCheckAll;
     end;
   end;
+  }
 end;
 
 procedure TfrmMain.PopulateMainMenuSort;
@@ -1018,7 +973,7 @@ begin
       mSort.Add(M);
     end;
   finally
-    L.Free;
+    FreeAndNil(L);
   end;
 
 end;
@@ -1050,8 +1005,6 @@ begin
     end;
     mProfiles.Add(M);
   end;
-
-  //SetProfileIndex(frmSetup.ProfileIndex);
 
 end;
 
@@ -1102,21 +1055,23 @@ end;
 procedure TfrmMain.actCheckAllExecute(Sender: TObject);
 begin
   //Check All...
-  Self.chkCheckAll.Checked:= True;
+  Lst.Header.Columns[0].CheckState:= TCheckState.csCheckedNormal;
+  Self.chkCheckAllClick(Sender);
 end;
 
 procedure TfrmMain.actCheckNoneExecute(Sender: TObject);
 begin
   //Check None...
-  Self.chkCheckAll.Checked:= False;
+  Lst.Header.Columns[0].CheckState:= TCheckState.csUncheckedNormal;
+  Self.chkCheckAllClick(Sender);
 end;
 
 procedure TfrmMain.actCheckSelectedExecute(Sender: TObject);
 begin
   //Check Selected...
-  if Self.lstRepos.ItemIndex >= 0 then begin
-    lstRepos.Selected.Checked:= not lstRepos.Selected.Checked;
-  end;
+  //if Self.lstRepos.ItemIndex >= 0 then begin
+    //lstRepos.Selected.Checked:= not lstRepos.Selected.Checked;
+  //end;
 end;
 
 procedure TfrmMain.ClearRepos;
@@ -1216,10 +1171,31 @@ procedure TfrmMain.chkCheckAllClick(Sender: TObject);
 var
   X: Integer;
   R: TGitHubRepo;
+  Node: PVirtualNode;
 begin
   //User clicked on check all checkbox at top of list
+  Lst.BeginUpdate;
+  try
+    Node := Lst.GetFirst;
+    while Assigned(Node) do
+    begin
+      case Lst.Header.Columns[0].CheckState of
+        TCheckState.csUncheckedNormal: ;
+        TCheckState.csCheckedNormal: ;
+        TCheckState.csMixedNormal: ;
+      end;
+      Node.CheckState:= Lst.Header.Columns[0].CheckState;
+      Node := Lst.GetNextSibling(Node);
+      Self.lstRepos2Checked(Lst, Node);
+    end;
+  finally
+    Lst.EndUpdate;
+  end;
+  Lst.Refresh;
+
   //NOTE: This is also triggered when "Check All" or "Check None"
   //  actions are executed.
+  {
   if chkCheckAll.Tag = 0 then begin
     lstRepos.OnItemChecked:= nil;
     try
@@ -1238,6 +1214,7 @@ begin
       lstRepos.OnItemChecked:= lstReposItemChecked;
     end;
   end;
+  }
 end;
 
 procedure TfrmMain.ActsUpdate(Action: TBasicAction; var Handled: Boolean);
@@ -1251,7 +1228,6 @@ begin
   //Set UI enabled controls based on current state
   FEnabled:= Enabled;
   actRefresh.Enabled:= Enabled;
-  chkCheckAll.Enabled:= Enabled;
   actCheckAll.Enabled:= Enabled;
   actCheckNone.Enabled:= Enabled;
   actCheckSelected.Enabled:= Enabled;
@@ -1263,6 +1239,11 @@ begin
   btnClearFilter.Enabled:= Enabled;
   mProfiles.Enabled:= Enabled;
   UpdateDownloadAction;
+  if Enabled then begin
+    Lst.Header.Columns[0].CheckBox:= True;
+  end else begin
+    Lst.Header.Columns[0].CheckBox:= False;
+  end;
 end;
 
 procedure TfrmMain.SetTitle;
@@ -1286,7 +1267,7 @@ begin
   Prog.Visible:= True;
   Prog.Position:= 0;
   UpdateDownloadAction;
-  lstRepos.Tag:= 1;
+  Lst.Tag:= 1;
 end;
 
 procedure TfrmMain.ThreadDone(Sender: TObject);
@@ -1295,7 +1276,7 @@ begin
   FCurFile:= nil;
   FThreadCancel:= nil;
   actCancelDownload.Enabled:= False;
-  lstRepos.Tag:= 0;
+  Lst.Tag:= 0;
   SetEnabledState(True);
   Stat.Panels[1].Text:= 'Ready';
   Prog.Visible:= False;
@@ -1328,28 +1309,23 @@ begin
   if Assigned(FCurFile) then begin
     if Assigned(FTaskbarList3) then
       FTaskbarList3.SetProgressState(Self.Handle, TBPF_NORMAL);
-
-    //FTaskbarList.ProgressState:= TTaskbarProgressState.Normal;
     Prog.Max:= FCurMax;
     Prog.Position:= FCurPos;
     if Assigned(FTaskbarList3) then
       FTaskbarList3.SetProgressValue(Self.Handle, FCurPos, FCurMax);
-    //Taskbar.ProgressMaxValue:= FCurMax;
-    //Taskbar.ProgressValue:= FCurPos;
     Stat.Panels[1].Text:= 'Downloading '+IntToStr(FCurPos)+' of '+IntToStr(FCurMax)+'...';
     Stat.Panels[2].Text:= FCurFile.Name;
   end else begin
     if Assigned(FTaskbarList3) then
       FTaskbarList3.SetProgressState(Self.Handle, TBPF_NOPROGRESS);
-    //Taskbar.ProgressState:= TTaskbarProgressState.None;
   end;
 end;
 
 procedure TfrmMain.tmrFilterTimer(Sender: TObject);
 begin
-  tmrFilter.Enabled:= False;
   //Apply filter...
-  Self.DisplayRepos;
+  tmrFilter.Enabled:= False;
+  DisplayRepos;
 end;
 
 procedure TfrmMain.txtFilterChange(Sender: TObject);
@@ -1365,13 +1341,12 @@ begin
   txtErrorLog.Lines.Append('EXCEPTION on file '+CurFile.Name+': '+CurFile.Error);
 end;
 
-{$IFDEF V1}
 procedure TfrmMain.CreateColumns;
 var
   C: TVirtualTreeColumn;
   function AC(const Text: String; const Width: Integer): TVirtualTreeColumn;
   begin
-    Result:= FRepoList.Header.Columns.Add;
+    Result:= Lst.Header.Columns.Add;
     Result.Text:= Text;
     Result.Width:= Width;
   end;
@@ -1388,7 +1363,6 @@ begin
   AC('Description', 386);
 
 end;
-{$ENDIF}
 
 function TfrmMain.CreateDownloadThread: TDownloadThread;
 begin
