@@ -71,6 +71,8 @@ This project makes use of the [X-SuperObject](https://github.com/onryldz/x-super
 
 This project makes use of the [Virtual Treeview](https://github.com/Virtual-TreeView/Virtual-TreeView). While it is not yet implemented, you don't need to download/install the library. However future versions will migrate to this component. 
 
+**NOTE**: There is currently a [branch](https://github.com/djjd47130/GitHubBackup/tree/virtual-treeview) and a [project](https://github.com/djjd47130/GitHubBackup/projects/9) dedicated to this.
+
 ### JDLib
 
 This project makes use of another project of mine [JDLib](https://github.com/djjd47130/JDLib) which contains some of my common-purpose works. Specifically, font glyphs using Font Awesome. You will need to install it first in order to open this project.
