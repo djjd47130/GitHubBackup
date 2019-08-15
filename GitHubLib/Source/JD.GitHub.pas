@@ -110,8 +110,10 @@ type
   TGitHubCommits = class;
   TGitHubAccount = class;
   TGitHubAccounts = class;
-
   TGitHubRepoList = class;
+  TGitHubRepoListThread = class;
+
+
 
   TGitHubAccountType = (gaUser, gaOrganization);
 
@@ -289,6 +291,7 @@ type
   end;
 
 
+
   TGitHubRepoEvent = procedure(Sender: TObject; Repo: TGitHubRepo) of object;
 
   /// <summary>
@@ -308,11 +311,13 @@ type
     FOnRepoEdit: TGitHubRepoEvent;
     FOnRepoDelete: TGitHubRepoEvent;
     FAutoPages: Boolean;
+    FRefreshInterval: Integer;
     procedure SetPageSize(const Value: Integer);
     procedure SetGitHub(const Value: TGitHub);
     procedure SetAccountName(const Value: String);
     procedure SetAccountType(const Value: TGitHubAccountType);
     procedure SetAutoPages(const Value: Boolean);
+    procedure SetRefreshInterval(const Value: Integer);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -325,28 +330,16 @@ type
     property AutoPages: Boolean read FAutoPages write SetAutoPages;
     property GitHub: TGitHub read FGitHub write SetGitHub;
     property PageSize: Integer read FPageSize write SetPageSize;
+    property RefreshInterval: Integer read FRefreshInterval write SetRefreshInterval;
 
     property OnRepoAdd: TGitHubRepoEvent read FOnRepoAdd write FOnRepoAdd;
     property OnRepoEdit: TGitHubRepoEvent read FOnRepoEdit write FOnRepoEdit;
     property OnRepoDelete: TGitHubRepoEvent read FOnRepoDelete write FOnRepoDelete;
   end;
 
-  /// <summary>
-  ///   Encapsulates a list of repositories which is event triggered
-  ///   to allow for dynamically adding/editing/removing items
-  ///   from any UI list view which is currently in place.
-  /// </summary>
-  TGitHubRepoSearch = class(TComponent)
-  //TODO: A component to perform arbitrary repository searches...
-  private
-
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-  published
+  TGitHubRepoListThread = class(TThread)
 
   end;
-
 
 procedure ListRepoFields(AStrings: TStrings);
 
@@ -809,18 +802,11 @@ begin
   FPageSize := Value;
 end;
 
-{ TGitHubRepoSearch }
-
-constructor TGitHubRepoSearch.Create(AOwner: TComponent);
+procedure TGitHubRepoList.SetRefreshInterval(const Value: Integer);
 begin
-  inherited;
-
-end;
-
-destructor TGitHubRepoSearch.Destroy;
-begin
-
-  inherited;
+  FRefreshInterval := Value;
+  if FRefreshInterval < 1 then
+    FRefreshInterval:= 1; //TODO
 end;
 
 end.

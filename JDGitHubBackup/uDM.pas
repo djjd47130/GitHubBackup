@@ -13,12 +13,19 @@ interface
 uses
   System.SysUtils, System.Classes,
   JD.Config,
-  JD.GitHub;
+  JD.GitHub,
+  JD.Ctrls.FontButton, JD.Graphics,
+  System.ImageList, Vcl.ImgList,
+  Vcl.Controls, Vcl.Graphics;
 
 type
   TDM = class(TDataModule)
     GitHub: TGitHub;
     Repos: TGitHubRepoList;
+    Img16: TImageList;
+    Img32: TImageList;
+    Img24: TImageList;
+    Glyphs: TRMProFontGlyphs;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private
@@ -38,6 +45,8 @@ implementation
 
 procedure TDM.DataModuleCreate(Sender: TObject);
 begin
+  ColorManager.BaseColor:= clBlack;
+
   FConfig:= TJDConfig.Create;
   FConfig.Path:= 'JD Software Inc\GitHub Backup';
   FConfig.Load;

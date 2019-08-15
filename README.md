@@ -53,7 +53,7 @@ Either way, the progress is also shown in the taskbar icon for the application.
 
 GitHub [restricts the number of API calls](https://developer.github.com/v3/#rate-limiting) that can be used in a given period of time. At the time of writing this, authenticated users (with token) have a limit of 5,000 requests per hour, while unauthenticated users (anonymous without token) have a limit of 60 requests per hour. Note that due to pagination, a single "refresh" of repositories may end up in multiple API calls, depending on page size and number of repositories being fetched. This also applies to repository detail, such as branches and commits, also using pagination.
 
-## Technical
+## Technical / Requirements
 
 ### Delphi
 
@@ -70,6 +70,14 @@ This project makes use of the [X-SuperObject](https://github.com/onryldz/x-super
 ### Virtual TreeView
 
 This project makes use of the [Virtual Treeview](https://github.com/Virtual-TreeView/Virtual-TreeView). While it is not yet implemented, you don't need to download/install the library. However future versions will migrate to this component. 
+
+### JDLib
+
+This project makes use of another project of mine [JDLib](https://github.com/djjd47130/JDLib) which contains some of my common-purpose works. Specifically, font glyphs using Font Awesome. You will need to install it first in order to open this project.
+
+### FontAwesome
+
+The JDLib makes use of [FontAwesome](https://fontawesome.com) for glyph icons. The Vcl-Styles-Utils automatically includes this in the project and is unnecessary to install/distribute.
 
 ### OpenSSL
 

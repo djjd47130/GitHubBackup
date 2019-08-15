@@ -26,8 +26,8 @@ uses
 
   Vcl.Styles, Vcl.Themes,
 
-  Vcl.Styles.FontAwesome,
   Vcl.Styles.Fixes,
+  Vcl.Styles.Hooks,
   Vcl.Styles.Utils.Menus,
   Vcl.Styles.Utils.Forms,
   Vcl.Styles.Utils.StdCtrls,
@@ -35,8 +35,8 @@ uses
   Vcl.Styles.Utils.ScreenTips,
   Vcl.Styles.Utils.SysControls,
   Vcl.Styles.Utils.SysStyleHook,
-  Vcl.Styles.Hooks,
-  Vcl.Styles.NC,
+  Vcl.Styles.FontAwesome, //Used to include font for icon glyphs
+  Vcl.Styles.NC, //Used for main menu
 
   JD.GitHub,
   JD.IndyUtils,
@@ -84,9 +84,6 @@ type
     actAbout: TAction;
     actHelpContents: TAction;
     AppEvents: TApplicationEvents;
-    Img16: TImageList;
-    Img32: TImageList;
-    Img24: TImageList;
     mRepos: TPopupMenu;
     MenuItem17: TMenuItem;
     MenuItem18: TMenuItem;
@@ -127,6 +124,7 @@ type
     btnSortDir: TButton;
     cboSort: TComboBox;
     Label4: TLabel;
+    actSetupProfiles: TAction;
     procedure actRefreshExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -164,7 +162,7 @@ type
     procedure actClearFilterExecute(Sender: TObject);
     procedure lstReposColumnClick(Sender: TObject; Column: TListColumn);
     procedure actFindExecute(Sender: TObject);
-    procedure Setup1Click(Sender: TObject);
+    procedure actSetupProfilesExecute(Sender: TObject);
   private
     FEnabled: Boolean; //Whether UI controls should be enabled, used for busy state
     FRepos: TGitHubRepos; //Master list of repositories
@@ -177,6 +175,7 @@ type
     FTaskbarList2: ITaskbarList2;
     FTaskbarList3: ITaskbarList3;
     FTaskbarList4: ITaskbarList4;
+
     {$IFDEF V1}
     FRepoList: TVirtualStringTree; //Virtual String Tree for future UI
     procedure lstRepos2GetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -189,37 +188,45 @@ type
     procedure CreateColumns;
     procedure SetupVST;
     {$ENDIF}
+
+    procedure SetupNC;
+    procedure SetTitle;
+    procedure DpiChanged(var Msg: TWMDpi); message WM_DPICHANGED;
+    procedure CloseHelpWnd;
+    function OpenHelp(const AContextID: Integer): Boolean;
+
+    procedure LoadConfig;
+    procedure SaveConfig;
+    function AppIsConfigured: Boolean;
+
+    procedure PopulateProfiles;
+    procedure ProfileMenuClick(Sender: TObject);
+    procedure SetProfileIndex(const Index: Integer);
+
     function GetRepos(const PageNum: Integer): TGitHubRepos;
     procedure GetRepoPage(const PageNum: Integer);
+    procedure SortRepos;
+    procedure DisplayRepos;
+    procedure ClearRepos;
+    procedure PopulateMainMenuSort;
+    function RepoSort: Integer;
+    procedure MenuSortClick(Sender: TObject);
+
+    procedure UpdateCheckAll;
     function CheckedCount: Integer;
     function VisibleCount: Integer;
     function VisibleCheckedCount: Integer;
     procedure UpdateDownloadAction;
     procedure SetEnabledState(const Enabled: Boolean);
+
+    function CreateDownloadThread: TDownloadThread;
     procedure ThreadBegin(Sender: TObject);
     procedure ThreadDone(Sender: TObject);
     procedure ThreadException(Sender: TObject; const CurFile: TDownloadFile);
     procedure ThreadProgress(Sender: TObject; const Cur, Max: Integer;
       const CurFile: TDownloadFile);
-    function CreateDownloadThread: TDownloadThread;
-    function RepoSort: Integer;
-    procedure UpdateCheckAll;
-    procedure SortRepos;
-    procedure DisplayRepos;
+
     procedure ShowErrorLog(const AShow: Boolean = True);
-    function AppIsConfigured: Boolean;
-    procedure PopulateMainMenuSort;
-    procedure MenuSortClick(Sender: TObject);
-    procedure LoadConfig;
-    procedure SaveConfig;
-    procedure CloseHelpWnd;
-    function OpenHelp(const AContextID: Integer): Boolean;
-    procedure SetupNC;
-    procedure SetTitle;
-    procedure PopulateProfiles;
-    procedure ProfileMenuClick(Sender: TObject);
-    procedure SetProfileIndex(const Index: Integer);
-    procedure DpiChanged(var Msg: TWMDpi); message WM_DPICHANGED;
   public
   end;
   {$WARN SYMBOL_PLATFORM ON}
@@ -268,7 +275,7 @@ begin
   {$IFDEF DEBUG}
   //If debug build, use CHM from release folder
   T:= IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
-  T:= T + '..\Release\';
+  T:= T + '..\..\..\Bin\Win32\';
   T:= TPath.Combine(T, 'JDGitHubBackupHelp.chm');
   Application.HelpFile:= T;
   {$ELSE}
@@ -346,12 +353,6 @@ begin
     CanClose:= False;
     MessageDlg('Cannot close while download is in progress.', mtError, [mbOK], 0);
   end;
-end;
-
-procedure TfrmMain.Setup1Click(Sender: TObject);
-begin
-  frmSetup.Pages.ActivePageIndex:= 1;
-  actSetup.Execute;
 end;
 
 procedure TfrmMain.SetupNC;
@@ -1069,6 +1070,7 @@ begin
     end;
   end;
   SetTitle;
+  ClearRepos;
 end;
 
 procedure TfrmMain.ProfileMenuClick(Sender: TObject);
@@ -1117,6 +1119,28 @@ begin
   end;
 end;
 
+procedure TfrmMain.ClearRepos;
+begin
+  Screen.Cursor:= crHourglass;
+  try
+    SetEnabledState(False);
+    try
+      Stat.Panels[1].Text:= 'Clearing Repos...';
+      try
+        FRepos.Clear;
+        Application.ProcessMessages;
+        SortRepos;
+      finally
+        Stat.Panels[1].Text:= 'Ready';
+      end;
+    finally
+      SetEnabledState(True);
+    end;
+  finally
+    Screen.Cursor:= crDefault;
+  end;
+end;
+
 procedure TfrmMain.actSetupExecute(Sender: TObject);
 //var
   //P: TGitHubProfile;
@@ -1132,34 +1156,19 @@ begin
     end;
 
     //TODO: Clear list if accounts change #45
-
     //if (not SameText(frmSetup.User, FCurAccount)) or (frmSetup.UserType <> Integer(FCurAccountType)) then begin
-         //{
-      Screen.Cursor:= crHourglass;
-      try
-        SetEnabledState(False);
-        try
-          Stat.Panels[1].Text:= 'Clearing Repos...';
-          try
-            FRepos.Clear;
-            Application.ProcessMessages;
-            SortRepos;
-          finally
-            Stat.Panels[1].Text:= 'Ready';
-          end;
-        finally
-          SetEnabledState(True);
-        end;
-      finally
-        Screen.Cursor:= crDefault;
-      end;
-          // }
+      ClearRepos;
     //end;
-
 
     PopulateProfiles;
 
   end;
+end;
+
+procedure TfrmMain.actSetupProfilesExecute(Sender: TObject);
+begin
+  frmSetup.Pages.ActivePageIndex:= 1; //Profile page
+  actSetup.Execute;
 end;
 
 procedure TfrmMain.actConfigColsExecute(Sender: TObject);
@@ -1252,6 +1261,7 @@ begin
   btnSortDir.Enabled:= Enabled;
   txtFilter.Enabled:= Enabled;
   btnClearFilter.Enabled:= Enabled;
+  mProfiles.Enabled:= Enabled;
   UpdateDownloadAction;
 end;
 
