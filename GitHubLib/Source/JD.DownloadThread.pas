@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows,
   System.Classes, System.SysUtils, System.Generics.Collections,
-  JD.IndyUtils;
+  JD.IndyUtils,
+  IdException;
 
 type
   TDownloadStatus = (dsPending, dsProgress, dsComplete, dsException);
@@ -200,6 +201,9 @@ begin
 
         AFile.FStatus:= dsComplete;
       except
+        on E: EIdConnClosedGracefully do begin
+          EM:= 'The server aborted the download: '+E.Message;
+        end;
         on E: Exception do begin
           EM:= E.Message;
         end;

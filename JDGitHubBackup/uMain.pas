@@ -275,7 +275,7 @@ begin
   {$IFDEF DEBUG}
   //If debug build, use CHM from release folder
   T:= IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
-  T:= T + '..\Release\';
+  T:= T + '..\..\..\Bin\Win32\';
   T:= TPath.Combine(T, 'JDGitHubBackupHelp.chm');
   Application.HelpFile:= T;
   {$ELSE}
