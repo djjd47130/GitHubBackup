@@ -509,7 +509,6 @@ end;
 
 function TfrmSetup.FormatTime(const AValue: TDateTime): String;
 begin
-  //TODO: Make user option how to format date/time...
   Result:= FormatDateTime('yyyy-mm-dd hh:nn ampm', AdjustTime(AValue));
 end;
 

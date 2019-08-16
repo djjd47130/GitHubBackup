@@ -612,7 +612,7 @@ object frmMain: TfrmMain
     Enabled = False
     Interval = 500
     OnTimer = tmrFilterTimer
-    Left = 240
-    Top = 200
+    Left = 184
+    Top = 144
   end
 end
