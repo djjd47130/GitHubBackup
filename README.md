@@ -81,6 +81,8 @@ This project makes use of another project of mine [JDLib](https://github.com/djj
 
 The JDLib makes use of [FontAwesome](https://fontawesome.com) for glyph icons. The Vcl-Styles-Utils automatically includes this in the project and is unnecessary to install/distribute.
 
+**NOTE**: You must install the font into Windows if you wish to use the JDLib components to customize icons. 
+
 ### OpenSSL
 
 This project requires the OpenSSL binaries in Indy. These are not included in this repository, and you are responsible to provide a 32bit set of binaries with the output executable. Specifically, `ssleay32.dll` and `libeay32.dll`. However, the binary downloads in the releases section does include these files. 
